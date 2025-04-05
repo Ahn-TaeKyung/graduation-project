@@ -1,0 +1,25 @@
+# =============== Unity Generated Files ===============
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+MemoryCaptures/
+
+# =============== Unity Burst/Package Cache (중요) ===============
+**/[Pp]ackageCache/
+
+# =============== OS, IDE, 기타 불필요 파일 ===============
+.DS_Store
+*.csproj
+*.sln
+*.user
+.vscode/
+
+# =============== 바이너리/대용량 파일 차단 (선택적) ===============
+*.dll
+*.dylib
+*.so
+*.exe
