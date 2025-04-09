@@ -4,12 +4,16 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
+using UnityEngine.UI;
+using TMPro;
 
 public class NetworkManager : MonoBehaviour
 {
     public static NetworkManager Instance { get; private set; }
     private NetworkRunner m_network_runner;
-    
+    [SerializeField] private GameObject m_main_panel;
+    [SerializeField] private GameObject m_room_panel;
+    public TextMeshProUGUI m_room_key;
     private void Awake()
     {
         if (Instance == null)
@@ -54,6 +58,9 @@ public class NetworkManager : MonoBehaviour
         if (result.Ok)
         {
             Debug.Log($"방 생성 성공! Room ID: {roomID}");
+            m_room_key.text = roomID;
+            m_main_panel.SetActive(false);
+            m_room_panel.SetActive(true);
         }
         else
         {
@@ -75,6 +82,9 @@ public class NetworkManager : MonoBehaviour
         if (result.Ok)
         {
             Debug.Log("방 참가 성공!");
+            m_room_key.text = roomID;
+            m_main_panel.SetActive(false);
+            m_room_panel.SetActive(true);
         }
         else
         {
