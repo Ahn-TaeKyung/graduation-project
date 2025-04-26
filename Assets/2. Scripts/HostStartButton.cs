@@ -1,0 +1,51 @@
+using UnityEngine;
+using UnityEngine.UI;
+using Fusion;
+using System.Collections.Generic;
+
+public class HostStartButton : NetworkBehaviour
+{
+    [SerializeField] private Button m_start_button;
+    [SerializeField] private SceneRef m_game_scene_ref; // 전환할 게임 씬 이름
+
+    private void Start()
+    {
+        if (Runner.IsServer)
+        {
+            m_start_button.gameObject.SetActive(true);
+            m_start_button.onClick.AddListener(OnStartButtonClicked);
+        }
+        else
+        {
+            m_start_button.gameObject.SetActive(false);
+        }
+    }
+
+    private void OnStartButtonClicked()
+    {
+        Debug.Log("게임 시작 버튼 클릭됨");
+
+        // (선택) 플레이어들이 역할 선택했는지 확인할 수도 있음
+        CheckAllPlayersRole();
+
+        // 씬 이동
+        if (Runner.SceneManager != null)
+        {
+            Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
+        }
+        else
+        {
+            Debug.LogError("SceneManager가 없습니다! 씬 이동 실패");
+        }
+    }
+
+    private void CheckAllPlayersRole()
+    {
+        var networkRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
+
+        foreach (var role in networkRoles)
+        {
+            Debug.Log($"플레이어 {role.Object.InputAuthority.PlayerId}의 선택된 역할은 {role.m_player_role}입니다.");
+        }
+    }
+}
