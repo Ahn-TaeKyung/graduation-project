@@ -72,6 +72,8 @@ namespace Fusion {
     }
 
     protected virtual NetworkObject InstantiatePrefab(NetworkRunner runner, NetworkObject prefab) {
+      Debug.Log(runner);
+      Debug.Log(prefab);
       return Instantiate(prefab);
     }
 

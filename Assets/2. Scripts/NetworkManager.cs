@@ -17,7 +17,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] private GameObject m_room_panel;
     public TextMeshProUGUI m_room_key;
     [SerializeField] private NetworkPrefabRef m_player_prefab;
-    private Dictionary<PlayerRef, NetworkObject> m_spawn_characters = new Dictionary<PlayerRef, NetworkObject>();
+    private Dictionary<PlayerRef, NetworkObject> m_spawn_characters = new ();
     private void Awake()
     {
         if (Instance == null)
@@ -105,12 +105,22 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log($"플레이어 {player} 참가 -> 캐릭터 생성");
 
             Vector3 spawn_position = new Vector3(UnityEngine.Random.Range(-3, 3), 0, UnityEngine.Random.Range(-3, 3));
-            runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
+            var network_player_object = runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
+            Debug.Log("spawn() 완료");
+            m_spawn_characters.Add(player, network_player_object);
+        }
+    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
+    {
+        if (m_spawn_characters.TryGetValue(player, out NetworkObject networkObject))
+        {
+            runner.Despawn(networkObject);
+            m_spawn_characters.Remove(player);
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+    
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
