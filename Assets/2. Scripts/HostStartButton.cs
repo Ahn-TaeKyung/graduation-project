@@ -2,14 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using Fusion;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class HostStartButton : NetworkBehaviour
 {
     [SerializeField] private Button m_start_button;
     [SerializeField] private SceneRef m_game_scene_ref; // 전환할 게임 씬 이름
+    [SerializeField] private SceneRef m_current_scene_ref; 
 
-    private void Start()
+    public override void Spawned()
     {
+        Debug.Log($"start_button spawned{Runner}/{Runner.IsServer}");
         if (Runner.IsServer)
         {
             m_start_button.gameObject.SetActive(true);
@@ -27,11 +30,13 @@ public class HostStartButton : NetworkBehaviour
 
         // (선택) 플레이어들이 역할 선택했는지 확인할 수도 있음
         CheckAllPlayersRole();
-
+        
         // 씬 이동
         if (Runner.SceneManager != null)
         {
+            Debug.Log($"SceneChange{m_game_scene_ref}/ {Runner.SceneManager}");   
             Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
+            Runner.SceneManager.UnloadScene(m_current_scene_ref);
         }
         else
         {

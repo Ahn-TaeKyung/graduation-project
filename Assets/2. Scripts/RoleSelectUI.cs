@@ -10,7 +10,6 @@ public class RoleSelectUI : NetworkBehaviour
     [SerializeField] private Button m_right_button;
 
     private RoleType[] m_roles;
-    private int m_current_role_index = 0;
     private NetworkRole m_network_role;
 
     public override void Spawned()
@@ -18,6 +17,7 @@ public class RoleSelectUI : NetworkBehaviour
         m_network_role = GetComponent<NetworkRole>();
 
         m_roles = (RoleType[])System.Enum.GetValues(typeof(RoleType));
+
         UpdateRoleText();
 
         m_left_button.onClick.AddListener(SelectLeft);
@@ -30,32 +30,45 @@ public class RoleSelectUI : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        // 매 프레임마다 현재 역할을 텍스트에 반영 (변경 감지용)
+        UpdateRoleText();
+    }
+
     private void SelectLeft()
     {
-        m_current_role_index--;
-        if (m_current_role_index < 0)
-            m_current_role_index = m_roles.Length - 1;
+        int currentIndex = GetCurrentRoleIndex();
+        currentIndex--;
+        if (currentIndex < 0)
+            currentIndex = m_roles.Length - 1;
 
-        UpdateRole();
+        m_network_role.SetPlayerRole(m_roles[currentIndex]);
     }
 
     private void SelectRight()
     {
-        m_current_role_index++;
-        if (m_current_role_index >= m_roles.Length)
-            m_current_role_index = 0;
+        int currentIndex = GetCurrentRoleIndex();
+        currentIndex++;
+        if (currentIndex >= m_roles.Length)
+            currentIndex = 0;
 
-        UpdateRole();
+        m_network_role.SetPlayerRole(m_roles[currentIndex]);
     }
 
-    private void UpdateRole()
+    private int GetCurrentRoleIndex()
     {
-        m_network_role.SetPlayerRole(m_roles[m_current_role_index]);
-        UpdateRoleText();
+        RoleType currentRole = m_network_role.m_player_role;
+        for (int i = 0; i < m_roles.Length; i++)
+        {
+            if (m_roles[i] == currentRole)
+                return i;
+        }
+        return 0;
     }
 
     private void UpdateRoleText()
     {
-        m_role_text.text = m_roles[m_current_role_index].ToString();
+        m_role_text.text = m_network_role.m_player_role.ToString();
     }
 }

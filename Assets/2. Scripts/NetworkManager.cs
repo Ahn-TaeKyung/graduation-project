@@ -21,7 +21,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            // DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -34,6 +34,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         m_network_runner = gameObject.AddComponent<NetworkRunner>();
         m_network_runner.ProvideInput = true;
         m_network_runner.AddCallbacks(this);
+        DontDestroyOnLoad(m_network_runner.gameObject);
     }
 
 
@@ -86,8 +87,10 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (result.Ok)
         {
             Debug.Log("방 참가 성공!");
+            Debug.Log(roomID);
             m_main_panel.SetActive(false);
             m_room_panel.SetActive(true);
+            // m_room_canvas.SetActive(true);
             m_room_key.text = roomID;
         }
         else
@@ -101,23 +104,31 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer)
         {
             Debug.Log($"플레이어 {player} 참가 -> 캐릭터 생성");
-
             // 고정된 위치에서 스폰하도록 수정 예정
             Vector3 spawn_position = GetFixedSpawnPosition(player); 
-            var player_object = runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
-            m_spawn_characters.Add(player, player_object);
+            NetworkObject spawned_player = runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
+            if (spawned_player != null)
+            {
+                var ui_positioner = spawned_player.GetComponent<PlayerUIPositioner>();
+                if(ui_positioner != null)
+                {
+                    ui_positioner.m_player_index = player.AsIndex;
+                    ui_positioner.SetUIPosition();
+                }
+            }
+            // m_spawn_characters.Add(player, player_object);
         }
     }
     private Vector3[] spawn_positions = new Vector3[]
     {
-        new Vector3(-5, 0, 0), // 1번 플레이어
-        new Vector3(0, 0, 0),  // 2번 플레이어
-        new Vector3(5, 0, 0)   // 3번 플레이어
+        new Vector3(-7, 1, 0), // 1번 플레이어
+        new Vector3(0, 1, 0),  // 2번 플레이어
+        new Vector3(7, 1, 0)   // 3번 플레이어
     };
 
     private Vector3 GetFixedSpawnPosition(PlayerRef player)
     {
-        int index = player.RawEncoded % spawn_positions.Length;
+        int index = player.AsIndex - 1;
         return spawn_positions[index];
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
