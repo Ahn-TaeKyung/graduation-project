@@ -1,23 +1,23 @@
 using System;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
-using UnityEngine.UI;
 using TMPro;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static NetworkManager Instance { get; private set; }
-    private NetworkRunner m_network_runner;
+    public NetworkRunner m_network_runner;
     [SerializeField] private GameObject m_main_panel;
     [SerializeField] private GameObject m_room_panel;
+    [SerializeField] private GameObject m_room_canvas;
     public TextMeshProUGUI m_room_key;
     [SerializeField] private NetworkPrefabRef m_player_prefab;
-    private Dictionary<PlayerRef, NetworkObject> m_spawn_characters = new Dictionary<PlayerRef, NetworkObject>();
+    public Dictionary<PlayerRef, NetworkObject> m_spawn_characters = new Dictionary<PlayerRef, NetworkObject>();
+    public TMP_InputField m_join_key;
+    private NetworkSceneManagerDefault m_scene_manager;
     private void Awake()
     {
         if (Instance == null)
@@ -35,7 +35,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         m_network_runner = gameObject.AddComponent<NetworkRunner>();
         m_network_runner.ProvideInput = true;
+        m_scene_manager = gameObject.AddComponent<NetworkSceneManagerDefault>();
         m_network_runner.AddCallbacks(this);
+        DontDestroyOnLoad(m_network_runner.gameObject);
     }
 
 
@@ -43,8 +45,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         System.Random random = new System.Random();
-        return new string(Enumerable.Repeat(chars, 10)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
+        return new string(Enumerable.Repeat(chars, 10).Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
 
@@ -58,7 +59,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.Host,
             SessionName = roomID,
             Scene = SceneRef.FromIndex(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex),
-            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+            SceneManager = m_scene_manager
         });
 
         if (result.Ok)
@@ -67,6 +68,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             m_room_key.text = roomID;
             m_main_panel.SetActive(false);
             m_room_panel.SetActive(true);
+            m_room_canvas.SetActive(true);
         }
         else
         {
@@ -75,27 +77,41 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    public async void JoinRoom(string roomID)
+    public async void JoinRoom()
     {
+        string roomID = m_join_key.text.Trim();
         Debug.Log($"Room ID {roomID} 에 참가 시도...");
-        
+        Debug.Log($"Room ID {m_network_runner.SceneManager} 에 참가 시도...");
+
         var result = await m_network_runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Client,
             SessionName = roomID
         });
+        var sceneManager = gameObject.GetComponent<NetworkSceneManagerDefault>();
+        Debug.Log($"Room SceneManager : {sceneManager}");
+
 
         if (result.Ok)
         {
-            Debug.Log("방 참가 성공!");
-            m_room_key.text = roomID;
+            Debug.Log("🎉 방 참가 성공!");
+            Debug.Log($"IsRunning: {m_network_runner.IsRunning}");
+            Debug.Log($"IsServer: {m_network_runner.IsServer}");
+            Debug.Log($"IsClient: {m_network_runner.IsClient}");
+            Debug.Log($"LocalPlayer: {m_network_runner.LocalPlayer}");
+            Debug.Log($"Player Count: {m_network_runner.ActivePlayers.Count()}");
+            Debug.Log($"SceneManager 존재 여부: {m_network_runner.SceneManager != null}");
+            Debug.Log($"[Client] SceneManager 타입: {m_network_runner.SceneManager?.GetType().Name}");
+
             m_main_panel.SetActive(false);
             m_room_panel.SetActive(true);
+            m_room_key.text = roomID;
         }
         else
         {
             Debug.LogError($"방 참가 실패: {result.ShutdownReason}");
         }
+        
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -103,14 +119,43 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer)
         {
             Debug.Log($"플레이어 {player} 참가 -> 캐릭터 생성");
+            // 고정된 위치에서 스폰하도록 수정 예정
+            Vector3 spawn_position = GetFixedSpawnPosition(player); 
+            NetworkObject spawned_player = runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
+            if (spawned_player != null)
+            {
+                var ui_positioner = spawned_player.GetComponent<PlayerUIPositioner>();
+                if(ui_positioner != null)
+                {
+                    ui_positioner.m_player_index = player.AsIndex;
+                    ui_positioner.SetUIPosition();
+                }
+            }
+            // m_spawn_characters.Add(player, player_object);
+        }
+    }
+    private Vector3[] spawn_positions = new Vector3[]
+    {
+        new Vector3(-7, 1, 0), // 1번 플레이어
+        new Vector3(0, 1, 0),  // 2번 플레이어
+        new Vector3(7, 1, 0)   // 3번 플레이어
+    };
 
-            Vector3 spawn_position = new Vector3(UnityEngine.Random.Range(-3, 3), 0, UnityEngine.Random.Range(-3, 3));
-            runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
+    private Vector3 GetFixedSpawnPosition(PlayerRef player)
+    {
+        int index = player.AsIndex - 1;
+        return spawn_positions[index];
+    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
+    {
+        if (m_spawn_characters.TryGetValue(player, out NetworkObject networkObject))
+        {
+            runner.Despawn(networkObject);
+            m_spawn_characters.Remove(player);
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input) { }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
@@ -120,8 +165,17 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+
+        Debug.Log($"[{runner.GameMode}] Scene Load Done");
+        
+    }
+    public void OnSceneLoadStart(NetworkRunner runner)
+    {
+        Debug.Log($"[{runner.GameMode}] Scene Load Start");
+        
+    }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
