@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Fusion;
+using System.Collections.Generic;
 
 public class RoleSelectUI : NetworkBehaviour
 {

@@ -9,7 +9,7 @@ public class HostStartButton : NetworkBehaviour
 {
     [SerializeField] private Button m_start_button;
     [SerializeField] private SceneRef m_game_scene_ref; // 전환할 게임 씬 이름
-    [SerializeField] private SceneRef m_current_scene_ref; 
+    [SerializeField] private SceneRef m_current_scene_ref;
 
     public override void Spawned()
     {
@@ -31,12 +31,13 @@ public class HostStartButton : NetworkBehaviour
 
         // (선택) 플레이어들이 역할 선택했는지 확인할 수도 있음
         CheckAllPlayersRole();
-        if(Runner.IsServer)
+        SaveAllRolesBeforeSceneLoad();
+        if (Runner.IsServer)
         {
             // 씬 이동
             if (Runner.SceneManager != null)
             {
-                Debug.Log($"SceneChange{m_game_scene_ref}/ {Runner.SceneManager}");   
+                Debug.Log($"SceneChange{m_game_scene_ref}/ {Runner.SceneManager}");
                 Debug.Log("=== [Runner 상태 디버그 시작] ===");
 
                 Debug.Log($"IsRunning: {Runner.IsRunning}");
@@ -75,20 +76,20 @@ public class HostStartButton : NetworkBehaviour
             Debug.Log($"플레이어 {role.Object.InputAuthority.PlayerId}의 선택된 역할은 {role.m_player_role}입니다.");
         }
     }
+    public void SaveAllRolesBeforeSceneLoad()
+    {
+        var allRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
+        var list = new List<RoleData>();
 
-        // RPC: 모든 클라이언트에게 씬을 로드하라는 명령을 전달
-    // [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    // private void RPC_LoadGameScene()
-    // {
-    //     // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
-    //     Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
-    // }
+        foreach (var role in allRoles)
+        {
+            list.Add(new RoleData
+            {
+                m_player_id = role.Object.InputAuthority.PlayerId,
+                m_role = role.m_player_role
+            });
+        }
 
-        // RPC: 모든 클라이언트에게 씬을 로드하라는 명령을 전달
-    // [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    // private void RPC_UnLoadGameScene()
-    // {
-    //     // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
-    //    Runner.SceneManager.UnloadScene(m_current_scene_ref);
-    // }
+        RoleDataManager.SaveRoles(list);
+    }
 }

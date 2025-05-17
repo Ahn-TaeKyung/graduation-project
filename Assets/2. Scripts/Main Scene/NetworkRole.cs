@@ -2,8 +2,6 @@ using Fusion;
 
 public class NetworkRole : NetworkBehaviour
 {
-    // [Networked]
-    // public RoleType PlayerRole { get; set; } = RoleType.None;
 
     [Networked]
     public RoleType m_player_role { get; private set; }
