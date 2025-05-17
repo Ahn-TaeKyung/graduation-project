@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class HostStartButton : NetworkBehaviour
 {
@@ -36,8 +37,27 @@ public class HostStartButton : NetworkBehaviour
             if (Runner.SceneManager != null)
             {
                 Debug.Log($"SceneChange{m_game_scene_ref}/ {Runner.SceneManager}");   
-                RPC_LoadGameScene();
-                RPC_UnLoadGameScene();
+                Debug.Log("=== [Runner 상태 디버그 시작] ===");
+
+                Debug.Log($"IsRunning: {Runner.IsRunning}");
+                Debug.Log($"IsServer: {Runner.IsServer}");
+                Debug.Log($"IsClient: {Runner.IsClient}");
+                Debug.Log($"GameMode: {Runner.GameMode}");
+                Debug.Log($"ProvideInput: {Runner.ProvideInput}");
+                Debug.Log($"LocalPlayer: {Runner.LocalPlayer}");
+                Debug.Log($"Player Count: {Runner.ActivePlayers.Count()}");
+                Debug.Log($"SceneManager 존재 여부: {Runner.SceneManager != null}");
+                if (Runner.SessionInfo != null)
+                {
+                    Debug.Log($"Session Name: {Runner.SessionInfo.Name}");
+                    Debug.Log($"Session Region: {Runner.SessionInfo.Region}");
+                }
+
+                Debug.Log("=== [Runner 상태 디버그 끝] ===");
+                // Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
+                Runner.LoadScene("Play", LoadSceneMode.Single);
+                // RPC_LoadGameScene()
+                // RPC_UnLoadGameScene();
             }
             else
             {
@@ -57,18 +77,18 @@ public class HostStartButton : NetworkBehaviour
     }
 
         // RPC: 모든 클라이언트에게 씬을 로드하라는 명령을 전달
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_LoadGameScene()
-    {
-        // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
-        Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
-    }
+    // [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    // private void RPC_LoadGameScene()
+    // {
+    //     // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
+    //     Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
+    // }
 
         // RPC: 모든 클라이언트에게 씬을 로드하라는 명령을 전달
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    private void RPC_UnLoadGameScene()
-    {
-        // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
-       Runner.SceneManager.UnloadScene(m_current_scene_ref);
-    }
+    // [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    // private void RPC_UnLoadGameScene()
+    // {
+    //     // 서버에서 씬을 로드한 후 클라이언트들에 씬 로드 요청
+    //    Runner.SceneManager.UnloadScene(m_current_scene_ref);
+    // }
 }

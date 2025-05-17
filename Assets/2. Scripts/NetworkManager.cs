@@ -16,12 +16,14 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public TextMeshProUGUI m_room_key;
     [SerializeField] private NetworkPrefabRef m_player_prefab;
     public Dictionary<PlayerRef, NetworkObject> m_spawn_characters = new Dictionary<PlayerRef, NetworkObject>();
+    public TMP_InputField m_join_key;
+    private NetworkSceneManagerDefault m_scene_manager;
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -33,6 +35,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         m_network_runner = gameObject.AddComponent<NetworkRunner>();
         m_network_runner.ProvideInput = true;
+        m_scene_manager = gameObject.AddComponent<NetworkSceneManagerDefault>();
         m_network_runner.AddCallbacks(this);
         DontDestroyOnLoad(m_network_runner.gameObject);
     }
@@ -56,7 +59,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.Host,
             SessionName = roomID,
             Scene = SceneRef.FromIndex(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex),
-            SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+            SceneManager = m_scene_manager
         });
 
         if (result.Ok)
@@ -74,29 +77,41 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    public async void JoinRoom(string roomID)
+    public async void JoinRoom()
     {
+        string roomID = m_join_key.text.Trim();
         Debug.Log($"Room ID {roomID} 에 참가 시도...");
-        
+        Debug.Log($"Room ID {m_network_runner.SceneManager} 에 참가 시도...");
+
         var result = await m_network_runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Client,
             SessionName = roomID
         });
+        var sceneManager = gameObject.GetComponent<NetworkSceneManagerDefault>();
+        Debug.Log($"Room SceneManager : {sceneManager}");
+
 
         if (result.Ok)
         {
-            Debug.Log("방 참가 성공!");
-            Debug.Log(roomID);
+            Debug.Log("🎉 방 참가 성공!");
+            Debug.Log($"IsRunning: {m_network_runner.IsRunning}");
+            Debug.Log($"IsServer: {m_network_runner.IsServer}");
+            Debug.Log($"IsClient: {m_network_runner.IsClient}");
+            Debug.Log($"LocalPlayer: {m_network_runner.LocalPlayer}");
+            Debug.Log($"Player Count: {m_network_runner.ActivePlayers.Count()}");
+            Debug.Log($"SceneManager 존재 여부: {m_network_runner.SceneManager != null}");
+            Debug.Log($"[Client] SceneManager 타입: {m_network_runner.SceneManager?.GetType().Name}");
+
             m_main_panel.SetActive(false);
             m_room_panel.SetActive(true);
-            // m_room_canvas.SetActive(true);
             m_room_key.text = roomID;
         }
         else
         {
             Debug.LogError($"방 참가 실패: {result.ShutdownReason}");
         }
+        
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -150,8 +165,17 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
-    public void OnSceneLoadDone(NetworkRunner runner) { }
-    public void OnSceneLoadStart(NetworkRunner runner) { }
+    public void OnSceneLoadDone(NetworkRunner runner)
+    {
+
+        Debug.Log($"[{runner.GameMode}] Scene Load Done");
+        
+    }
+    public void OnSceneLoadStart(NetworkRunner runner)
+    {
+        Debug.Log($"[{runner.GameMode}] Scene Load Start");
+        
+    }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
