@@ -307,7 +307,6 @@ namespace Fusion {
     #endregion
 
     protected virtual IEnumerator LoadSceneCoroutine(SceneRef sceneRef, NetworkLoadSceneParameters sceneParams) {
-      Debug.Log("SceneLoadStart");
       Runner.InvokeSceneLoadStart(sceneRef);
 
       Scene scene = default;
@@ -468,7 +467,6 @@ namespace Fusion {
           }
         }
       }
-      Debug.Log("SceneLoaded");
 
       yield return StartCoroutine(OnSceneLoaded(sceneRef, scene, sceneParams));
     }
@@ -548,7 +546,6 @@ namespace Fusion {
     }
 
     protected virtual IEnumerator OnSceneLoaded(SceneRef sceneRef, Scene scene, NetworkLoadSceneParameters sceneParams) {
-      Debug.Log("SceneLoadedStart");
       Log.TraceSceneManager(Runner, $"Finished loading, starting processing {scene.Dump()} for {sceneRef}");
 
       var sceneObjects = scene.GetComponents<NetworkObject>(includeInactive: true, out var rootObjects);
@@ -593,7 +590,6 @@ namespace Fusion {
       
       Log.TraceSceneManager(Runner, $"Finished loading & processing {scene.Dump()} for {sceneRef}");
       Runner.InvokeSceneLoadDone(new SceneLoadDoneArgs(sceneRef, sceneObjects, scene, rootObjects));
-      Debug.Log($"▶ OnSceneLoaded called with scene: {scene.name}, isLoaded: {scene.isLoaded}, rootCount: {scene.rootCount}");
       yield break;
     }
 
