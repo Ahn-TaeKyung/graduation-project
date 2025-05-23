@@ -10,6 +10,21 @@ public class CameraMover : MonoBehaviour
 
     public bool IsMoving => moving;
 
+    private Camera hackerCamera;
+
+    void Awake()
+    {
+        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
+        if (hackerCameraObject != null)
+        {
+            hackerCamera = hackerCameraObject.GetComponent<Camera>();
+        }
+        else
+        {
+            Debug.LogError("태그가 'hacker'인 카메라를 찾을 수 없습니다.");
+        }
+    }
+
     public void MoveTo(Vector3 pos, Quaternion rot, float duration)
     {
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
@@ -18,8 +33,14 @@ public class CameraMover : MonoBehaviour
 
     IEnumerator MoveRoutine(Vector3 targetPos, Quaternion targetRot, float duration)
     {
+        if (hackerCamera == null)
+        {
+            Debug.LogError("hackerCamera가 설정되지 않았습니다.");
+            yield break;
+        }
+
         moving = true;
-        Transform cam = Camera.main.transform;
+        Transform cam = hackerCamera.transform;
         Vector3 startPos = cam.position;
         Quaternion startRot = cam.rotation;
 

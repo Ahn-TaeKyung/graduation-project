@@ -1,35 +1,48 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem; // âœ… ìƒˆ Input System ì‚¬ìš©
 
 public class CubeDragSnap : MonoBehaviour
 {
     public static bool IsDragging = false;
 
     private bool dragging = false;
-    private Vector3 prevMousePos;
-    private Vector3 mouseDownPos;
+    private Vector2 prevMousePos;
+    private Vector2 mouseDownPos;
     private float mouseDownTime;
     private const float dragThreshold = 5f;
     private const float clickDelay = 0.07f;
     int cubeGroupLayerMask;
 
+    private Camera hackerCamera;
+
     void Awake()
     {
         cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
+
+        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
+        if (hackerCameraObject != null)
+        {
+            hackerCamera = hackerCameraObject.GetComponent<Camera>();
+        }
+        else
+        {
+            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+        }
     }
 
     void Update()
     {
-        // È®´ë(ÁÜ) ÁßÀÌ¸é ÀÔ·Â(È¸Àü/µå·¡±×) ¿ÏÀü Â÷´Ü!
-        if (ModuleZoom.IsZoomed) return;
+        if (ModuleZoom.IsZoomed || hackerCamera == null) return;
 
-        if (Input.GetMouseButtonDown(0))
+        // ë§ˆìš°ìŠ¤ ëˆ„ë¥´ê¸°
+        if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             mouseDownTime = Time.time;
-            mouseDownPos = Input.mousePosition;
+            mouseDownPos = Mouse.current.position.ReadValue();
             prevMousePos = mouseDownPos;
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = hackerCamera.ScreenPointToRay(mouseDownPos);
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, cubeGroupLayerMask))
             {
                 if (hit.transform == this.transform)
@@ -52,12 +65,14 @@ public class CubeDragSnap : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButton(0) && mouseDownTime > 0)
+        // ë“œëž˜ê·¸ ì¤‘
+        if (Mouse.current.leftButton.isPressed && mouseDownTime > 0)
         {
-            Vector3 mouseDelta = Input.mousePosition - prevMousePos;
-            prevMousePos = Input.mousePosition;
+            Vector2 currentPos = Mouse.current.position.ReadValue();
+            Vector2 mouseDelta = currentPos - prevMousePos;
+            prevMousePos = currentPos;
 
-            if (!dragging && (Input.mousePosition - mouseDownPos).magnitude > dragThreshold)
+            if (!dragging && (currentPos - mouseDownPos).magnitude > dragThreshold)
             {
                 dragging = true;
                 IsDragging = true;
@@ -66,19 +81,21 @@ public class CubeDragSnap : MonoBehaviour
             if (dragging)
             {
                 float rotSpeed = 0.1f;
-                transform.Rotate(Camera.main.transform.up, -mouseDelta.x * rotSpeed, Space.World);
-                transform.Rotate(Camera.main.transform.right, mouseDelta.y * rotSpeed, Space.World);
+                transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
+                transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && mouseDownTime > 0)
+        // ë§ˆìš°ìŠ¤ ë–¼ê¸°
+        if (Mouse.current.leftButton.wasReleasedThisFrame && mouseDownTime > 0)
         {
+            Vector2 currentPos = Mouse.current.position.ReadValue();
             float heldTime = Time.time - mouseDownTime;
-            float totalMove = (Input.mousePosition - mouseDownPos).magnitude;
+            float totalMove = (currentPos - mouseDownPos).magnitude;
 
             if (!dragging && heldTime < clickDelay && totalMove < dragThreshold)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                Ray ray = hackerCamera.ScreenPointToRay(currentPos);
                 int moduleLayerMask = LayerMask.GetMask("Module");
                 if (Physics.Raycast(ray, out RaycastHit hit, 100f, moduleLayerMask))
                 {
@@ -92,15 +109,15 @@ public class CubeDragSnap : MonoBehaviour
             IsDragging = false;
             mouseDownTime = -1000f;
 
-            // ¡Ú µå·¡±× Á¾·á ÈÄ ½º³À(Á¤·Ä)
             SnapToClosestFaceSmooth();
         }
     }
 
-    // ½º³À(Ä«¸Þ¶ó¸¦ ¹Ù¶óº¸´Â ¸éÀ» 90µµ ´ÜÀ§·Î Á¤·Ä)
     void SnapToClosestFaceSmooth()
     {
-        Vector3 toCamera = (Camera.main.transform.position - transform.position).normalized;
+        if (hackerCamera == null) return;
+
+        Vector3 toCamera = (hackerCamera.transform.position - transform.position).normalized;
         Vector3[] normals = {
             transform.TransformDirection(Vector3.right),
             transform.TransformDirection(-Vector3.right),
@@ -145,6 +162,7 @@ public class CubeDragSnap : MonoBehaviour
 
         StartCoroutine(SmoothSnapRotation(snappedRot, 0.5f));
     }
+
     IEnumerator SmoothSnapRotation(Quaternion target, float duration)
     {
         Quaternion startRot = transform.rotation;
