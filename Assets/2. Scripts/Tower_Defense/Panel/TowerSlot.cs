@@ -1,6 +1,6 @@
+
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // 필요시 타워 이름 등 표시용
 
 public class TowerSlot : MonoBehaviour
 {
@@ -23,7 +23,8 @@ public class TowerSlot : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        highlightImage.enabled = selected;
+        if (highlightImage != null)
+            highlightImage.enabled = selected;
     }
 
     public TowerData GetTowerData() => towerData;
