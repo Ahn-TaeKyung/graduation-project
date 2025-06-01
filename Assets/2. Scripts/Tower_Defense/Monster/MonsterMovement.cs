@@ -9,7 +9,7 @@ public class MonsterMovement : MonoBehaviour
 
     private int currentWaypointIndex = 0;
     private Rigidbody rb;
-    private float fixedY = 10.0f; // 몬스터가 땅 위에 떠 있도록 Y축 고정값 설정
+    private float fixedY = 2.5f; // 몬스터가 땅 위에 떠 있도록 Y축 고정값 설정
 
     void Start()
     {
