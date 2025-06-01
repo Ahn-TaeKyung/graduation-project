@@ -15,7 +15,7 @@ public class TowerPlacementZone : MonoBehaviour
             Instantiate(towerToPlace.prefab, transform.position, Quaternion.identity);
             isOccupied = true;
 
-            // 인벤토리에서 선택 타워 제거
+            // 인벤토리에서 선택 타워 제거 및 선택 해제
             GameManager.Instance.inventory.RemoveTower(towerToPlace);
             GameManager.Instance.inventory.selectedTower = null;
         }

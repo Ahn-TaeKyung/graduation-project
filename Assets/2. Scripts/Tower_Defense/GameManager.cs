@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,16 +8,18 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public int gold = 20;  // 시작 시 20골드 지급
+    public int gold = 20;
 
     [Header("UI")]
-    public TMP_Text goldText;                // 골드 표시 텍스트
-    public Button drawTowerButton;           // 타워 뽑기 버튼
-    public TMP_Text buttonText;              // 버튼 내부 텍스트
+    public TMP_Text goldText;
+    public Button drawTowerButton;
+    public TMP_Text buttonText;
+    public TMP_Text waveText;
+    public TMP_Text timeText;
 
     [Header("Tower")]
-    public TowerInventory inventory;         // 인벤토리 컴포넌트 (에디터에서 연결)
-    public List<TowerData> lv1Towers;        // 1레벨 타워들 (랜덤 뽑기용)
+    public TowerInventory inventory;
+    public List<TowerData> lv1Towers;
 
     void Awake()
     {
@@ -31,6 +34,26 @@ public class GameManager : MonoBehaviour
 
         if (drawTowerButton != null)
             drawTowerButton.onClick.AddListener(OnDrawTowerButtonClicked);
+
+        StartCoroutine(UpdateGameTime());
+    }
+
+    IEnumerator UpdateGameTime()
+    {
+        float elapsed = 0f;
+        while (true)
+        {
+            elapsed += Time.deltaTime;
+            if (timeText != null)
+                timeText.text = $"<color=black>Time: {elapsed:F1}s</color>";
+            yield return null;
+        }
+    }
+
+    public void UpdateWaveUI(int wave)
+    {
+        if (waveText != null)
+            waveText.text = $"<color=black>Wave: {wave}</color>";
     }
 
     public void AddGold(int amount)
@@ -55,7 +78,7 @@ public class GameManager : MonoBehaviour
     void UpdateGoldUI()
     {
         if (goldText != null)
-            goldText.text = $"Gold: {gold}";
+            goldText.text = $"<color=#E4AF31>Gold: {gold}</color>";
     }
 
     void UpdateDrawButtonState()
@@ -66,7 +89,7 @@ public class GameManager : MonoBehaviour
         if (buttonText != null)
         {
             if (gold >= 10)
-                buttonText.text = "<color=#338CF1>타워뽑기(10G)</color>";
+                buttonText.text = "<color=#338CF1>DrawTower(10G)</color>";
             else
                 buttonText.text = "<color=red>Not Enough Gold</color>";
         }
