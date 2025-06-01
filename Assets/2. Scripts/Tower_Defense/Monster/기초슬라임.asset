@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: "\uAE30\uCD08\uC2AC\uB77C\uC784"
   m_EditorClassIdentifier: 
   monsterName: "\uAE30\uCD08\uC2AC\uB77C\uC784"
-  maxHealth: 0
-  moveSpeed: 0
+  maxHealth: 3
+  moveSpeed: 3
   deathEffectPrefab: {fileID: 0}

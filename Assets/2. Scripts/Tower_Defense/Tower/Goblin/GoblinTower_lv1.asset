@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: GoblinTower_lv1
   m_EditorClassIdentifier: 
   towerName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 3473019865734486357, guid: c8c7228f448bff5479957686eddb7836, type: 3}
   cost: 10
-  icon: {fileID: 0}
-  race: 0
+  icon: {fileID: 21300000, guid: bbc814fee607ce44d8450923b79ad75c, type: 3}
+  race: 1
   level: 1

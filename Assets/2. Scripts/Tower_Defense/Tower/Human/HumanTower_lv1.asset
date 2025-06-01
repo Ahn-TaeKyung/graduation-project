@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: HumanTower_lv1
   m_EditorClassIdentifier: 
   towerName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 3473019865734486357, guid: e18e1229916a0d447b1cc8ca05be1cde, type: 3}
   cost: 10
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 33c11420778bc3145943e963b46d6851, type: 3}
   race: 0
   level: 1
