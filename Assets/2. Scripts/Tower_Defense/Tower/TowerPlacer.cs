@@ -5,13 +5,15 @@ public class TowerPlacer : MonoBehaviour
 {
     public Camera mainCamera;
     public TowerInventory inventory;
+    public LayerMask BuildZone; // 인스펙터에서 BuildZone만 포함되도록 설정
 
     void Update()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            // Raycast에 LayerMask 적용
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f, BuildZone))
             {
                 TowerPlacementZone zone = hit.collider.GetComponent<TowerPlacementZone>();
                 if (zone != null && !zone.isOccupied)

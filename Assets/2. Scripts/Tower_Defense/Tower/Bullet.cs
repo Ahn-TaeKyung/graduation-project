@@ -26,8 +26,7 @@ public class Bullet : MonoBehaviour
 
         // 총알이 목표를 바라보도록 회전
         Vector3 direction = (target.position - transform.position).normalized;
-        transform.forward = direction;  // transform.forward로 방향 설정
-
+        transform.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(0, -90, 0);
         // 총알이 목표를 향해 이동
         transform.position += direction * speed * Time.deltaTime;
     }
