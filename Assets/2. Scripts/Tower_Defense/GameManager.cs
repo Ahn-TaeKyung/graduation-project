@@ -113,4 +113,7 @@ public class GameManager : MonoBehaviour
         int idx = Random.Range(0, lv1Towers.Count);
         return lv1Towers[idx];
     }
+
+
+    
 }

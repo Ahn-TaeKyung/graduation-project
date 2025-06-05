@@ -5,7 +5,7 @@ using UnityEngine;
 public class TowerInventory : MonoBehaviour
 {
     public List<TowerData> towerSlots = new List<TowerData>();
-    public TowerData selectedTower; 
+    public TowerData selectedTower;
     public event Action OnInventoryChanged;
 
     public void AddTower(TowerData tower)
@@ -26,4 +26,6 @@ public class TowerInventory : MonoBehaviour
     {
         return towerSlots;
     }
+    
+    
 }
