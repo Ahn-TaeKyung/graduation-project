@@ -1489,7 +1489,7 @@ MonoBehaviour:
   inventory: {fileID: 1580622026}
   BuildZone:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 131072
 --- !u!1 &283965550
 GameObject:
   m_ObjectHideFlags: 0
