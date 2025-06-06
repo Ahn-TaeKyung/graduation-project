@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoxSurfaceRandomSpawner : MonoBehaviour
+public class ModuleSpawner : MonoBehaviour
 {
     [Header("ÇÁ¸®ÆÕ ¸®½ºÆ® (·£´ý ¼±ÅÃ)")]
     public List<GameObject> prefabOptions;

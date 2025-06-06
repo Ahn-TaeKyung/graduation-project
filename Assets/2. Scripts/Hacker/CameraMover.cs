@@ -9,6 +9,9 @@ public class CameraMover : MonoBehaviour
     private Coroutine moveCoroutine;
 
     public bool IsMoving => moving;
+    public Vector3 DefaultCameraPosition;
+    public Quaternion DefaultCameraRotation;
+
 
     private Camera hackerCamera;
 
@@ -21,10 +24,11 @@ public class CameraMover : MonoBehaviour
         }
         else
         {
-            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
         }
+        DefaultCameraPosition = hackerCamera.transform.position;
+        DefaultCameraRotation = hackerCamera.transform.rotation;
     }
-
     public void MoveTo(Vector3 pos, Quaternion rot, float duration)
     {
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
@@ -33,14 +37,14 @@ public class CameraMover : MonoBehaviour
 
     IEnumerator MoveRoutine(Vector3 targetPos, Quaternion targetRot, float duration)
     {
+        Transform cam = hackerCamera.transform;
         if (hackerCamera == null)
         {
-            Debug.LogError("hackerCameraê°€ ì„¤ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+            Debug.LogError("[CameraMover] Camera.mainÀÌ nullÀÔ´Ï´Ù. Tag ¼³Á¤ ¶Ç´Â Ä«¸Ş¶ó È°¼ºÈ­ ¿©ºÎ¸¦ È®ÀÎÇÏ¼¼¿ä.");
+            moving = false;
             yield break;
         }
-
         moving = true;
-        Transform cam = hackerCamera.transform;
         Vector3 startPos = cam.position;
         Quaternion startRot = cam.rotation;
 

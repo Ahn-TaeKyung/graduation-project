@@ -7,8 +7,8 @@ using System.Collections.Generic;
 public class RoleSelectUI : NetworkBehaviour
 {
     [SerializeField] private TMP_Text m_role_text;
-    [SerializeField] private Button m_left_button;
-    [SerializeField] private Button m_right_button;
+    [SerializeField] private UnityEngine.UI.Button m_left_button;
+    [SerializeField] private UnityEngine.UI.Button m_right_button;
 
     private RoleType[] m_roles;
     private NetworkRole m_network_role;
