@@ -7,8 +7,9 @@ public class CameraMover : MonoBehaviour
 
     private bool moving = false;
     private Coroutine moveCoroutine;
+    [HideInInspector]
+    public static bool isMoving;
 
-    public bool IsMoving => moving;
     public Vector3 DefaultCameraPosition;
     public Quaternion DefaultCameraRotation;
 
@@ -17,6 +18,7 @@ public class CameraMover : MonoBehaviour
 
     void Awake()
     {
+        CameraMover.isMoving = moving;
         GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
         if (hackerCameraObject != null)
         {
@@ -59,5 +61,34 @@ public class CameraMover : MonoBehaviour
         cam.position = targetPos;
         cam.rotation = targetRot;
         moving = false;
+    }
+    public Coroutine MoveTo(Vector3 pos, Quaternion rot, float duration, System.Action onComplete = null)
+    {
+        if (moveCoroutine != null) StopCoroutine(moveCoroutine);
+        moveCoroutine = StartCoroutine(MoveRoutine(pos, rot, duration, onComplete));
+        return moveCoroutine;
+    }
+
+    IEnumerator MoveRoutine(Vector3 targetPos, Quaternion targetRot, float duration, System.Action onComplete)
+    {
+        Transform cam = hackerCamera.transform;
+        // ... 기존 코드 ...
+        moving = true;
+        Vector3 startPos = cam.position;
+        Quaternion startRot = cam.rotation;
+
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            cam.position = Vector3.Lerp(startPos, targetPos, t);
+            cam.rotation = Quaternion.Slerp(startRot, targetRot, t);
+            yield return null;
+        }
+        cam.position = targetPos;
+        cam.rotation = targetRot;
+
+        moving = false;
+        if (onComplete != null) onComplete();
     }
 }

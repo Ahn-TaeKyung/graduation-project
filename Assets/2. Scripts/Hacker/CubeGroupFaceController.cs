@@ -40,7 +40,6 @@ public class CubeGroupFaceController : MonoBehaviour
             inputHandler = gameObject.AddComponent<ClickDragHandler>();
 
         inputHandler.OnLeftClick += OnLeftClickHandler;
-        inputHandler.OnRightClick += OnRightClickHandler;
         Debug.Log("[CubeGroupFaceController] ClickHandler 바인딩 완료");
     }
 
@@ -53,7 +52,7 @@ public class CubeGroupFaceController : MonoBehaviour
             return;
         }
 
-        if (cameraMover.IsMoving)
+        if (CameraMover.isMoving)
         {
             Debug.Log("[CubeGroupFaceController] 카메라 이동 중 - 클릭 무시");
             return;
@@ -78,35 +77,40 @@ public class CubeGroupFaceController : MonoBehaviour
         }
     }
 
-    // 우클릭: 필요하면 구현
-    void OnRightClickHandler()
-    {
-        // 예시: 카메라 원위치 복귀
-        if (IsCameraFixed)
-        {
-            MoveCameraBackToFace();
-        }
-        if (!IsCameraFixed)
-        {
-            cameraMover.MoveTo(cameraMover.DefaultCameraPosition, cameraMover.DefaultCameraRotation, cameraMoveDuration);
-            IsCameraFixed = false;
-        }
-            
-    }
-
     public void MoveCameraToFace()
     {
-        fixedDirection = -transform.forward; // 뒤쪽 방향
+        fixedDirection = Vector3.back; // 뒤쪽 방향
         fixedCameraPos = transform.position + fixedDirection * viewDistance;
         fixedCameraRot = Quaternion.LookRotation(transform.position - fixedCameraPos, Vector3.up);
 
-        cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration);
-        IsCameraFixed = true;
+        cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration, () =>
+        {
+            IsCameraFixed = true;
+        });
     }
 
     public void MoveCameraBackToFace()
     {
         if (IsCameraFixed)
             cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration);
+
     }
+    public void MoveCameraToFace(System.Action onComplete = null)
+    {
+        fixedDirection = Vector3.back; // 뒤쪽 방향
+        fixedCameraPos = transform.position + fixedDirection * viewDistance;
+        fixedCameraRot = Quaternion.LookRotation(transform.position - fixedCameraPos, Vector3.up);
+
+        cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration, () =>
+        {
+            IsCameraFixed = true;
+        });
+    }
+
+    public void MoveCameraBackToFace(System.Action onComplete = null)
+    {
+        // 원위치/회전으로 부드러운 복귀
+        cameraMover.MoveTo(cameraMover.DefaultCameraPosition, cameraMover.DefaultCameraRotation, cameraMoveDuration, onComplete);
+    }
+
 }

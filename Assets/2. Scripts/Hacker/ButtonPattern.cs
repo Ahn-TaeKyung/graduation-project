@@ -1,45 +1,49 @@
 using System;
 using System.Collections;
 using UnityEngine;
-
+using hacker;
 public class ButtonPatternManager : MonoBehaviour
 {
-    public static int strikeCount = 0; // ¸ðµç ¹öÆ°¿¡¼­ °øÀ¯µÇ´Â ½ÇÆÐ(Strike) È½¼ö
-
     public string patternCode = "4A2M7z";
     public PatternStep pattern;
 
     private int currentCount = 0;
-    private bool isComplete = false;
+    public bool isComplete = false;
     private Coroutine checkCoroutine;
-
+    private bool isInteractable = true;
+    private hacker.Button button;
     public void ApplyPatternCode()
     {
         pattern = PatternCodec.CodeToUniquePattern(patternCode);
         isComplete = false;
         currentCount = 0;
-        Debug.Log($"[ButtonPattern] ÄÚµå:{patternCode} ¡æ {PatternToString(pattern)}");
+        Debug.Log($"[ButtonPattern] ï¿½Úµï¿½:{patternCode} ï¿½ï¿½ {PatternToString(pattern)}");
     }
 
 
-    // ¹öÆ°¿¡¼­ Å¬¸¯ È£Ãâ (Click ÆÐÅÏÀÏ ¶§¸¸ ¼º°ø)
+    // ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ È£ï¿½ï¿½ (Click ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     public void OnButtonClick()
     {
+        if (!isInteractable) return;
         if (isComplete) return;
         if (pattern.Type == PatternStep.InputType.Click)
         {
             currentCount++;
-            Debug.Log($"[ButtonPattern] Å¬¸¯ {currentCount}/{pattern.Count}");
+            Debug.Log($"[ButtonPattern] Å¬ï¿½ï¿½ {currentCount}/{pattern.Count}");
             OnInputEvent();
         }
         else
         {
-            Debug.Log("[ButtonPattern] ½ÇÆÐ: ÀÌ ÆÐÅÏÀº ClickÀÌ ¾Æ´Ô.");
+            Debug.Log("[ButtonPattern] ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Clickï¿½ï¿½ ï¿½Æ´ï¿½.");
+            HackerCounter.Instance.AddStrike();
+            FailSafe();
+            ResetPattern();
         }
     }
 
     public void OnButtonHold(float holdTime)
     {
+        if (!isInteractable) return;
         if (isComplete) return;
         if (pattern.Type == PatternStep.InputType.Hold)
         {
@@ -48,24 +52,28 @@ public class ButtonPatternManager : MonoBehaviour
             if (holdTime >= min && holdTime <= max)
             {
                 currentCount++;
-                Debug.Log($"[ButtonPattern] È¦µå {currentCount}/{pattern.Count} ({holdTime:F2}s)");
+                Debug.Log($"[ButtonPattern] È¦ï¿½ï¿½ {currentCount}/{pattern.Count} ({holdTime:F2}s)");
                 OnInputEvent();
             }
             else
             {
-                Debug.Log($"[ButtonPattern] ½ÇÆÐ: {holdTime:F2}s, Çã¿ë:{min:F2}~{max:F2}s");
-                strikeCount++;
+                Debug.Log($"[ButtonPattern] ï¿½ï¿½ï¿½ï¿½: {holdTime:F2}s, ï¿½ï¿½ï¿½:{min:F2}~{max:F2}s");
+                HackerCounter.Instance.AddStrike();
+                FailSafe();
                 ResetPattern();
             }
         }
         else
         {
-            Debug.Log("[ButtonPattern] ½ÇÆÐ: ÀÌ ÆÐÅÏÀº Hold°¡ ¾Æ´Ô.");
+            Debug.Log("[ButtonPattern] ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Holdï¿½ï¿½ ï¿½Æ´ï¿½.");
+            HackerCounter.Instance.AddStrike();
+            FailSafe();
+            ResetPattern();
         }
     }
     private void OnInputEvent()
     {
-        // ¼º°ø Áï½Ã
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         if (currentCount == pattern.Count)
         {
             if (checkCoroutine != null)
@@ -74,11 +82,12 @@ public class ButtonPatternManager : MonoBehaviour
                 checkCoroutine = null;
             }
             isComplete = true;
-            Debug.Log("[ButtonPattern] ÆÐÅÏ ÀÔ·Â ¼º°ø!(Áï½Ã)");
+            HackerCounter.Instance.AddComplete();
+            Debug.Log("[ButtonPattern] ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½!(ï¿½ï¿½ï¿½)");
         }
         else
         {
-            // ¾ÆÁ÷ ¼º°ø ÀüÀÌ¸é, 2ÃÊ ÈÄ °Ë»ç ÄÚ·çÆ¾ Àç½ÃÀÛ
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½, 2ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½ï¿½
             if (checkCoroutine != null)
                 StopCoroutine(checkCoroutine);
             checkCoroutine = StartCoroutine(CheckCompleteAfterDelay());
@@ -89,9 +98,11 @@ public class ButtonPatternManager : MonoBehaviour
         yield return new WaitForSeconds(2.0f);
         if (!isComplete && currentCount < pattern.Count)
         {
-            Debug.Log($"[ButtonPattern] ÆÐÅÏ ¹Ì¿Ï·á! (ÀÔ·Â:{currentCount}/{pattern.Count}) - STRIKE!");
-            strikeCount++;
+            Debug.Log($"[ButtonPattern] ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¿Ï·ï¿½! (ï¿½Ô·ï¿½:{currentCount}/{pattern.Count}) - STRIKE!");
+            HackerCounter.Instance.AddStrike();
+            FailSafe();
             ResetPattern();
+
         }
         checkCoroutine = null;
     }
@@ -100,11 +111,12 @@ public class ButtonPatternManager : MonoBehaviour
     {
         currentCount = 0;
         isComplete = false;
-        Debug.Log($"[ButtonPattern] ÆÐÅÏ ¸®¼Â. ÇöÀç Strike: {strikeCount}");
+        Debug.Log($"[ButtonPattern] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ Strike: {HackerCounter.strikeCount}");
         if (checkCoroutine != null)
         {
             StopCoroutine(checkCoroutine);
             checkCoroutine = null;
+            button.SetAllColors(Color.gray);
         }
     }
     public void OnInputStarted()
@@ -121,9 +133,16 @@ public class ButtonPatternManager : MonoBehaviour
     private string PatternToString(PatternStep p)
     {
         if (p.Type == PatternStep.InputType.Click)
-            return $"Click, {p.Count}¹ø";
+            return $"Click, {p.Count}ï¿½ï¿½";
         else
-            return $"Hold, {p.Count}¹ø, {p.MinHoldTime}ÃÊ, ¿ÀÂ÷:{p.Tolerance}";
+            return $"Hold, {p.Count}ï¿½ï¿½, {p.MinHoldTime}ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½:{p.Tolerance}";
+    }
+    private IEnumerator FailSafe()
+    {
+        isInteractable = false;
+        button.SetAllColors(Color.red);
+        yield return new WaitForSeconds(1.0f);
+        isInteractable = true;
     }
 }
 public class PatternStep
@@ -133,7 +152,7 @@ public class PatternStep
     public int Count;
     public float MinHoldTime;
     public float Tolerance;
-    public PatternStep(InputType type, int count, float minHoldTime = 0f, float tolerance = 0.3f)
+    public PatternStep(InputType type, int count, float minHoldTime = 0f, float tolerance = 0.5f)
     {
         Type = type;
         Count = count;
@@ -142,7 +161,7 @@ public class PatternStep
     }
 }
 
-// Base62 µðÄÚµù
+// Base62 ï¿½ï¿½ï¿½Úµï¿½
 public static class Base62Util
 {
     private const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -155,7 +174,7 @@ public static class Base62Util
     }
 }
 
-// ´ÜÀÏ À¯ÀÏ ÆÐÅÏ »ý¼º
+// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 public static class PatternCodec
 {
     public static PatternStep CodeToUniquePattern(string code)
@@ -166,12 +185,12 @@ public static class PatternCodec
         if (isClick)
         {
             int count = rand.Next(1, 8); // 1~7
-            Debug.Log($"[ÆÐÅÏ»ý¼º] Click, {count}¹ø");
+            Debug.Log($"[ï¿½ï¿½ï¿½Ï»ï¿½ï¿½ï¿½] Click, {count}ï¿½ï¿½");
             return new PatternStep(PatternStep.InputType.Click, count);
         }
         else
         {
-            // 2~7ÃÊ Áß ·£´ý (Á¤¼ö)
+            // 2~7ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½)
             int time = rand.Next(2, 8);
 
             int maxCount;
@@ -179,11 +198,11 @@ public static class PatternCodec
             else if (time == 6) maxCount = 3;     // 1~3È¸
             else if (time == 5) maxCount = 4;     // 1~4È¸
             else if (time == 4) maxCount = 5;     // 1~5È¸
-            else maxCount = 7;     // 2~3ÃÊ´Â 1~7È¸
+            else maxCount = 7;     // 2~3ï¿½Ê´ï¿½ 1~7È¸
 
             int count = rand.Next(1, maxCount + 1);
-            Debug.Log($"[ÆÐÅÏ»ý¼º] Hold, {count}¹ø, {time}ÃÊ, ¿ÀÂ÷:0.3");
-            return new PatternStep(PatternStep.InputType.Hold, count, time, 0.3f);
+            Debug.Log($"[ï¿½ï¿½ï¿½Ï»ï¿½ï¿½ï¿½] Hold, {count}ï¿½ï¿½, {time}ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½:0.5");
+            return new PatternStep(PatternStep.InputType.Hold, count, time, 0.5f);
         }
     }
 }

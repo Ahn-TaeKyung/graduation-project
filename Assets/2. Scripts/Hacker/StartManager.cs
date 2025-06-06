@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseManager : MonoBehaviour
+public class StartManager : MonoBehaviour
 {
     // 통합 변수
     [Header("생성 크기 설정")]
@@ -15,7 +15,8 @@ public class BaseManager : MonoBehaviour
     public ModuleSpawner moduleSpawner;
     public List<GameObject> modulePrefabs = new List<GameObject>();
     [Header("모듈 배치 수")]
-    public int moduleCount = 6;
+    public int spawnCount = 6;
+    public static int moduleCount;
 
     void Reset() // 오브젝트에 붙일 때 자동 할당
     {
@@ -25,6 +26,7 @@ public class BaseManager : MonoBehaviour
     }
     private void Start()
     {
+        StartManager.moduleCount = spawnCount;
         SpawnAll();
     }
 
@@ -43,7 +45,7 @@ public class BaseManager : MonoBehaviour
         moduleSpawner.nx = nx;
         moduleSpawner.ny = ny;
         moduleSpawner.nz = nz;
-        moduleSpawner.spawnCount = moduleCount;
+        moduleSpawner.spawnCount = spawnCount;
         moduleSpawner.prefabOptions = modulePrefabs;
 
         // 1. 큐브 생성
@@ -55,6 +57,6 @@ public class BaseManager : MonoBehaviour
         // 3. 모듈 생성 (랜덤 배치)
         moduleSpawner.SpawnRandomOnBoxSurfaces();
 
-        Debug.Log("BaseManager: nx=" + nx + ", ny=" + ny + ", nz=" + nz + ", moduleCount=" + moduleCount);
+        Debug.Log("BaseManager: nx=" + nx + ", ny=" + ny + ", nz=" + nz + ", moduleCount=" + spawnCount);
     }
 }

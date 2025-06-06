@@ -1,150 +1,169 @@
 using System.Collections;
 using UnityEngine;
-
-public class Button : MonoBehaviour
+namespace hacker
 {
-    [Header("¹öÆ° ´­¸² °Å¸®")]
-    public float pressDistance = 1;
-    [Header("´­¸² ¹æÇâ (¿¹: -z)")]
-    public Vector3 pressDirection = Vector3.back;
-    private float holdThreshold = 0.3f;
-
-    private Vector3 defaultPosition;
-    private bool isPressed = false;
-    private float pressTime;
-
-    private ModuleZoom ModuleZoom;
-    private ClickDragHandler clickDragHandler;
-    private Camera hackerCamera;
-    private ButtonPatternManager patternManager;
-    private Collider myCollider;   // Inspector¿¡¼­ ÇÒ´ç(È¤Àº GetComponent·Î ÇÒ´ç)
-
-    void Awake()
+    public class Button : MonoBehaviour
     {
-        defaultPosition = transform.localPosition;
-        myCollider = GetComponent<Collider>();
-        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
-        if (hackerCameraObject != null)
+        [Header("ï¿½ï¿½Æ° ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½")]
+        public float pressDistance = 1;
+        [Header("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½: -z)")]
+        public Vector3 pressDirection = Vector3.back;
+        private float holdThreshold = 0.3f;
+
+        private Vector3 defaultPosition;
+        private bool isPressed = false;
+        private float pressTime;
+
+        private ModuleZoom ModuleZoom;
+        private ClickDragHandler clickDragHandler;
+        private Camera hackerCamera;
+        private ButtonPatternManager patternManager;
+        private Collider myCollider;   // Inspectorï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½(È¤ï¿½ï¿½ GetComponentï¿½ï¿½ ï¿½Ò´ï¿½)
+        private new Renderer renderer;
+
+        void Awake()
         {
-            hackerCamera = hackerCameraObject.GetComponent<Camera>();
-        }
-        else
-        {
-            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Þ¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
-        }
-        ModuleZoom = GetComponentInParent<ModuleZoom>();
-        if (patternManager == null)
-            patternManager = GetComponent<ButtonPatternManager>();
-        if (patternManager != null)
-        {
-            patternManager.patternCode = GenerateRandomCode();
-            patternManager.ApplyPatternCode(); // ÄÚµå ¹Ù²î¾úÀ¸´Ï ÆÐÅÏ »õ·Î »ý¼º
-            Debug.Log($"[Button] ³» ÄÚµå: {patternManager.patternCode}");
-        }
-        clickDragHandler = GetComponent<ClickDragHandler>();
-        if (clickDragHandler == null)
-            clickDragHandler = gameObject.AddComponent<ClickDragHandler>();
-
-        clickDragHandler.OnLeftPress += OnButtonPress;
-        clickDragHandler.OnLeftRelease += OnButtonRelease;  // ¶¿ ¶§(¿Ã¶ó°¨)
-
-    }
-    private void Update()
-    {
-        myCollider.enabled = ModuleZoom.c_zoomed;
-    }
-
-    void OnDestroy()
-    {
-        // ¸Þ¸ð¸®¸¯ ¹æÁö
-        if (clickDragHandler != null)
-        {
-            clickDragHandler.OnLeftPress -= OnButtonPress;
-            clickDragHandler.OnLeftRelease -= OnButtonRelease;  // ¶¿ ¶§(¿Ã¶ó°¨)
-
-        }
-    }
-
-
-    void OnButtonPress()
-    {
-        if (!ModuleZoom.c_zoomed) return;
-        // Raycast·Î ÀÚ±â ÀÚ½Å À§ÀÎÁö È®ÀÎ
-        Ray ray = hackerCamera.ScreenPointToRay(clickDragHandler.LastClickPos);
-        if (Physics.Raycast(ray, out RaycastHit hit, 100f))
-        {
-            if (hit.transform == this.transform)
+            SetAllColors(Color.grey);
+            defaultPosition = transform.localPosition;
+            myCollider = GetComponent<Collider>();
+            GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
+            if (hackerCameraObject != null)
             {
-                // ¹öÆ°ÀÇ Áß½ÉÀÌ Ä«¸Þ¶ó View ¾È¿¡ ÀÖ´ÂÁö È®ÀÎ
-                Vector3 viewportPos = hackerCamera.WorldToViewportPoint(transform.position);
+                hackerCamera = hackerCameraObject.GetComponent<Camera>();
+            }
+            else
+            {
+                Debug.LogError("ï¿½Â±×°ï¿½ 'hacker'ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
+            }
+            ModuleZoom = GetComponentInParent<ModuleZoom>();
+            if (patternManager == null)
+                patternManager = GetComponent<ButtonPatternManager>();
+            if (patternManager != null)
+            {
+                patternManager.patternCode = GenerateRandomCode();
+                patternManager.ApplyPatternCode(); // ï¿½Úµï¿½ ï¿½Ù²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                Debug.Log($"[Button] ï¿½ï¿½ ï¿½Úµï¿½: {patternManager.patternCode}");
+            }
+            clickDragHandler = GetComponent<ClickDragHandler>();
+            if (clickDragHandler == null)
+                clickDragHandler = gameObject.AddComponent<ClickDragHandler>();
 
-                bool isVisible =
-                    viewportPos.z > 0 && // Ä«¸Þ¶ó ¾Õ¿¡ ÀÖ¾î¾ß ÇÔ
-                    viewportPos.x > 0 && viewportPos.x < 1 &&
-                    viewportPos.y > 0 && viewportPos.y < 1;
+            clickDragHandler.OnLeftPress += OnButtonPress;
+            clickDragHandler.OnLeftRelease += OnButtonRelease;  // ï¿½ï¿½ ï¿½ï¿½(ï¿½Ã¶ï¿½)
 
-                if (isVisible)
-                {
-                    patternManager.OnInputStarted();
-                    pressTime = Time.time;
-                    ButtonPress();
-                }
-                // º¸ÀÌÁö ¾ÊÀ¸¸é ¹«½Ã
+        }
+        private void Update()
+        {
+            myCollider.enabled = ModuleZoom.c_zoomed;
+            if (patternManager.isComplete == true)
+            {
+                myCollider.enabled = false;
+                SetAllColors(Color.green);
             }
         }
-    }
 
-
-    void OnButtonRelease()
-    {
-        if (!ModuleZoom.c_zoomed) return;
-        if (!isPressed) return;
-
-        float holdTime = Time.time - pressTime;
-
-        if (holdTime <= holdThreshold)
+        void OnDestroy()
         {
-            // Å¬¸¯ Ã³¸®
-            patternManager.OnButtonClick();
-            Debug.Log($"[Button] Click ÆÇÁ¤, ½Ã°£:{holdTime:F2}s");
-        }
-        else
-        {
-            // È¦µå Ã³¸®
-            patternManager.OnButtonHold(holdTime);
-            Debug.Log($"[Button] Hold ÆÇÁ¤, ½Ã°£:{holdTime:F2}s");
+            // ï¿½Þ¸ð¸®¸ï¿½ ï¿½ï¿½ï¿½ï¿½
+            if (clickDragHandler != null)
+            {
+                clickDragHandler.OnLeftPress -= OnButtonPress;
+                clickDragHandler.OnLeftRelease -= OnButtonRelease;  // ï¿½ï¿½ ï¿½ï¿½(ï¿½Ã¶ï¿½)
+
+            }
         }
 
-        ButtonRelease();
-    }
 
-    void ButtonPress()
-    {
-        if (!isPressed)
+        void OnButtonPress()
         {
-            transform.localPosition = defaultPosition + pressDirection.normalized * pressDistance;
-            isPressed = true;
-            Debug.Log($"[Button:{gameObject.name}] ´­¸²");
-        }
-    }
+            if (!ModuleZoom.c_zoomed) return;
+            // Raycastï¿½ï¿½ ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
+            Ray ray = hackerCamera.ScreenPointToRay(clickDragHandler.LastClickPos);
+            if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+            {
+                if (hit.transform == this.transform)
+                {
+                    // ï¿½ï¿½Æ°ï¿½ï¿½ ï¿½ß½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½ View ï¿½È¿ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
+                    Vector3 viewportPos = hackerCamera.WorldToViewportPoint(transform.position);
 
-    void ButtonRelease()
-    {
-        if (isPressed)
+                    bool isVisible =
+                        viewportPos.z > 0 && // Ä«ï¿½Þ¶ï¿½ ï¿½Õ¿ï¿½ ï¿½Ö¾ï¿½ï¿½ ï¿½ï¿½
+                        viewportPos.x > 0 && viewportPos.x < 1 &&
+                        viewportPos.y > 0 && viewportPos.y < 1;
+
+                    if (isVisible)
+                    {
+                        patternManager.OnInputStarted();
+                        pressTime = Time.time;
+                        SetAllColors(Color.white);
+                        ButtonPress();
+                    }
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+                }
+            }
+        }
+
+
+        void OnButtonRelease()
         {
-            transform.localPosition = defaultPosition;
-            isPressed = false;
-            Debug.Log($"[Button:{gameObject.name}] º¹±Í");
-        }
-    }
+            if (!ModuleZoom.c_zoomed) return;
+            if (!isPressed) return;
 
-    public static string GenerateRandomCode(int length = 6)
-    {
-        const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        System.Random rand = new System.Random(System.DateTime.Now.Millisecond + UnityEngine.Random.Range(0, 100000));
-        char[] code = new char[length];
-        for (int i = 0; i < length; i++)
-            code[i] = chars[rand.Next(62)];
-        return new string(code);
+            float holdTime = Time.time - pressTime;
+
+            if (holdTime <= holdThreshold)
+            {
+                // Å¬ï¿½ï¿½ Ã³ï¿½ï¿½
+                patternManager.OnButtonClick();
+                Debug.Log($"[Button] Click ï¿½ï¿½ï¿½ï¿½, ï¿½Ã°ï¿½:{holdTime:F2}s");
+            }
+            else
+            {
+                // È¦ï¿½ï¿½ Ã³ï¿½ï¿½
+                patternManager.OnButtonHold(holdTime);
+                Debug.Log($"[Button] Hold ï¿½ï¿½ï¿½ï¿½, ï¿½Ã°ï¿½:{holdTime:F2}s");
+            }
+
+            ButtonRelease();
+        }
+
+        void ButtonPress()
+        {
+            if (!isPressed)
+            {
+                transform.localPosition = defaultPosition + pressDirection.normalized * pressDistance;
+                isPressed = true;
+                Debug.Log($"[Button:{gameObject.name}] ï¿½ï¿½ï¿½ï¿½");
+            }
+        }
+
+        void ButtonRelease()
+        {
+            if (isPressed)
+            {
+                transform.localPosition = defaultPosition;
+                isPressed = false;
+                Debug.Log($"[Button:{gameObject.name}] ï¿½ï¿½ï¿½ï¿½");
+            }
+        }
+
+        public static string GenerateRandomCode(int length = 6)
+        {
+            const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            System.Random rand = new System.Random(System.DateTime.Now.Millisecond + UnityEngine.Random.Range(0, 100000));
+            char[] code = new char[length];
+            for (int i = 0; i < length; i++)
+                code[i] = chars[rand.Next(62)];
+            return new string(code);
+        }
+        public void SetAllColors(Color color)
+        {
+            // ï¿½Ú½Å°ï¿½ ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ Renderer(=MeshRenderer ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
+            var renderers = GetComponentsInChildren<Renderer>();
+            foreach (var renderer in renderers)
+            {
+                renderer.material.color = color;
+            }
+        }
     }
 }
