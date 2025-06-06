@@ -1,24 +1,25 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem; // âœ… ìƒˆ Input System ì‚¬ìš©
 
 public class CubeDragSnap : MonoBehaviour
 {
     public static bool IsDragging = false;
 
-    private bool dragging = false;
-    private Vector2 prevMousePos;
-    private Vector2 mouseDownPos;
-    private float mouseDownTime;
-    private const float dragThreshold = 5f;
-    private const float clickDelay = 0.07f;
+    private ClickDragHandler handler;
     int cubeGroupLayerMask;
+    int moduleLayerMask;
 
+    [HideInInspector]
+    public CubeGroupFaceController groupController;
     private Camera hackerCamera;
+    public static bool IsSnapping { get; private set; } = false;
+    public static bool IsSnapped => !IsSnapping; // ÀĞ±â Àü¿ë, Á¤·ÄÀÌ ³¡³µÀ¸¸é true
 
     void Awake()
     {
         cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
+        moduleLayerMask = LayerMask.GetMask("Module");
 
         GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
         if (hackerCameraObject != null)
@@ -27,96 +28,98 @@ public class CubeDragSnap : MonoBehaviour
         }
         else
         {
-            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
         }
+
+        handler = GetComponent<ClickDragHandler>();
+        if (handler == null)
+            handler = gameObject.AddComponent<ClickDragHandler>();
+
+        handler.OnDrag += OnDragCube;
+        handler.OnLeftClick += OnLeftClickCube;
+        handler.OnRightClick += OnRightClickCube;
+        handler.OnDragEnd += OnDragEndCube;
+
+        // ¹İµå½Ã ÂüÁ¶ ¿¬°á(Á÷Á¢ ÀÎ½ºÆåÅÍ ÇÒ´ç ¶Ç´Â Find µî)
+        if (groupController == null)
+            groupController = GetComponentInParent<CubeGroupFaceController>();
     }
 
-    void Update()
+    void OnDragCube(Vector2 mouseDelta)
     {
-        if (ModuleZoom.IsZoomed || hackerCamera == null) return;
+        if (!groupController.IsCameraFixed) return;
+        if (ModuleZoom.IsZoomed) return;
+        IsDragging = true;
 
-        // ë§ˆìš°ìŠ¤ ëˆ„ë¥´ê¸°
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            mouseDownTime = Time.time;
-            mouseDownPos = Mouse.current.position.ReadValue();
-            prevMousePos = mouseDownPos;
-
-            Ray ray = hackerCamera.ScreenPointToRay(mouseDownPos);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, cubeGroupLayerMask))
-            {
-                if (hit.transform == this.transform)
-                {
-                    dragging = false;
-                    IsDragging = false;
-                }
-                else
-                {
-                    dragging = false;
-                    IsDragging = false;
-                    mouseDownTime = -1000f;
-                }
-            }
-            else
-            {
-                dragging = false;
-                IsDragging = false;
-                mouseDownTime = -1000f;
-            }
-        }
-
-        // ë“œë˜ê·¸ ì¤‘
-        if (Mouse.current.leftButton.isPressed && mouseDownTime > 0)
-        {
-            Vector2 currentPos = Mouse.current.position.ReadValue();
-            Vector2 mouseDelta = currentPos - prevMousePos;
-            prevMousePos = currentPos;
-
-            if (!dragging && (currentPos - mouseDownPos).magnitude > dragThreshold)
-            {
-                dragging = true;
-                IsDragging = true;
-            }
-
-            if (dragging)
-            {
-                float rotSpeed = 0.1f;
-                transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
-                transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
-            }
-        }
-
-        // ë§ˆìš°ìŠ¤ ë–¼ê¸°
-        if (Mouse.current.leftButton.wasReleasedThisFrame && mouseDownTime > 0)
-        {
-            Vector2 currentPos = Mouse.current.position.ReadValue();
-            float heldTime = Time.time - mouseDownTime;
-            float totalMove = (currentPos - mouseDownPos).magnitude;
-
-            if (!dragging && heldTime < clickDelay && totalMove < dragThreshold)
-            {
-                Ray ray = hackerCamera.ScreenPointToRay(currentPos);
-                int moduleLayerMask = LayerMask.GetMask("Module");
-                if (Physics.Raycast(ray, out RaycastHit hit, 100f, moduleLayerMask))
-                {
-                    ModuleZoom mz = hit.transform.GetComponent<ModuleZoom>();
-                    if (mz != null)
-                        mz.OnModuleClickTrigger();
-                }
-            }
-
-            dragging = false;
-            IsDragging = false;
-            mouseDownTime = -1000f;
-
-            SnapToClosestFaceSmooth();
-        }
+        float rotSpeed = 0.15f;
+        transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
+        transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
     }
 
+    void OnLeftClickCube()
+    {
+        if (!groupController.IsCameraFixed) return;
+        if (ModuleZoom.IsZoomed) return;
+
+        Vector2 clickScreenPos = handler.LastClickPos;
+        Ray ray = hackerCamera.ScreenPointToRay(clickScreenPos);
+
+        // CubeGroup + Module ¸ğµÎ Æ÷ÇÔ (layerMask | ¿¬»ê)
+        int combinedMask = cubeGroupLayerMask | moduleLayerMask;
+        RaycastHit[] hits = Physics.RaycastAll(ray, 100f, combinedMask);
+
+        if (hits.Length == 0)
+            return;
+
+        // °Å¸®¼øÀ¸·Î Á¤·Ä (°¡±î¿î °ÍºÎÅÍ ÆÇÁ¤)
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var hit in hits)
+        {
+            int objLayer = hit.transform.gameObject.layer;
+
+            // CubeGroup(º®)¿¡ ¸·È÷¸é Áï½Ã Áß´Ü(µÚ´Â ¾È º½)
+            if ((cubeGroupLayerMask & (1 << objLayer)) != 0)
+            {
+                // Debug.Log("Å¥ºê º®¿¡ ¸·Èû, ¸ğµâ Å¬¸¯ ¾øÀ½");
+                break;
+            }
+            // Module¿¡ Ã³À½ ¸ÂÀ¸¸é ¹Ù·Î Æ®¸®°Å
+            if ((moduleLayerMask & (1 << objLayer)) != 0)
+            {
+                ModuleZoom mz = hit.transform.GetComponent<ModuleZoom>();
+                if (mz != null)
+                    SnapModuleFaceToCamera(
+                        hit.transform,    // Å¬¸¯µÈ ¸ğµâ Transform
+                        hackerCamera,     // Ä«¸Ş¶ó ÂüÁ¶
+                        0.1f,             // È¸Àü ½Ã°£
+                        () => mz.OnModuleClickTrigger() // È¸Àü ³¡³ª°í È®´ë Æ®¸®°Å
+                    );
+                break; // Ã¹ ¹øÂ° ¸ğµâ¸¸ Ã³¸®
+            }
+        }
+        IsDragging = false;
+    }
+
+
+    void OnRightClickCube()
+    {
+        if (!groupController.IsCameraFixed) return;
+        Debug.Log("¿ìÅ¬¸¯ ÀÌº¥Æ® ¹ß»ı!");
+    }
+
+    void OnDragEndCube()
+    {
+        if (!groupController.IsCameraFixed) return;
+        IsDragging = false;
+        SnapToClosestFaceSmooth();
+    }
+
+    // ÀÌÇÏ ½º³À(Á¤·Ä) ÇÔ¼ö µî µ¿ÀÏ
     void SnapToClosestFaceSmooth()
     {
-        if (hackerCamera == null) return;
-
+        if (IsSnapping) return;
+        IsSnapping = true;
         Vector3 toCamera = (hackerCamera.transform.position - transform.position).normalized;
         Vector3[] normals = {
             transform.TransformDirection(Vector3.right),
@@ -174,5 +177,47 @@ public class CubeDragSnap : MonoBehaviour
             yield return null;
         }
         transform.rotation = target;
+        IsSnapping = false;
     }
+    void SnapModuleFaceToCamera(Transform module, Camera cam, float duration, System.Action onComplete = null)
+    {
+        // 1. ¸ğµâÀÇ ÇöÀç ¿ùµå ±âÁØ Á¤¸é/À§
+        Vector3 moduleForwardWorld = module.transform.forward;
+        Vector3 moduleUpWorld = module.transform.up;
+
+        // 2. Ä«¸Ş¶óÀÇ Á¤¸é/À§
+        Vector3 cameraForward = cam.transform.forward.normalized;
+        Vector3 cameraUp = cam.transform.up.normalized;
+
+        // 3. ¸ñÇ¥ È¸Àü: Ä«¸Ş¶óÀÇ forward ¹İ´ë(-forward), upµµ ±×´ë·Î(¶Ç´Â -upµµ °¡´É, ÀÏ¹İÀûÀ¸·Î upÀº ±×´ë·Î)
+        Quaternion targetRotation = Quaternion.LookRotation(-cameraForward, cameraUp);
+
+        // 4. ÇöÀç ¸ğµâÀÇ ¿À¸®¿£Å×ÀÌ¼Ç(¿ùµå±âÁØ)
+        Quaternion moduleCurrentRot = Quaternion.LookRotation(moduleForwardWorld, moduleUpWorld);
+
+        // 5. Å¥ºê¸¦ targetRotationÀ¸·Î ¸ÂÃß±â À§ÇØ ÇÊ¿äÇÑ È¸Àü°ª (»ó´ëº¯È¯)
+        Quaternion delta = targetRotation * Quaternion.Inverse(moduleCurrentRot);
+
+        // 6. Å¥ºê ÀüÃ¼¿¡ Àû¿ë
+        Quaternion finalRot = delta * transform.rotation;
+
+        StartCoroutine(SmoothSnapRotationWithCallback(finalRot, duration, onComplete));
+    }
+
+    IEnumerator SmoothSnapRotationWithCallback(Quaternion target, float duration, System.Action onComplete)
+    {
+        IsSnapping = true;
+        Quaternion startRot = transform.rotation;
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            transform.rotation = Quaternion.Slerp(startRot, target, Mathf.Clamp01(t));
+            yield return null;
+        }
+        transform.rotation = target;
+        IsSnapping = false;
+        onComplete?.Invoke();
+    }
+
 }

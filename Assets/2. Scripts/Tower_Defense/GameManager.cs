@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public TMP_Text goldText;
-    public Button drawTowerButton;
+    public UnityEngine.UI.Button drawTowerButton;
     public TMP_Text buttonText;
     public TMP_Text waveText;
     public TMP_Text timeText;

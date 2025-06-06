@@ -1,14 +1,13 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // ‚úÖ ÏÉà Input System ÏÇ¨Ïö©
 
 public class CubeGroupFaceController : MonoBehaviour
 {
     public CameraMover cameraMover;
-    public float viewDistance = 5f;
-    public float cameraMoveDuration = 1.0f;
+    public float viewDistance = 7f;
+    public float cameraMoveDuration = 0.5f;
 
     [HideInInspector]
-    public bool cameraIsFixed = false;
+    public bool IsCameraFixed = false;
 
     private Vector3 fixedDirection;
     private Vector3 fixedCameraPos;
@@ -16,12 +15,12 @@ public class CubeGroupFaceController : MonoBehaviour
     int cubeGroupLayerMask;
 
     private Camera hackerCamera;
+    private ClickDragHandler inputHandler;
 
     void Awake()
     {
         if (cameraMover == null)
             cameraMover = FindFirstObjectByType<CameraMover>();
-
         fixedDirection = transform.forward;
         cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
 
@@ -32,42 +31,82 @@ public class CubeGroupFaceController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÌÉúÍ∑∏Í∞Ä 'hacker'Ïù∏ Ïπ¥Î©îÎùºÎ•º Ï∞æÏùÑ Ïàò ÏóÜÏäµÎãàÎã§.");
+            Debug.LogError("≈¬±◊∞° 'hacker'¿Œ ƒ´∏ﬁ∂Û∏¶ √£¿ª ºˆ æ¯Ω¿¥œ¥Ÿ.");
         }
+
+        // ¿‘∑¬ «⁄µÈ∑Ø ∫Ÿ¿Ã±‚(æ¯¿∏∏È ¿⁄µø ª˝º∫)
+        inputHandler = GetComponent<ClickDragHandler>();
+        if (inputHandler == null)
+            inputHandler = gameObject.AddComponent<ClickDragHandler>();
+
+        inputHandler.OnLeftClick += OnLeftClickHandler;
+        inputHandler.OnRightClick += OnRightClickHandler;
+        Debug.Log("[CubeGroupFaceController] ClickHandler πŸ¿Œµ˘ øœ∑·");
     }
 
-    void Update()
+    // ¡¬≈¨∏Ø ¿Ã∫•∆Æ √≥∏Æ
+    void OnLeftClickHandler()
     {
-        if (cameraMover != null && cameraMover.IsMoving)
-            return;
-
-        if (!cameraIsFixed && Mouse.current.leftButton.wasPressedThisFrame && hackerCamera != null)
+        if (cameraMover == null)
         {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray ray = hackerCamera.ScreenPointToRay(mousePos);
+            Debug.LogWarning("[CubeGroupFaceController] cameraMover∞° «“¥Áµ«¡ˆ æ æ“Ω¿¥œ¥Ÿ.");
+            return;
+        }
+
+        if (cameraMover.IsMoving)
+        {
+            Debug.Log("[CubeGroupFaceController] ƒ´∏ﬁ∂Û ¿Ãµø ¡ﬂ - ≈¨∏Ø π´Ω√");
+            return;
+        }
+
+        if (!IsCameraFixed)
+        {
+            Vector2 clickScreenPos = inputHandler.LastClickPos;
+            Ray ray = hackerCamera.ScreenPointToRay(clickScreenPos);
+            Debug.Log($"[CubeGroupFaceController] Ray ª˝º∫: {clickScreenPos}");
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, cubeGroupLayerMask))
             {
+                Debug.Log($"[CubeGroupFaceController] Raycast hit: {hit.transform.name}");
                 if (hit.transform == this.transform)
-                {
-                    MoveCameraToFrontFace();
-                }
+                    if (hit.transform == this.transform || hit.transform.IsChildOf(this.transform))
+                    {
+                        Debug.Log("[CubeGroupFaceController] CameraMove »£√‚");
+                        MoveCameraToFace();
+                    }
             }
         }
     }
 
-    public void MoveCameraToFrontFace()
+    // øÏ≈¨∏Ø: « ø‰«œ∏È ±∏«ˆ
+    void OnRightClickHandler()
     {
+        // øπΩ√: ƒ´∏ﬁ∂Û ø¯¿ßƒ° ∫π±Õ
+        if (IsCameraFixed)
+        {
+            MoveCameraBackToFace();
+        }
+        if (!IsCameraFixed)
+        {
+            cameraMover.MoveTo(cameraMover.DefaultCameraPosition, cameraMover.DefaultCameraRotation, cameraMoveDuration);
+            IsCameraFixed = false;
+        }
+            
+    }
+
+    public void MoveCameraToFace()
+    {
+        fixedDirection = -transform.forward; // µ⁄¬  πÊ«‚
         fixedCameraPos = transform.position + fixedDirection * viewDistance;
-        fixedCameraRot = Quaternion.LookRotation(-fixedDirection, Vector3.up);
+        fixedCameraRot = Quaternion.LookRotation(transform.position - fixedCameraPos, Vector3.up);
 
         cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration);
-        cameraIsFixed = true;
+        IsCameraFixed = true;
     }
 
     public void MoveCameraBackToFace()
     {
-        if (cameraIsFixed)
+        if (IsCameraFixed)
             cameraMover.MoveTo(fixedCameraPos, fixedCameraRot, cameraMoveDuration);
     }
 }

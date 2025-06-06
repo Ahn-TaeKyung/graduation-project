@@ -7,7 +7,7 @@ using System.Linq;
 
 public class HostStartButton : NetworkBehaviour
 {
-    [SerializeField] private Button m_start_button;
+    [SerializeField] private UnityEngine.UI.Button m_start_button;
     [SerializeField] private SceneRef m_game_scene_ref; // 전환할 게임 씬 이름
     [SerializeField] private SceneRef m_current_scene_ref;
 
