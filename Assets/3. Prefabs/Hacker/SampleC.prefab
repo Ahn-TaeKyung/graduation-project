@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 5820362053155942191}
   - component: {fileID: 5828673057103985777}
   - component: {fileID: 7500539142924018214}
-  - component: {fileID: -8066664340567012799}
-  m_Layer: 6
-  m_Name: SampleG
+  - component: {fileID: 6953198329322650486}
+  m_Layer: 10
+  m_Name: SampleC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,18 +99,18 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 3}
+  m_Size: {x: 1, y: 1, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-8066664340567012799
+--- !u!114 &6953198329322650486
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -119,13 +119,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2187073056612151316}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f2aee1174ae6f44bb4f26d23bafd69b, type: 3}
+  m_Script: {fileID: 11500000, guid: 872a2e125c80f184e9a552c746e919bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cameraMover: {fileID: 0}
   cubeGroupController: {fileID: 0}
+  cubedargsnap: {fileID: 0}
   zoomOffset: {x: 0, y: 0, z: 2}
-  zoomDuration: 0.8
+  zoomDuration: 0.5
 --- !u!1 &6354407540654137374
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +138,7 @@ GameObject:
   - component: {fileID: 4619388844467555400}
   - component: {fileID: 5942404063404127042}
   - component: {fileID: 8495668216611305859}
-  m_Layer: 6
+  m_Layer: 10
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,7 +229,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: G
+  m_text: C
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
