@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5828673057103985777}
   - component: {fileID: 7500539142924018214}
   - component: {fileID: 1258015810709131722}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: SampleE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,6 +127,7 @@ MonoBehaviour:
   cubedargsnap: {fileID: 0}
   zoomOffset: {x: 0, y: 0, z: 2}
   zoomDuration: 0.5
+  c_zoomed: 0
 --- !u!1 &6354407540654137374
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,7 +139,7 @@ GameObject:
   - component: {fileID: 4619388844467555400}
   - component: {fileID: 5942404063404127042}
   - component: {fileID: 8495668216611305859}
-  m_Layer: 10
+  m_Layer: 11
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
