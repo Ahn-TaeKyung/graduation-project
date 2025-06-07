@@ -1,56 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
-public class CubeDragSnap : MonoBehaviour
+public class CubeDragSnap : MonoBehaviour, IGameReadyListener
 {
     public static bool IsDragging = false;
+    public static bool IsSnapping { get; private set; } = false;
+    public static bool IsSnapped => !IsSnapping;
 
     private ClickDragHandler handler;
-    int cubeGroupLayerMask;
-    int moduleLayerMask;
-
-    [HideInInspector]
-    public CubeGroupFaceController groupController;
     private Camera hackerCamera;
-    public static bool IsSnapping { get; private set; } = false;
-    public static bool IsSnapped => !IsSnapping; // 읽기 전용, 정렬이 끝났으면 true
+    private int cubeGroupLayerMask;
+    private int moduleLayerMask;
+    public CubeGroupFaceController groupController;
+    private GameSceneManager GameSceneManager;
 
-    void Awake()
+    private bool isInitialized = false;
+
+    void Start()
     {
-        cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
-        moduleLayerMask = LayerMask.GetMask("Module");
-
-        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
-        if (hackerCameraObject != null)
-        {
-            hackerCamera = hackerCameraObject.GetComponent<Camera>();
-        }
-        else
-        {
-            Debug.LogError("태그가 'hacker'인 카메라를 찾을 수 없습니다.");
-        }
-
-        handler = GetComponent<ClickDragHandler>();
-        if (handler == null)
-            handler = gameObject.AddComponent<ClickDragHandler>();
-
+        handler = GetComponent<ClickDragHandler>() ?? gameObject.AddComponent<ClickDragHandler>();
         handler.OnDrag += OnDragCube;
         handler.OnLeftClick += OnLeftClickCube;
         handler.OnRightClick += OnRightClickCube;
         handler.OnDragEnd += OnDragEndCube;
 
-        // 반드시 참조 연결(직접 인스펙터 할당 또는 Find 등)
-        if (groupController == null)
-            groupController = GetComponentInParent<CubeGroupFaceController>();
+        cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
+        moduleLayerMask = LayerMask.GetMask("Module");
+
+        // GameStateManager가 준비되었을 때 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[CubeDragSnap] GameStateManager 인스턴스가 없음.");
+        }
     }
 
+    public void OnGameReady()
+    {
+        GameSceneManager = FindFirstObjectByType<GameSceneManager>();
+        RoleType myRole = GameSceneManager.GetMyRole();
+        if (myRole != RoleType.Hacker)
+        {
+            return; // 내 역할이 아니라면 아무 것도 안 함
+        }
+        GameObject hackerCam = GameObject.FindGameObjectWithTag("hacker");
+        if (hackerCam != null)
+        {
+            hackerCamera = hackerCam.GetComponent<Camera>();
+            isInitialized = true;
+        }
+        else
+        {
+            Debug.LogError("[CubeDragSnap] 해커 카메라를 찾을 수 없습니다.");
+        }
+    }
+
+    // 이하 기존 코드 유지
     void OnDragCube(Vector2 mouseDelta)
     {
-        if (!groupController.IsCameraFixed) return;
+        if (!isInitialized || !groupController.IsCameraFixed) return;
         if (ModuleZoom.IsZoomed) return;
-        IsDragging = true;
 
+        IsDragging = true;
         float rotSpeed = 0.15f;
         transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
         transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
@@ -58,64 +72,41 @@ public class CubeDragSnap : MonoBehaviour
 
     void OnLeftClickCube()
     {
-        if (!groupController.IsCameraFixed) return;
-        if (ModuleZoom.IsZoomed) return;
+        if (!isInitialized || !groupController.IsCameraFixed || ModuleZoom.IsZoomed) return;
 
-        Vector2 clickScreenPos = handler.LastClickPos;
-        Ray ray = hackerCamera.ScreenPointToRay(clickScreenPos);
-
-        // CubeGroup + Module 모두 포함 (layerMask | 연산)
+        Ray ray = hackerCamera.ScreenPointToRay(handler.LastClickPos);
         int combinedMask = cubeGroupLayerMask | moduleLayerMask;
         RaycastHit[] hits = Physics.RaycastAll(ray, 100f, combinedMask);
 
-        if (hits.Length == 0)
-            return;
-
-        // 거리순으로 정렬 (가까운 것부터 판정)
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
         foreach (var hit in hits)
         {
             int objLayer = hit.transform.gameObject.layer;
 
-            // CubeGroup(벽)에 막히면 즉시 중단(뒤는 안 봄)
             if ((cubeGroupLayerMask & (1 << objLayer)) != 0)
-            {
-                // Debug.Log("큐브 벽에 막힘, 모듈 클릭 없음");
                 break;
-            }
-            // Module에 처음 맞으면 바로 트리거
+
             if ((moduleLayerMask & (1 << objLayer)) != 0)
             {
-                ModuleZoom mz = hit.transform.GetComponent<ModuleZoom>();
+                var mz = hit.transform.GetComponent<ModuleZoom>();
                 if (mz != null)
-                    SnapModuleFaceToCamera(
-                        hit.transform,    // 클릭된 모듈 Transform
-                        hackerCamera,     // 카메라 참조
-                        0.1f,             // 회전 시간
-                        () => mz.OnModuleClickTrigger() // 회전 끝나고 확대 트리거
-                    );
-                break; // 첫 번째 모듈만 처리
+                    SnapModuleFaceToCamera(hit.transform, hackerCamera, 0.1f, () => mz.OnModuleClickTrigger());
+                break;
             }
         }
+
         IsDragging = false;
     }
 
-
-    void OnRightClickCube()
-    {
-        if (!groupController.IsCameraFixed) return;
-        Debug.Log("우클릭 이벤트 발생!");
-    }
+    void OnRightClickCube() => Debug.Log("우클릭");
 
     void OnDragEndCube()
     {
-        if (!groupController.IsCameraFixed) return;
+        if (!isInitialized || !groupController.IsCameraFixed) return;
         IsDragging = false;
         SnapToClosestFaceSmooth();
     }
-
-    // 이하 스냅(정렬) 함수 등 동일
     void SnapToClosestFaceSmooth()
     {
         if (IsSnapping) return;

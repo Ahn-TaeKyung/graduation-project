@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IGameStartListener
 {
     public static GameManager Instance;
 
@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     public TowerInventory inventory;
     public List<TowerData> lv1Towers;
 
+    private Coroutine gameTimeCoroutine;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -35,7 +37,20 @@ public class GameManager : MonoBehaviour
         if (drawTowerButton != null)
             drawTowerButton.onClick.AddListener(OnDrawTowerButtonClicked);
 
-        StartCoroutine(UpdateGameTime());
+        // GameStateManager에 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[GameManager] GameStateManager 인스턴스가 없습니다.");
+        }
+    }
+
+    public void OnGameStart()
+    {
+        gameTimeCoroutine = StartCoroutine(UpdateGameTime());
     }
 
     IEnumerator UpdateGameTime()
@@ -113,7 +128,4 @@ public class GameManager : MonoBehaviour
         int idx = Random.Range(0, lv1Towers.Count);
         return lv1Towers[idx];
     }
-
-
-    
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterSpawner : MonoBehaviour
+public class MonsterSpawner : MonoBehaviour, IGameStartListener
 {
     public GameObject monsterPrefab;
     public Transform spawnPoint;
@@ -13,12 +13,22 @@ public class MonsterSpawner : MonoBehaviour
     private int waveCount = 0;
     private bool spawningWave = false;
 
-    void Update()
+    private void Start()
     {
-        if (PlayerHealth.isGameOver) return;
+        // GameStateManager에 자신을 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[MonsterSpawner] GameStateManager 인스턴스가 없습니다.");
+        }
+    }
 
-        if (!spawningWave)
-            StartCoroutine(SpawnWave());
+    public void OnGameStart()
+    {
+        StartCoroutine(SpawnWave());
     }
 
     IEnumerator SpawnWave()

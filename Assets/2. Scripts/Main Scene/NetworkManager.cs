@@ -170,6 +170,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
         Debug.Log($"[{runner.GameMode}] Scene Load Done");
         
+        // GameStateManager가 존재할 경우 GameState 변경 시도
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.ChangeState(GameState.Role);
+        }
     }
     public void OnSceneLoadStart(NetworkRunner runner)
     {

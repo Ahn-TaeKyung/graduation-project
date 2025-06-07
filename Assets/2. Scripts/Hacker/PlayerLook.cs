@@ -2,7 +2,7 @@ using TMPro.Examples;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerLook : MonoBehaviour
+public class PlayerLook : MonoBehaviour, IGameReadyListener
 {
     public float lookSensitivity = 2f;
     public float minX = -80f, maxX = 80f;
@@ -19,13 +19,28 @@ public class PlayerLook : MonoBehaviour
     private Vector3 beforePosition;
     private Quaternion beforeRotation;
 
-    void Start()
+    private void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
-        if (hackerCameraObject != null)
+        // GameStateManager에 등록해서 Ready 상태가 되면 OnGameReady 호출되도록 함
+        if (GameStateManager.Instance != null)
         {
-            hackerCamera = hackerCameraObject.GetComponent<Camera>();
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[PlayerLook] GameStateManager 인스턴스가 없습니다.");
+            // 기본 초기화 (테스트용)
+            InitializePlayerLook();
+        }
+
+        // 기존 Start 초기화 중 씬에 있는 오브젝트 참조만 미리 찾아둠 (OnGameReady에서 활성화 관련 초기화)
+        if (hackerCamera == null)
+        {
+            GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
+            if (hackerCameraObject != null)
+            {
+                hackerCamera = hackerCameraObject.GetComponent<Camera>();
+            }
         }
         if (playermove == null) playermove = GetComponentInParent<PlayerMove>();
         if (cameraMover == null) cameraMover = FindFirstObjectByType<CameraMover>();
@@ -35,9 +50,24 @@ public class PlayerLook : MonoBehaviour
             if (cubeObj != null)
                 cubeTransform = cubeObj.transform;
             else
-                Debug.LogWarning("Cube라는 이름의 오브젝트를 찾을 수 없습니다.");
+                Debug.LogWarning("[PlayerLook] Cube라는 이름의 오브젝트를 찾을 수 없습니다.");
         }
         if (faceController == null) faceController = FindFirstObjectByType<CubeGroupFaceController>();
+    }
+
+    // IGameReadyListener 인터페이스 구현
+    public void OnGameReady()
+    {
+        // 게임 준비 완료 시점에 수행할 초기화
+        InitializePlayerLook();
+    }
+
+    private void InitializePlayerLook()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        isCubeMode = false;
+        xRotation = 0f;
     }
 
     void Update()
@@ -49,6 +79,7 @@ public class PlayerLook : MonoBehaviour
             xRotation = Mathf.Clamp(xRotation, minX, maxX);
             transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
         }
+
         if (!isCubeMode)
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -66,15 +97,12 @@ public class PlayerLook : MonoBehaviour
                         Cursor.lockState = CursorLockMode.None;
                         Cursor.visible = true;
                         // 카메라 이동
-                        // CubeGroupFaceController가 카메라 이동 주도
                         if (faceController != null)
                         {
                             faceController.MoveCameraToFace(() =>
                             {
-                                // 카메라 이동 완료 콜백에서 큐브 모드 진입
                                 isCubeMode = true;
                             });
-
                         }
                     }
                 }
@@ -82,24 +110,31 @@ public class PlayerLook : MonoBehaviour
         }
         else
         {
-            // 우클릭/ESC 시 복귀
             if (Mouse.current.rightButton.wasPressedThisFrame && !ModuleZoom.IsZoomed)
             {
                 PlayerMove.inputEnabled = false;
 
-                // CubeGroupFaceController가 카메라 복귀 주도
                 if (faceController != null)
                 {
-                    cameraMover.MoveTo(beforePosition, beforeRotation, cameraMoveDuration,()=>
+                    cameraMover.MoveTo(beforePosition, beforeRotation, cameraMoveDuration, () =>
                     {
                         Cursor.lockState = CursorLockMode.Locked;
                         Cursor.visible = false;
                         PlayerMove.inputEnabled = true;
                         isCubeMode = false;
-                        faceController.IsCameraFixed = false;
+                        faceController.SetCameraFixed(false);
                     });
                 }
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // 씬 종료 시 반드시 등록 해제
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.UnregisterListener(this);
         }
     }
 }
