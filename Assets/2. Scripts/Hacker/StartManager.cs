@@ -3,22 +3,22 @@ using UnityEngine;
 
 public class StartManager : MonoBehaviour
 {
-    // ÅëÇÕ º¯¼ö
-    [Header("»ı¼º Å©±â ¼³Á¤")]
+    // í†µí•© ë³€ìˆ˜
+    [Header("ìƒì„± í¬ê¸° ì„¤ì •")]
     public int nx = 3;
     public int ny = 3;
     public int nz = 3;
 
-    // °¢ ÄÄÆ÷³ÍÆ® ÂüÁ¶
+    // ê° ì»´í¬ë„ŒíŠ¸ ì°¸ì¡°
     public CubeSpawner cubeSpawner;
     public AutoBoxColliderForGroup autoGroupCollider;
     public ModuleSpawner moduleSpawner;
     public List<GameObject> modulePrefabs = new List<GameObject>();
-    [Header("¸ğµâ ¹èÄ¡ ¼ö")]
+    [Header("ëª¨ë“ˆ ë°°ì¹˜ ìˆ˜")]
     public int spawnCount = 6;
     public static int moduleCount;
 
-    void Reset() // ¿ÀºêÁ§Æ®¿¡ ºÙÀÏ ¶§ ÀÚµ¿ ÇÒ´ç
+    void Reset() // ì˜¤ë¸Œì íŠ¸ì— ë¶™ì¼ ë•Œ ìë™ í• ë‹¹
     {
         cubeSpawner = GetComponent<CubeSpawner>();
         autoGroupCollider = GetComponent<AutoBoxColliderForGroup>();
@@ -30,10 +30,10 @@ public class StartManager : MonoBehaviour
         SpawnAll();
     }
 
-    [ContextMenu("»ı¼º/Ãæµ¹/¸ğµâ ¼øÂ÷ ½ÇÇà")]
+    [ContextMenu("ìƒì„±/ì¶©ëŒ/ëª¨ë“ˆ ìˆœì°¨ ì‹¤í–‰")]
     public void SpawnAll()
     {
-        // µ¿±âÈ­: BaseManagerÀÇ nx/ny/nz ¡æ °¢ ½ºÅ©¸³Æ®¿¡ Àû¿ë
+        // ë™ê¸°í™”: BaseManagerì˜ nx/ny/nz â†’ ê° ìŠ¤í¬ë¦½íŠ¸ì— ì ìš©
         if (cubeSpawner == null) cubeSpawner = GetComponent<CubeSpawner>();
         if (moduleSpawner == null) moduleSpawner = GetComponent<ModuleSpawner>();
         if (autoGroupCollider == null) autoGroupCollider = GetComponent<AutoBoxColliderForGroup>();
@@ -48,13 +48,13 @@ public class StartManager : MonoBehaviour
         moduleSpawner.spawnCount = spawnCount;
         moduleSpawner.prefabOptions = modulePrefabs;
 
-        // 1. Å¥ºê »ı¼º
+        // 1. íë¸Œ ìƒì„±
         cubeSpawner.GenerateCubeGroup();
 
-        // 2. Ãæµ¹°ª »ı¼º (BoxCollider Å©±â Àç¼³Á¤)
+        // 2. ì¶©ëŒê°’ ìƒì„± (BoxCollider í¬ê¸° ì¬ì„¤ì •)
         autoGroupCollider.FitColliderToChildren();
 
-        // 3. ¸ğµâ »ı¼º (·£´ı ¹èÄ¡)
+        // 3. ëª¨ë“ˆ ìƒì„± (ëœë¤ ë°°ì¹˜)
         moduleSpawner.SpawnRandomOnBoxSurfaces();
 
         Debug.Log("BaseManager: nx=" + nx + ", ny=" + ny + ", nz=" + nz + ", moduleCount=" + spawnCount);

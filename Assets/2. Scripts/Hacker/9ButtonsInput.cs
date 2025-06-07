@@ -4,8 +4,8 @@ using System;
 
 public class ButtonInputForwarder : MonoBehaviour
 {
-    public int buttonIndex; // 0~8 (ÀÔ·Â ¹öÆ°), 9 (È®ÀÎ ¹öÆ° µî)
-    public NineButtons targetManager; // Inspector¿¡¼­ ÇÒ´ç
+    public int buttonIndex; // 0~8 (ì…ë ¥ ë²„íŠ¼), 9 (í™•ì¸ ë²„íŠ¼ ë“±)
+    public NineButtons targetManager; // Inspectorì—ì„œ í• ë‹¹
 
     private ClickDragHandler handler;
     private Collider col;
@@ -24,9 +24,9 @@ public class ButtonInputForwarder : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
-        // Äİ¹é µî·Ï
+        // ì½œë°± ë“±ë¡
         if (handler != null)
         {
             handler.OnLeftPress = () => OnPress();
@@ -41,7 +41,7 @@ public class ButtonInputForwarder : MonoBehaviour
             col.enabled = false;
         }
     }
-    // Raycast·Î ³» À§¿¡ ÀÖÀ» ¶§¸¸ 9Buttons¿¡ ÀÔ·Â Àü´Ş
+    // Raycastë¡œ ë‚´ ìœ„ì— ìˆì„ ë•Œë§Œ 9Buttonsì— ì…ë ¥ ì „ë‹¬
     void OnPress()
     {
         if (!ModuleZoom.IsZoomed) return;
@@ -51,7 +51,7 @@ public class ButtonInputForwarder : MonoBehaviour
         if (!col.Raycast(ray, out RaycastHit hit, 100f)) return;
         isPressed = true;
         if (targetManager == null)
-            Debug.LogWarning($"{name}: targetManager(NineButtons)°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning($"{name}: targetManager(NineButtons)ê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
 
         if (targetManager != null)
         {
@@ -65,12 +65,12 @@ public class ButtonInputForwarder : MonoBehaviour
         if (!isPressed) return;
         isPressed = false;
         if (targetManager == null)
-            Debug.LogWarning($"{name}: targetManager(NineButtons)°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning($"{name}: targetManager(NineButtons)ê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
         if (targetManager != null && buttonIndex < 9)
         {
             targetManager.OnButtonRelease(buttonIndex);
         }
-        // È®ÀÎ¹öÆ°(9)¿¡¼­¸¸ OnConfirmClick
+        // í™•ì¸ë²„íŠ¼(9)ì—ì„œë§Œ OnConfirmClick
         else if (targetManager != null && buttonIndex == 9)
         {
             targetManager.OnConfirmClick();

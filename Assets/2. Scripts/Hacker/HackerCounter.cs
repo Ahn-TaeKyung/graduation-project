@@ -14,7 +14,7 @@ public class HackerCounter : MonoBehaviour
         Instance = this;
     }
 
-    // ¸ðµâ Å¬¸®¾î/½ÇÆÐ ½Ã¸¶´Ù ÀÌ ÇÔ¼ö¸¦ ¹Ýµå½Ã È£ÃâÇÏ°Ô ÇÑ´Ù
+    // ëª¨ë“ˆ í´ë¦¬ì–´/ì‹¤íŒ¨ ì‹œë§ˆë‹¤ ì´ í•¨ìˆ˜ë¥¼ ë°˜ë“œì‹œ í˜¸ì¶œí•˜ê²Œ í•œë‹¤
     public void AddComplete()
     {
         CompleteCount++;
@@ -31,11 +31,11 @@ public class HackerCounter : MonoBehaviour
     {
         if (CompleteCount >= moduleCount)
         {
-            Debug.Log("°ÔÀÓ Å¬¸®¾î!");
+            Debug.Log("ê²Œìž„ í´ë¦¬ì–´!");
         }
         if (strikeCount >= 3)
         {
-            Debug.Log("°ÔÀÓ ¿À¹ö!");
+            Debug.Log("ê²Œìž„ ì˜¤ë²„!");
         }
     }
 }

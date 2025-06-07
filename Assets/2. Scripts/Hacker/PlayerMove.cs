@@ -27,7 +27,7 @@ public class PlayerMove : MonoBehaviour
         {
 
 
-            // ¸¶¿ì½º ÁÂ¿ì·Î Player(Ä¸½¶)¸¸ È¸Àü
+            // ë§ˆìš°ìŠ¤ ì¢Œìš°ë¡œ Player(ìº¡ìŠ)ë§Œ íšŒì „
             if (Mouse.current != null)
             {
                 float mouseX = Mouse.current.delta.x.ReadValue() * lookSensitivity * 0.1f;
@@ -35,7 +35,7 @@ public class PlayerMove : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, yRotation, 0);
             }
 
-            // WASD ÀÌµ¿
+            // WASD ì´ë™
             Vector3 move = Vector3.zero;
             if (Keyboard.current.wKey.isPressed) move += transform.forward;
             if (Keyboard.current.sKey.isPressed) move -= transform.forward;
@@ -48,7 +48,7 @@ public class PlayerMove : MonoBehaviour
             velocity.z = move.normalized.z * speed;
             rb.linearVelocity = new Vector3(velocity.x, rb.linearVelocity.y, velocity.z);
 
-            // Á¡ÇÁ
+            // ì í”„
             if (Keyboard.current.spaceKey.wasPressedThisFrame && isGrounded)
             {
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);

@@ -14,7 +14,7 @@ public class CubeDragSnap : MonoBehaviour
     public CubeGroupFaceController groupController;
     private Camera hackerCamera;
     public static bool IsSnapping { get; private set; } = false;
-    public static bool IsSnapped => !IsSnapping; // ÀĞ±â Àü¿ë, Á¤·ÄÀÌ ³¡³µÀ¸¸é true
+    public static bool IsSnapped => !IsSnapping; // ì½ê¸° ì „ìš©, ì •ë ¬ì´ ëë‚¬ìœ¼ë©´ true
 
     void Awake()
     {
@@ -28,7 +28,7 @@ public class CubeDragSnap : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
 
         handler = GetComponent<ClickDragHandler>();
@@ -40,7 +40,7 @@ public class CubeDragSnap : MonoBehaviour
         handler.OnRightClick += OnRightClickCube;
         handler.OnDragEnd += OnDragEndCube;
 
-        // ¹İµå½Ã ÂüÁ¶ ¿¬°á(Á÷Á¢ ÀÎ½ºÆåÅÍ ÇÒ´ç ¶Ç´Â Find µî)
+        // ë°˜ë“œì‹œ ì°¸ì¡° ì—°ê²°(ì§ì ‘ ì¸ìŠ¤í™í„° í• ë‹¹ ë˜ëŠ” Find ë“±)
         if (groupController == null)
             groupController = GetComponentInParent<CubeGroupFaceController>();
     }
@@ -64,38 +64,38 @@ public class CubeDragSnap : MonoBehaviour
         Vector2 clickScreenPos = handler.LastClickPos;
         Ray ray = hackerCamera.ScreenPointToRay(clickScreenPos);
 
-        // CubeGroup + Module ¸ğµÎ Æ÷ÇÔ (layerMask | ¿¬»ê)
+        // CubeGroup + Module ëª¨ë‘ í¬í•¨ (layerMask | ì—°ì‚°)
         int combinedMask = cubeGroupLayerMask | moduleLayerMask;
         RaycastHit[] hits = Physics.RaycastAll(ray, 100f, combinedMask);
 
         if (hits.Length == 0)
             return;
 
-        // °Å¸®¼øÀ¸·Î Á¤·Ä (°¡±î¿î °ÍºÎÅÍ ÆÇÁ¤)
+        // ê±°ë¦¬ìˆœìœ¼ë¡œ ì •ë ¬ (ê°€ê¹Œìš´ ê²ƒë¶€í„° íŒì •)
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
 
         foreach (var hit in hits)
         {
             int objLayer = hit.transform.gameObject.layer;
 
-            // CubeGroup(º®)¿¡ ¸·È÷¸é Áï½Ã Áß´Ü(µÚ´Â ¾È º½)
+            // CubeGroup(ë²½)ì— ë§‰íˆë©´ ì¦‰ì‹œ ì¤‘ë‹¨(ë’¤ëŠ” ì•ˆ ë´„)
             if ((cubeGroupLayerMask & (1 << objLayer)) != 0)
             {
-                // Debug.Log("Å¥ºê º®¿¡ ¸·Èû, ¸ğµâ Å¬¸¯ ¾øÀ½");
+                // Debug.Log("íë¸Œ ë²½ì— ë§‰í˜, ëª¨ë“ˆ í´ë¦­ ì—†ìŒ");
                 break;
             }
-            // Module¿¡ Ã³À½ ¸ÂÀ¸¸é ¹Ù·Î Æ®¸®°Å
+            // Moduleì— ì²˜ìŒ ë§ìœ¼ë©´ ë°”ë¡œ íŠ¸ë¦¬ê±°
             if ((moduleLayerMask & (1 << objLayer)) != 0)
             {
                 ModuleZoom mz = hit.transform.GetComponent<ModuleZoom>();
                 if (mz != null)
                     SnapModuleFaceToCamera(
-                        hit.transform,    // Å¬¸¯µÈ ¸ğµâ Transform
-                        hackerCamera,     // Ä«¸Ş¶ó ÂüÁ¶
-                        0.1f,             // È¸Àü ½Ã°£
-                        () => mz.OnModuleClickTrigger() // È¸Àü ³¡³ª°í È®´ë Æ®¸®°Å
+                        hit.transform,    // í´ë¦­ëœ ëª¨ë“ˆ Transform
+                        hackerCamera,     // ì¹´ë©”ë¼ ì°¸ì¡°
+                        0.1f,             // íšŒì „ ì‹œê°„
+                        () => mz.OnModuleClickTrigger() // íšŒì „ ëë‚˜ê³  í™•ëŒ€ íŠ¸ë¦¬ê±°
                     );
-                break; // Ã¹ ¹øÂ° ¸ğµâ¸¸ Ã³¸®
+                break; // ì²« ë²ˆì§¸ ëª¨ë“ˆë§Œ ì²˜ë¦¬
             }
         }
         IsDragging = false;
@@ -105,7 +105,7 @@ public class CubeDragSnap : MonoBehaviour
     void OnRightClickCube()
     {
         if (!groupController.IsCameraFixed) return;
-        Debug.Log("¿ìÅ¬¸¯ ÀÌº¥Æ® ¹ß»ı!");
+        Debug.Log("ìš°í´ë¦­ ì´ë²¤íŠ¸ ë°œìƒ!");
     }
 
     void OnDragEndCube()
@@ -115,7 +115,7 @@ public class CubeDragSnap : MonoBehaviour
         SnapToClosestFaceSmooth();
     }
 
-    // ÀÌÇÏ ½º³À(Á¤·Ä) ÇÔ¼ö µî µ¿ÀÏ
+    // ì´í•˜ ìŠ¤ëƒ…(ì •ë ¬) í•¨ìˆ˜ ë“± ë™ì¼
     void SnapToClosestFaceSmooth()
     {
         if (IsSnapping) return;
@@ -181,24 +181,24 @@ public class CubeDragSnap : MonoBehaviour
     }
     void SnapModuleFaceToCamera(Transform module, Camera cam, float duration, System.Action onComplete = null)
     {
-        // 1. ¸ğµâÀÇ ÇöÀç ¿ùµå ±âÁØ Á¤¸é/À§
+        // 1. ëª¨ë“ˆì˜ í˜„ì¬ ì›”ë“œ ê¸°ì¤€ ì •ë©´/ìœ„
         Vector3 moduleForwardWorld = module.transform.forward;
         Vector3 moduleUpWorld = module.transform.up;
 
-        // 2. Ä«¸Ş¶óÀÇ Á¤¸é/À§
+        // 2. ì¹´ë©”ë¼ì˜ ì •ë©´/ìœ„
         Vector3 cameraForward = cam.transform.forward.normalized;
         Vector3 cameraUp = cam.transform.up.normalized;
 
-        // 3. ¸ñÇ¥ È¸Àü: Ä«¸Ş¶óÀÇ forward ¹İ´ë(-forward), upµµ ±×´ë·Î(¶Ç´Â -upµµ °¡´É, ÀÏ¹İÀûÀ¸·Î upÀº ±×´ë·Î)
+        // 3. ëª©í‘œ íšŒì „: ì¹´ë©”ë¼ì˜ forward ë°˜ëŒ€(-forward), upë„ ê·¸ëŒ€ë¡œ(ë˜ëŠ” -upë„ ê°€ëŠ¥, ì¼ë°˜ì ìœ¼ë¡œ upì€ ê·¸ëŒ€ë¡œ)
         Quaternion targetRotation = Quaternion.LookRotation(-cameraForward, cameraUp);
 
-        // 4. ÇöÀç ¸ğµâÀÇ ¿À¸®¿£Å×ÀÌ¼Ç(¿ùµå±âÁØ)
+        // 4. í˜„ì¬ ëª¨ë“ˆì˜ ì˜¤ë¦¬ì—”í…Œì´ì…˜(ì›”ë“œê¸°ì¤€)
         Quaternion moduleCurrentRot = Quaternion.LookRotation(moduleForwardWorld, moduleUpWorld);
 
-        // 5. Å¥ºê¸¦ targetRotationÀ¸·Î ¸ÂÃß±â À§ÇØ ÇÊ¿äÇÑ È¸Àü°ª (»ó´ëº¯È¯)
+        // 5. íë¸Œë¥¼ targetRotationìœ¼ë¡œ ë§ì¶”ê¸° ìœ„í•´ í•„ìš”í•œ íšŒì „ê°’ (ìƒëŒ€ë³€í™˜)
         Quaternion delta = targetRotation * Quaternion.Inverse(moduleCurrentRot);
 
-        // 6. Å¥ºê ÀüÃ¼¿¡ Àû¿ë
+        // 6. íë¸Œ ì „ì²´ì— ì ìš©
         Quaternion finalRot = delta * transform.rotation;
 
         StartCoroutine(SmoothSnapRotationWithCallback(finalRot, duration, onComplete));

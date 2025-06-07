@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class CubeSpawner : MonoBehaviour
 {
-    [Header("»ı¼ºÇÒ Å¥ºê ÇÁ¸®ÆÕ")]
+    [Header("ìƒì„±í•  íë¸Œ í”„ë¦¬íŒ¹")]
     public GameObject cubePrefab;
 
-    [Header("x, y, z ¹æÇâ °³¼ö")]
+    [Header("x, y, z ë°©í–¥ ê°œìˆ˜")]
     [Range(1, 100)] public int nx = 3;
     [Range(1, 100)] public int ny = 3;
     [Range(1, 100)] public int nz = 3;
 
-    [Header("Å¥ºê °£°İ(gap)")]
+    [Header("íë¸Œ ê°„ê²©(gap)")]
     public float gap = 0.1f;
 
     [ContextMenu("Generate Cube Group")]
@@ -18,15 +18,15 @@ public class CubeSpawner : MonoBehaviour
     {
         if (cubePrefab == null)
         {
-            Debug.LogError("[CubeGroupGenerator] cubePrefabÀÌ ºñ¾îÀÖÀ½.");
+            Debug.LogError("[CubeGroupGenerator] cubePrefabì´ ë¹„ì–´ìˆìŒ.");
             return;
         }
 
-        // ±âÁ¸ ÀÚ½Ä »èÁ¦
+        // ê¸°ì¡´ ìì‹ ì‚­ì œ
         for (int i = transform.childCount - 1; i >= 0; i--)
             DestroyImmediate(transform.GetChild(i).gameObject);
 
-        float cubeSize = 1f; // ±âº» Å¥ºê Å©±â (ÇÁ¸®ÆÕÀÌ 1,1,1ÀÌ¶ó¸é)
+        float cubeSize = 1f; // ê¸°ë³¸ íë¸Œ í¬ê¸° (í”„ë¦¬íŒ¹ì´ 1,1,1ì´ë¼ë©´)
         float spacing = cubeSize + gap;
 
         float offsetX = (nx - 1) * spacing * 0.5f;
@@ -39,7 +39,7 @@ public class CubeSpawner : MonoBehaviour
             {
                 for (int z = 0; z < nz; z++)
                 {
-                    // Ç¥¸é(¿Üº®)¿¡¸¸ »ı¼º
+                    // í‘œë©´(ì™¸ë²½)ì—ë§Œ ìƒì„±
                     if (x == 0 || x == nx - 1 ||
                         y == 0 || y == ny - 1 ||
                         z == 0 || z == nz - 1)
@@ -52,6 +52,6 @@ public class CubeSpawner : MonoBehaviour
                 }
             }
         }
-        Debug.Log($"[CubeGroupGenerator] {nx} x {ny} x {nz} Ç¥¸é Å¥ºê »ı¼º ¿Ï·á");
+        Debug.Log($"[CubeGroupGenerator] {nx} x {ny} x {nz} í‘œë©´ íë¸Œ ìƒì„± ì™„ë£Œ");
     }
 }

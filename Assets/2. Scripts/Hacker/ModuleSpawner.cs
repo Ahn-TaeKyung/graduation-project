@@ -3,20 +3,20 @@ using UnityEngine;
 
 public class ModuleSpawner : MonoBehaviour
 {
-    [Header("ÇÁ¸®ÆÕ ¸®½ºÆ® (·£´ı ¼±ÅÃ)")]
+    [Header("í”„ë¦¬íŒ¹ ë¦¬ìŠ¤íŠ¸ (ëœë¤ ì„ íƒ)")]
     public List<GameObject> prefabOptions;
 
-    [Header("Å¥ºê ±¸Á¶ (Á÷À°¸éÃ¼)")]
+    [Header("íë¸Œ êµ¬ì¡° (ì§ìœ¡ë©´ì²´)")]
     [Range(1, 100)] public int nx = 3;
     [Range(1, 100)] public int ny = 3;
     [Range(1, 100)] public int nz = 3;
     public float cubeSize = 1.0f;
     public float gap = 0.1f;
 
-    [Header("ÃÑ »ı¼º °³¼ö")]
+    [Header("ì´ ìƒì„± ê°œìˆ˜")]
     [Range(1, 10000)] public int spawnCount = 10;
 
-    [Header("»ı¼º ¿É¼Ç")]
+    [Header("ìƒì„± ì˜µì…˜")]
     public bool clearOnSpawn = true;
 
     private List<GameObject> spawnedObjects = new();
@@ -26,7 +26,7 @@ public class ModuleSpawner : MonoBehaviour
     {
         if (prefabOptions == null || prefabOptions.Count == 0)
         {
-            Debug.LogError("ÇÁ¸®ÆÕ ¸®½ºÆ®°¡ ºñ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogError("í”„ë¦¬íŒ¹ ë¦¬ìŠ¤íŠ¸ê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -45,11 +45,11 @@ public class ModuleSpawner : MonoBehaviour
         float halfY = (ny - 1) / 2f;
         float halfZ = (nz - 1) / 2f;
 
-        // 1. ¸ğµç ¿Üº® ÈÄº¸ ÁÂÇ¥¿Í ¹æÇâ ¼öÁı(Áßº¹ X)
+        // 1. ëª¨ë“  ì™¸ë²½ í›„ë³´ ì¢Œí‘œì™€ ë°©í–¥ ìˆ˜ì§‘(ì¤‘ë³µ X)
         var candidates = new List<(Vector3 pos, Vector3 normal, Vector3 up)>();
         HashSet<string> uniqueChecker = new();
 
-        // +X, -X ¸é
+        // +X, -X ë©´
         for (int y = 0; y < ny; y++)
             for (int z = 0; z < nz; z++)
             {
@@ -62,7 +62,7 @@ public class ModuleSpawner : MonoBehaviour
                 if (uniqueChecker.Add(p2.ToString()))
                     candidates.Add((p2, Vector3.left, Vector3.up));
             }
-        // +Y, -Y ¸é
+        // +Y, -Y ë©´
         for (int x = 0; x < nx; x++)
             for (int z = 0; z < nz; z++)
             {
@@ -75,7 +75,7 @@ public class ModuleSpawner : MonoBehaviour
                 if (uniqueChecker.Add(p4.ToString()))
                     candidates.Add((p4, Vector3.down, Vector3.forward));
             }
-        // +Z, -Z ¸é
+        // +Z, -Z ë©´
         for (int x = 0; x < nx; x++)
             for (int y = 0; y < ny; y++)
             {
@@ -89,7 +89,7 @@ public class ModuleSpawner : MonoBehaviour
                     candidates.Add((p6, Vector3.back, Vector3.up));
             }
 
-        // 2. ·£´ı ¼ÅÇÃ
+        // 2. ëœë¤ ì…”í”Œ
         int totalCandidates = candidates.Count;
         for (int i = 0; i < totalCandidates; i++)
         {
@@ -97,9 +97,9 @@ public class ModuleSpawner : MonoBehaviour
             (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
         }
 
-        // 3. °³¼ö¸¸Å­¸¸ »ı¼º
+        // 3. ê°œìˆ˜ë§Œí¼ë§Œ ìƒì„±
         int count = Mathf.Min(spawnCount, candidates.Count);
-        Debug.Log($"ÈÄº¸ ÁÂÇ¥ °³¼ö: {candidates.Count}, »ı¼º ¿äÃ»: {count}, ÇÁ¸®ÆÕ °³¼ö: {prefabOptions.Count}");
+        Debug.Log($"í›„ë³´ ì¢Œí‘œ ê°œìˆ˜: {candidates.Count}, ìƒì„± ìš”ì²­: {count}, í”„ë¦¬íŒ¹ ê°œìˆ˜: {prefabOptions.Count}");
         for (int i = 0; i < count; i++)
         {
             var (pos, normal, up) = candidates[i];
@@ -109,6 +109,6 @@ public class ModuleSpawner : MonoBehaviour
             spawnedObjects.Add(go);
         }
 
-        Debug.Log($"ÀüÃ¼ ¹Ù±ù¸é ÈÄº¸ {candidates.Count}°³ Áß {count}°³ »ı¼º ¿Ï·á");
+        Debug.Log($"ì „ì²´ ë°”ê¹¥ë©´ í›„ë³´ {candidates.Count}ê°œ ì¤‘ {count}ê°œ ìƒì„± ì™„ë£Œ");
     }
 }

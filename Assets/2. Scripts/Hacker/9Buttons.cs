@@ -11,8 +11,8 @@ public class NineButtons : MonoBehaviour
     public int[] answerPattern = new int[9];
     public int[] userInput = new int[9];
 
-    public GameObject[] buttons = new GameObject[9];   // 0~8 ¹öÆ°
-    public GameObject confirmButton;                   // 9¹ø: È®ÀÎ
+    public GameObject[] buttons = new GameObject[9];   // 0~8 ë²„íŠ¼
+    public GameObject confirmButton;                   // 9ë²ˆ: í™•ì¸
     public string patternCode = "4A2M7z";
 
     private Vector3[] originalPositions;
@@ -44,7 +44,7 @@ public class NineButtons : MonoBehaviour
         Debug.Log($"Pattern Grid:\n{grid}");
     }
 
-    // ---- ¹öÆ° ´­¸²/¸±¸®Áî/È®ÀÎ Ã³¸® ----
+    // ---- ë²„íŠ¼ ëˆŒë¦¼/ë¦´ë¦¬ì¦ˆ/í™•ì¸ ì²˜ë¦¬ ----
     public void OnButtonPress(int idx)
     {
         if (!isInteractable) return;
@@ -88,14 +88,14 @@ public class NineButtons : MonoBehaviour
             {
                 confirmButton.transform.localPosition = originalConfirm;
                 confirmButton.GetComponent<Renderer>().material.color = Color.yellow;
-                Debug.Log("Æ²·È½À´Ï´Ù!");
+                Debug.Log("í‹€ë ¸ìŠµë‹ˆë‹¤!");
                 HackerCounter.Instance.AddStrike();
-                // ½ÇÆĞ Ã³¸®: ¸ğµÎ »¡°£»ö ¡æ 1ÃÊ ÈÄ ÃÊ±âÈ­
+                // ì‹¤íŒ¨ ì²˜ë¦¬: ëª¨ë‘ ë¹¨ê°„ìƒ‰ â†’ 1ì´ˆ í›„ ì´ˆê¸°í™”
                 StartCoroutine(ShowFailAndReset());
                 return;
             }
         }
-        Debug.Log("Á¤´ä!");
+        Debug.Log("ì •ë‹µ!");
         confirmButton.transform.localPosition = originalConfirm;
         for (int i = 0; i < 9; i++)
         {
@@ -111,7 +111,7 @@ public class NineButtons : MonoBehaviour
         }
         HackerCounter.Instance.AddComplete();
         isComplete = true;
-        // ¼º°ø Ã³¸®
+        // ì„±ê³µ ì²˜ë¦¬
     }
 
     public void ResetUserInput()
@@ -156,24 +156,24 @@ public class NineButtons : MonoBehaviour
 
         string code = GridPatternCodec.PatternToCode9(answerPattern);
         patternCode = code;
-        Debug.Log($"[Á¤´ä ÄÚµå(6ÀÚ¸®)] {code}");
+        Debug.Log($"[ì •ë‹µ ì½”ë“œ(6ìë¦¬)] {code}");
     }
 }
 public static class GridPatternCodec
 {
     private const string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    // 9ºñÆ® ÆĞÅÏ(0~511)À» 6ÀÚ¸® Base62·Î
+    // 9ë¹„íŠ¸ íŒ¨í„´(0~511)ì„ 6ìë¦¬ Base62ë¡œ
     public static string PatternToCode9(int[] pattern)
     {
-        // ÆĞÅÏÀ» 9ºñÆ® Á¤¼ö·Î º¯È¯
+        // íŒ¨í„´ì„ 9ë¹„íŠ¸ ì •ìˆ˜ë¡œ ë³€í™˜
         int val = 0;
         for (int i = 0; i < 9; i++)
         {
             if (pattern[i] != 0)
                 val |= (1 << i);
         }
-        // int ¡æ ulong(=uint) ¡æ 6ÀÚ¸® Base62·Î º¯È¯
+        // int â†’ ulong(=uint) â†’ 6ìë¦¬ Base62ë¡œ ë³€í™˜
         string code = "";
         ulong num = (ulong)val;
         for (int i = 0; i < 6; i++)
@@ -184,7 +184,7 @@ public static class GridPatternCodec
         return code;
     }
 
-    // 6ÀÚ¸® Base62 ¡æ 9ºñÆ® ÆĞÅÏ(¹è¿­ ¹İÈ¯)
+    // 6ìë¦¬ Base62 â†’ 9ë¹„íŠ¸ íŒ¨í„´(ë°°ì—´ ë°˜í™˜)
     public static int[] CodeToPattern9(string code)
     {
         // Base62 to int

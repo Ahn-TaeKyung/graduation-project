@@ -3,16 +3,16 @@ using UnityEngine.InputSystem;
 
 public class ClickDragHandler : MonoBehaviour
 {
-    public System.Action<Vector2> OnDrag;        // µå·¡±× ÀÌµ¿·®
-    public System.Action OnLeftPress;            // ¿ŞÅ¬¸¯ ´­·¶À» ¶§
-    public System.Action OnLeftRelease;          // ¿ŞÅ¬¸¯ ¶®À» ¶§
-    public System.Action OnLeftClick;            // ÂªÀº Å¬¸¯
-    public System.Action OnRightClick;           // ¿ìÅ¬¸¯
-    public System.Action OnDragEnd;              // µå·¡±× ³¡
-    public System.Action OnLeftHoldPress;        // ±æ°Ô ´©¸¦¶§
-    public System.Action<float> OnLeftHoldRelease; // ´©¸£°í ÀÖ´Ù°¡ ¶¿ ¶§ hold½Ã°£ Àü´Ş
+    public System.Action<Vector2> OnDrag;        // ë“œë˜ê·¸ ì´ë™ëŸ‰
+    public System.Action OnLeftPress;            // ì™¼í´ë¦­ ëˆŒë €ì„ ë•Œ
+    public System.Action OnLeftRelease;          // ì™¼í´ë¦­ ë• ì„ ë•Œ
+    public System.Action OnLeftClick;            // ì§§ì€ í´ë¦­
+    public System.Action OnRightClick;           // ìš°í´ë¦­
+    public System.Action OnDragEnd;              // ë“œë˜ê·¸ ë
+    public System.Action OnLeftHoldPress;        // ê¸¸ê²Œ ëˆ„ë¥¼ë•Œ
+    public System.Action<float> OnLeftHoldRelease; // ëˆ„ë¥´ê³  ìˆë‹¤ê°€ ë—„ ë•Œ holdì‹œê°„ ì „ë‹¬
 
-    public Vector2 LastClickPos { get; private set; } // Å¬¸¯/µå·¡±× ¹ß»ı À§Ä¡
+    public Vector2 LastClickPos { get; private set; } // í´ë¦­/ë“œë˜ê·¸ ë°œìƒ ìœ„ì¹˜
 
     private bool isDragging = false;
     private bool isHolding = false;
@@ -28,7 +28,7 @@ public class ClickDragHandler : MonoBehaviour
     void Update()
     {
 
-        // ÁÂÅ¬¸¯ ½ÃÀÛ
+        // ì¢Œí´ë¦­ ì‹œì‘
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             mouseDownTime = Time.time;
@@ -41,7 +41,7 @@ public class ClickDragHandler : MonoBehaviour
             OnLeftPress?.Invoke();
         }
 
-        // µå·¡±×
+        // ë“œë˜ê·¸
         if (Mouse.current.leftButton.isPressed && mouseDownTime > 0)
         {
             Vector2 currPos = Mouse.current.position.ReadValue();
@@ -56,7 +56,7 @@ public class ClickDragHandler : MonoBehaviour
             lastMousePos = currPos;
         }
 
-        // ÁÂÅ¬¸¯ ÇØÁ¦
+        // ì¢Œí´ë¦­ í•´ì œ
         if (Mouse.current.leftButton.wasReleasedThisFrame && mouseDownTime > 0)
         {
             float heldTime = Time.time - mouseDownTime;
@@ -72,7 +72,7 @@ public class ClickDragHandler : MonoBehaviour
                 OnDragEnd?.Invoke();
                 OnLeftRelease?.Invoke();
 
-            // È¦µå(±æ°Ô´©¸£±â) Ã³¸®: ¹«Á¶°Ç ÀÌº¥Æ® ¹ß»ı
+            // í™€ë“œ(ê¸¸ê²Œëˆ„ë¥´ê¸°) ì²˜ë¦¬: ë¬´ì¡°ê±´ ì´ë²¤íŠ¸ ë°œìƒ
             if (isHolding)
             {
                 float holdTime = Time.time - holdStartTime;
@@ -83,7 +83,7 @@ public class ClickDragHandler : MonoBehaviour
             isDragging = false;
         }
 
-        // ¿ìÅ¬¸¯
+        // ìš°í´ë¦­
         if (Mouse.current.rightButton.wasPressedThisFrame)
         {
             LastClickPos = Mouse.current.position.ReadValue();

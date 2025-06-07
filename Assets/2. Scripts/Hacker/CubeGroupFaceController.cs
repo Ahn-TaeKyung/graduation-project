@@ -31,30 +31,30 @@ public class CubeGroupFaceController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
 
-        // ÀÔ·Â ÇÚµé·¯ ºÙÀÌ±â(¾øÀ¸¸é ÀÚµ¿ »ı¼º)
+        // ì…ë ¥ í•¸ë“¤ëŸ¬ ë¶™ì´ê¸°(ì—†ìœ¼ë©´ ìë™ ìƒì„±)
         inputHandler = GetComponent<ClickDragHandler>();
         if (inputHandler == null)
             inputHandler = gameObject.AddComponent<ClickDragHandler>();
 
         inputHandler.OnLeftClick += OnLeftClickHandler;
-        Debug.Log("[CubeGroupFaceController] ClickHandler ¹ÙÀÎµù ¿Ï·á");
+        Debug.Log("[CubeGroupFaceController] ClickHandler ë°”ì¸ë”© ì™„ë£Œ");
     }
 
-    // ÁÂÅ¬¸¯ ÀÌº¥Æ® Ã³¸®
+    // ì¢Œí´ë¦­ ì´ë²¤íŠ¸ ì²˜ë¦¬
     void OnLeftClickHandler()
     {
         if (cameraMover == null)
         {
-            Debug.LogWarning("[CubeGroupFaceController] cameraMover°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("[CubeGroupFaceController] cameraMoverê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (CameraMover.isMoving)
         {
-            Debug.Log("[CubeGroupFaceController] Ä«¸Ş¶ó ÀÌµ¿ Áß - Å¬¸¯ ¹«½Ã");
+            Debug.Log("[CubeGroupFaceController] ì¹´ë©”ë¼ ì´ë™ ì¤‘ - í´ë¦­ ë¬´ì‹œ");
             return;
         }
 
@@ -62,7 +62,7 @@ public class CubeGroupFaceController : MonoBehaviour
         {
             Vector2 clickScreenPos = inputHandler.LastClickPos;
             Ray ray = hackerCamera.ScreenPointToRay(clickScreenPos);
-            Debug.Log($"[CubeGroupFaceController] Ray »ı¼º: {clickScreenPos}");
+            Debug.Log($"[CubeGroupFaceController] Ray ìƒì„±: {clickScreenPos}");
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, cubeGroupLayerMask))
             {
@@ -70,7 +70,7 @@ public class CubeGroupFaceController : MonoBehaviour
                 if (hit.transform == this.transform)
                     if (hit.transform == this.transform || hit.transform.IsChildOf(this.transform))
                     {
-                        Debug.Log("[CubeGroupFaceController] CameraMove È£Ãâ");
+                        Debug.Log("[CubeGroupFaceController] CameraMove í˜¸ì¶œ");
                         MoveCameraToFace();
                     }
             }
@@ -79,7 +79,7 @@ public class CubeGroupFaceController : MonoBehaviour
 
     public void MoveCameraToFace()
     {
-        fixedDirection = Vector3.back; // µÚÂÊ ¹æÇâ
+        fixedDirection = Vector3.back; // ë’¤ìª½ ë°©í–¥
         fixedCameraPos = transform.position + fixedDirection * viewDistance;
         fixedCameraRot = Quaternion.LookRotation(transform.position - fixedCameraPos, Vector3.up);
 
@@ -97,7 +97,7 @@ public class CubeGroupFaceController : MonoBehaviour
     }
     public void MoveCameraToFace(System.Action onComplete = null)
     {
-        fixedDirection = Vector3.back; // µÚÂÊ ¹æÇâ
+        fixedDirection = Vector3.back; // ë’¤ìª½ ë°©í–¥
         fixedCameraPos = transform.position + fixedDirection * viewDistance;
         fixedCameraRot = Quaternion.LookRotation(transform.position - fixedCameraPos, Vector3.up);
 
@@ -109,7 +109,7 @@ public class CubeGroupFaceController : MonoBehaviour
 
     public void MoveCameraBackToFace(System.Action onComplete = null)
     {
-        // ¿øÀ§Ä¡/È¸ÀüÀ¸·Î ºÎµå·¯¿î º¹±Í
+        // ì›ìœ„ì¹˜/íšŒì „ìœ¼ë¡œ ë¶€ë“œëŸ¬ìš´ ë³µê·€
         cameraMover.MoveTo(cameraMover.DefaultCameraPosition, cameraMover.DefaultCameraRotation, cameraMoveDuration, onComplete);
     }
 

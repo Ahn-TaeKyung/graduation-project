@@ -26,7 +26,7 @@ public class CameraMover : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÅÂ±×°¡ 'hacker'ÀÎ Ä«¸Ş¶ó¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("íƒœê·¸ê°€ 'hacker'ì¸ ì¹´ë©”ë¼ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
         DefaultCameraPosition = hackerCamera.transform.position;
         DefaultCameraRotation = hackerCamera.transform.rotation;
@@ -42,7 +42,7 @@ public class CameraMover : MonoBehaviour
         Transform cam = hackerCamera.transform;
         if (hackerCamera == null)
         {
-            Debug.LogError("[CameraMover] Camera.mainÀÌ nullÀÔ´Ï´Ù. Tag ¼³Á¤ ¶Ç´Â Ä«¸Ş¶ó È°¼ºÈ­ ¿©ºÎ¸¦ È®ÀÎÇÏ¼¼¿ä.");
+            Debug.LogError("[CameraMover] Camera.mainì´ nullì…ë‹ˆë‹¤. Tag ì„¤ì • ë˜ëŠ” ì¹´ë©”ë¼ í™œì„±í™” ì—¬ë¶€ë¥¼ í™•ì¸í•˜ì„¸ìš”.");
             moving = false;
             yield break;
         }
@@ -72,7 +72,7 @@ public class CameraMover : MonoBehaviour
     IEnumerator MoveRoutine(Vector3 targetPos, Quaternion targetRot, float duration, System.Action onComplete)
     {
         Transform cam = hackerCamera.transform;
-        // ... ±âÁ¸ ÄÚµå ...
+        // ... ê¸°ì¡´ ì½”ë“œ ...
         moving = true;
         Vector3 startPos = cam.position;
         Quaternion startRot = cam.rotation;

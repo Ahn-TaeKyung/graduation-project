@@ -8,7 +8,7 @@ public class ModuleZoom : MonoBehaviour
     public Vector3 zoomOffset = new(0, 0, 2);
     public float zoomDuration = 0.5f;
     public static bool IsZoomed = false;
-    public bool c_zoomed; //ÀÚ½Ä¿ë static¾ÈºÙÀº º¯¼ö
+    public bool c_zoomed; //ìì‹ìš© staticì•ˆë¶™ì€ ë³€ìˆ˜
     private Collider col;
 
     private ClickDragHandler handler;
@@ -20,7 +20,7 @@ public class ModuleZoom : MonoBehaviour
         if (handler == null)
             handler = gameObject.AddComponent<ClickDragHandler>();
         if (cubeGroupController == null) cubeGroupController = FindFirstObjectByType<CubeGroupFaceController>();
-        // ¿ìÅ¬¸¯ º¹±Í ÀÌº¥Æ® ¹ÙÀÎµù
+        // ìš°í´ë¦­ ë³µê·€ ì´ë²¤íŠ¸ ë°”ì¸ë”©
         handler.OnRightClick += OnRightClickRestore;
     }
     private void Update()
@@ -56,7 +56,7 @@ public class ModuleZoom : MonoBehaviour
 
     }
 
-    // ¿ìÅ¬¸¯ ½Ã º¹±Í µ¿ÀÛ(ClickDragHandler¿¡¼­¸¸ °¨Áö)
+    // ìš°í´ë¦­ ì‹œ ë³µê·€ ë™ì‘(ClickDragHandlerì—ì„œë§Œ ê°ì§€)
     void OnRightClickRestore()
     {
         if (IsZoomed && cubeGroupController != null)

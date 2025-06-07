@@ -5,17 +5,17 @@ public class AutoBoxColliderForGroup : MonoBehaviour
 {
     public bool includeInactive = false;
     [Range(0f, 1f)]
-    public float marginRatio = 0.1f; // 10% ¸¶Áø (±âº»°ª 0.1)
+    public float marginRatio = 0.1f; // 10% ë§ˆì§„ (ê¸°ë³¸ê°’ 0.1)
 
     [ContextMenu("Fit BoxCollider To Children")]
     public void FitColliderToChildren()
     {
-        // ÀÚ½Ä Áß MeshRenderer°¡ ºÙÀº ¸ğµç ¿ÀºêÁ§Æ®ÀÇ bounds·Î °è»ê
+        // ìì‹ ì¤‘ MeshRendererê°€ ë¶™ì€ ëª¨ë“  ì˜¤ë¸Œì íŠ¸ì˜ boundsë¡œ ê³„ì‚°
         var renderers = GetComponentsInChildren<MeshRenderer>(includeInactive);
 
         if (renderers.Length == 0)
         {
-            Debug.LogWarning("ÀÚ½Ä¿¡ MeshRenderer°¡ ¾ø½À´Ï´Ù!");
+            Debug.LogWarning("ìì‹ì— MeshRendererê°€ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
@@ -24,10 +24,10 @@ public class AutoBoxColliderForGroup : MonoBehaviour
         {
             bounds.Encapsulate(r.bounds);
         }
-        // ¸¶Áø Ãß°¡ (°¢ ¹æÇâº°·Î)
+        // ë§ˆì§„ ì¶”ê°€ (ê° ë°©í–¥ë³„ë¡œ)
         Vector3 sizeWithMargin = bounds.size * (1f + marginRatio);
 
-        // ºÎ¸ğÀÇ ·ÎÄÃ ÁÂÇ¥°è·Î º¯È¯
+        // ë¶€ëª¨ì˜ ë¡œì»¬ ì¢Œí‘œê³„ë¡œ ë³€í™˜
         Vector3 localCenter = transform.InverseTransformPoint(bounds.center);
         Vector3 localSize = bounds.size;
 

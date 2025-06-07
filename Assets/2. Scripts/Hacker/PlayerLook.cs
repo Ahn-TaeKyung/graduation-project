@@ -7,13 +7,13 @@ public class PlayerLook : MonoBehaviour
     public float lookSensitivity = 2f;
     public float minX = -80f, maxX = 80f;
     float xRotation = 0f;
-    public Camera hackerCamera; // ÇÃ·¹ÀÌ¾î Ä«¸Ş¶ó
+    public Camera hackerCamera; // í”Œë ˆì´ì–´ ì¹´ë©”ë¼
     public PlayerMove playermove;
-    public Transform cubeTransform; // Å¬¸¯ ´ë»ó Å¥ºê
+    public Transform cubeTransform; // í´ë¦­ ëŒ€ìƒ íë¸Œ
     public CameraMover cameraMover;
     public CubeGroupFaceController faceController;
-    public float activateDistance = 100f; // ·¹ÀÌÄ³½ºÆ® °Å¸®
-    public float cameraMoveDuration = 0.5f; // Ä«¸Ş¶ó Å¥ºê °íÁ¤ ½Ã°£
+    public float activateDistance = 100f; // ë ˆì´ìºìŠ¤íŠ¸ ê±°ë¦¬
+    public float cameraMoveDuration = 0.5f; // ì¹´ë©”ë¼ íë¸Œ ê³ ì • ì‹œê°„
 
     private bool isCubeMode = false;
     private Vector3 beforePosition;
@@ -35,7 +35,7 @@ public class PlayerLook : MonoBehaviour
             if (cubeObj != null)
                 cubeTransform = cubeObj.transform;
             else
-                Debug.LogWarning("Cube¶ó´Â ÀÌ¸§ÀÇ ¿ÀºêÁ§Æ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogWarning("Cubeë¼ëŠ” ì´ë¦„ì˜ ì˜¤ë¸Œì íŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
         if (faceController == null) faceController = FindFirstObjectByType<CubeGroupFaceController>();
     }
@@ -60,18 +60,18 @@ public class PlayerLook : MonoBehaviour
                     if (hit.transform == cubeTransform)
                     {
                         PlayerMove.inputEnabled = false;
-                        // Ä¿¼­ º¸ÀÌ±â
+                        // ì»¤ì„œ ë³´ì´ê¸°
                         beforePosition = hackerCamera.transform.position;
                         beforeRotation = hackerCamera.transform.rotation;
                         Cursor.lockState = CursorLockMode.None;
                         Cursor.visible = true;
-                        // Ä«¸Ş¶ó ÀÌµ¿
-                        // CubeGroupFaceController°¡ Ä«¸Ş¶ó ÀÌµ¿ ÁÖµµ
+                        // ì¹´ë©”ë¼ ì´ë™
+                        // CubeGroupFaceControllerê°€ ì¹´ë©”ë¼ ì´ë™ ì£¼ë„
                         if (faceController != null)
                         {
                             faceController.MoveCameraToFace(() =>
                             {
-                                // Ä«¸Ş¶ó ÀÌµ¿ ¿Ï·á Äİ¹é¿¡¼­ Å¥ºê ¸ğµå ÁøÀÔ
+                                // ì¹´ë©”ë¼ ì´ë™ ì™„ë£Œ ì½œë°±ì—ì„œ íë¸Œ ëª¨ë“œ ì§„ì…
                                 isCubeMode = true;
                             });
 
@@ -82,12 +82,12 @@ public class PlayerLook : MonoBehaviour
         }
         else
         {
-            // ¿ìÅ¬¸¯/ESC ½Ã º¹±Í
+            // ìš°í´ë¦­/ESC ì‹œ ë³µê·€
             if (Mouse.current.rightButton.wasPressedThisFrame && !ModuleZoom.IsZoomed)
             {
                 PlayerMove.inputEnabled = false;
 
-                // CubeGroupFaceController°¡ Ä«¸Ş¶ó º¹±Í ÁÖµµ
+                // CubeGroupFaceControllerê°€ ì¹´ë©”ë¼ ë³µê·€ ì£¼ë„
                 if (faceController != null)
                 {
                     cameraMover.MoveTo(beforePosition, beforeRotation, cameraMoveDuration,()=>

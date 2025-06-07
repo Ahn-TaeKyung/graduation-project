@@ -4,33 +4,33 @@ using UnityEngine;
 public class ButtonText : MonoBehaviour
 {
     private ButtonPatternManager patternManager;
-    public Transform panelTransform; // ¹öÆ°ÀÇ ÆÇ(Panel) Transform (Inspector¿¡¼­ ÇÒ´ç)
+    public Transform panelTransform; // ë²„íŠ¼ì˜ íŒ(Panel) Transform (Inspectorì—ì„œ í• ë‹¹)
 
     void Start()
     {
         if (patternManager == null)
             patternManager = GetComponent<ButtonPatternManager>();
-        // ÀÌ¹Ì ÀÚ½Ä¿¡ ÀÖÀ» ¼öµµ ÀÖÀ¸´Ï, ¾øÀ» ¶§¸¸ »ı¼º
+        // ì´ë¯¸ ìì‹ì— ìˆì„ ìˆ˜ë„ ìˆìœ¼ë‹ˆ, ì—†ì„ ë•Œë§Œ ìƒì„±
         if (panelTransform == null) panelTransform = this.transform;
 
         GameObject labelObj = new("PatternCodeLabel_TMP");
         labelObj.transform.SetParent(panelTransform, false);
 
-        // ¾Æ·¡(È¤Àº ¿øÇÏ´Â À§Ä¡)·Î ÀÌµ¿
-        labelObj.transform.localPosition = new Vector3(0f, -0.35f, 0.51f); // Y°ªÀº º£ÀÌ½º µÎ²²¡¤Å©±â¿¡ ¸Â°Ô Á¶Àı
-        labelObj.transform.localRotation = Quaternion.identity; // ÇÊ¿ä½Ã È¸Àü
+        // ì•„ë˜(í˜¹ì€ ì›í•˜ëŠ” ìœ„ì¹˜)ë¡œ ì´ë™
+        labelObj.transform.localPosition = new Vector3(0f, -0.35f, 0.51f); // Yê°’ì€ ë² ì´ìŠ¤ ë‘ê»˜Â·í¬ê¸°ì— ë§ê²Œ ì¡°ì ˆ
+        labelObj.transform.localRotation = Quaternion.identity; // í•„ìš”ì‹œ íšŒì „
 
-        // TextMeshPro »ı¼º ¹× ¼³Á¤
+        // TextMeshPro ìƒì„± ë° ì„¤ì •
         TextMeshPro textMeshPro = labelObj.AddComponent<TextMeshPro>();
         textMeshPro.text = patternManager.patternCode;
-        textMeshPro.enableAutoSizing = true;     // ¡Ú ÀÚµ¿ ÆùÆ® Å©±â Á¶Á¤ ON
-        textMeshPro.fontSizeMin = 1.0f;          // ÃÖ¼Ò ÆùÆ® Å©±â (¿¹: 1)
-        textMeshPro.fontSizeMax = 10.0f;         // ÃÖ´ë ÆùÆ® Å©±â (¿¹: 10)
+        textMeshPro.enableAutoSizing = true;     // â˜… ìë™ í°íŠ¸ í¬ê¸° ì¡°ì • ON
+        textMeshPro.fontSizeMin = 1.0f;          // ìµœì†Œ í°íŠ¸ í¬ê¸° (ì˜ˆ: 1)
+        textMeshPro.fontSizeMax = 10.0f;         // ìµœëŒ€ í°íŠ¸ í¬ê¸° (ì˜ˆ: 10)
         textMeshPro.color = Color.white;
         textMeshPro.alignment = TextAlignmentOptions.Center;
         textMeshPro.rectTransform.sizeDelta = new Vector2(0.8f, 1);
 
-        // Æò¸éÀÇ ¾Õ¸éÀ» ±âÁØÀ¸·Î ÅØ½ºÆ®°¡ Àß º¸ÀÌ°Ô È¸Àü (ÇÊ¿ä½Ã Á¶Á¤)
-        labelObj.transform.localRotation = Quaternion.Euler(0, 180, 0); // ÇÊ¿äÇÏ´Ù¸é ÁÖ¼® ÇØÁ¦
+        // í‰ë©´ì˜ ì•ë©´ì„ ê¸°ì¤€ìœ¼ë¡œ í…ìŠ¤íŠ¸ê°€ ì˜ ë³´ì´ê²Œ íšŒì „ (í•„ìš”ì‹œ ì¡°ì •)
+        labelObj.transform.localRotation = Quaternion.Euler(0, 180, 0); // í•„ìš”í•˜ë‹¤ë©´ ì£¼ì„ í•´ì œ
     }
 }
