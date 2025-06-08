@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour, IGameStartListener
     public List<TowerData> lv1Towers;
 
     private Coroutine gameTimeCoroutine;
+    private float elapsed = 0f;
+    private bool isTimePaused = false;
 
     void Awake()
     {
@@ -47,6 +49,10 @@ public class GameManager : MonoBehaviour, IGameStartListener
             Debug.LogWarning("[GameManager] GameStateManager 인스턴스가 없습니다.");
         }
     }
+    public void StartButtonClicked()
+    {
+        GameStateManager.Instance.ChangeState(GameState.Start);
+    }
 
     public void OnGameStart()
     {
@@ -55,12 +61,16 @@ public class GameManager : MonoBehaviour, IGameStartListener
 
     IEnumerator UpdateGameTime()
     {
-        float elapsed = 0f;
         while (true)
         {
-            elapsed += Time.deltaTime;
-            if (timeText != null)
-                timeText.text = $"<color=black>Time: {elapsed:F1}s</color>";
+            if (!isTimePaused)
+            {
+                elapsed += Time.deltaTime;
+
+                if (timeText != null)
+                    timeText.text = $"<color=black>Time: {elapsed:F1}s</color>";
+            }
+
             yield return null;
         }
     }
@@ -127,5 +137,22 @@ public class GameManager : MonoBehaviour, IGameStartListener
         if (lv1Towers == null || lv1Towers.Count == 0) return null;
         int idx = Random.Range(0, lv1Towers.Count);
         return lv1Towers[idx];
+    }
+    
+    public void PauseGameTime()
+    {
+        isTimePaused = true;
+    }
+
+    public void ResumeGameTime()
+    {
+        isTimePaused = false;
+    }
+
+    public void ResetGameTime()
+    {
+        elapsed = 0f;
+        if (timeText != null)
+            timeText.text = "<color=black>Time: 0.0s</color>";
     }
 }

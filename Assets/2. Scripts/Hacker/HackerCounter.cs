@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HackerCounter : MonoBehaviour
+public class HackerCounter : MonoBehaviour, IGameEndListener
 {
     public static int CompleteCount = 0;
     public static int strikeCount = 0;
@@ -8,7 +8,22 @@ public class HackerCounter : MonoBehaviour
     public static int moduleCount => StartManager.moduleCount;
 
     public static HackerCounter Instance { get; private set; }
-
+    private void Start()
+    {
+        // GameStateManager에 자신을 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[MonsterSpawner] GameStateManager 인스턴스가 없습니다.");
+        }
+    }
+    public void OnGameEnd()
+    {
+        CheckGameState();
+    }
     void Awake()
     {
         Instance = this;
@@ -31,11 +46,17 @@ public class HackerCounter : MonoBehaviour
     {
         if (CompleteCount >= moduleCount)
         {
+            GameStateManager.Instance.ChangeState(GameState.End);
             Debug.Log("게임 클리어!");
         }
-        if (strikeCount >= 3)
+        else if (strikeCount >= 3)
         {
-            Debug.Log("게임 오버!");
+            GameStateManager.Instance.ChangeState(GameState.End);
+            Debug.Log("해킹 실패!");
+        }
+        else
+        {
+            Debug.Log("팀원이 버티질 못했습니다...");
         }
     }
 }

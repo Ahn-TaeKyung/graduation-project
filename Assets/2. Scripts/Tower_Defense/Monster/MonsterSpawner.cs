@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MonsterSpawner : MonoBehaviour, IGameStartListener
 {
+    [Header("Spawner Settings")]
     public GameObject monsterPrefab;
     public Transform spawnPoint;
     public List<Transform> waypoints;
@@ -11,7 +12,8 @@ public class MonsterSpawner : MonoBehaviour, IGameStartListener
     public float waveInterval = 3f;
 
     private int waveCount = 0;
-    private bool spawningWave = false;
+    private bool isSpawning = false;
+    private Coroutine waveCoroutine;
 
     private void Start()
     {
@@ -28,12 +30,41 @@ public class MonsterSpawner : MonoBehaviour, IGameStartListener
 
     public void OnGameStart()
     {
-        StartCoroutine(SpawnWave());
+        StartWave();
+    }
+
+    public void StartWave()
+    {
+        if (isSpawning) return;
+
+        isSpawning = true;
+        waveCoroutine = StartCoroutine(LoopWaves());
+    }
+
+    public void StopWave()
+    {
+        if (waveCoroutine != null)
+        {
+            StopCoroutine(waveCoroutine);
+            waveCoroutine = null;
+            isSpawning = false;
+            Debug.Log("[MonsterSpawner] 웨이브가 수동으로 중단되었습니다.");
+        }
+    }
+
+    IEnumerator LoopWaves()
+    {
+        while (!PlayerHealth.isGameOver)
+        {
+            yield return StartCoroutine(SpawnWave());
+            yield return new WaitForSeconds(waveInterval);
+        }
+
+        isSpawning = false; // 게임오버로 루프 종료
     }
 
     IEnumerator SpawnWave()
     {
-        spawningWave = true;
         waveCount++;
 
         if (GameManager.Instance != null)
@@ -44,14 +75,11 @@ public class MonsterSpawner : MonoBehaviour, IGameStartListener
 
         for (int i = 0; i < monstersPerWave; i++)
         {
-            if (PlayerHealth.isGameOver) break;
+            if (PlayerHealth.isGameOver) yield break;
 
             SpawnMonster(monsterHealth);
             yield return new WaitForSeconds(timeBetweenMonsters);
         }
-
-        yield return new WaitForSeconds(waveInterval);
-        spawningWave = false;
     }
 
     void SpawnMonster(int health)

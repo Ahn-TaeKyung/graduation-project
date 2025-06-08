@@ -5,11 +5,12 @@ using System.Collections.Generic;
 public class GameStateManager : NetworkBehaviour
 {
     public static GameStateManager Instance { get; private set; }
-
+    public MonsterSpawner spawner;
     [Networked] public GameState CurrentState { get; private set; }
 
     private readonly List<IGameReadyListener> _gameReadyListeners = new();
     private readonly List<IGameStartListener> _gameStartListeners = new();
+    private readonly List<IGameEndListener> _gameEndListeners = new();
 
     private void Awake()
     {
@@ -23,13 +24,13 @@ public class GameStateManager : NetworkBehaviour
             Destroy(gameObject);
             return;
         }
-
-        if (HasStateAuthority)
-        {
-            ChangeState(GameState.Loading);
-        }
     }
+    public override void Spawned()
+    {
+        base.Spawned();
 
+        ChangeState(GameState.Loading);
+    }
     public void RegisterListener(IGameReadyListener listener)
     {
         if (!_gameReadyListeners.Contains(listener))
@@ -40,6 +41,11 @@ public class GameStateManager : NetworkBehaviour
     {
         if (!_gameStartListeners.Contains(listener))
             _gameStartListeners.Add(listener);
+    }
+    public void RegisterListener(IGameEndListener listener)
+    {
+        if (!_gameEndListeners.Contains(listener))
+            _gameEndListeners.Add(listener);
     }
 
     public void UnregisterListener(IGameReadyListener listener)
@@ -52,9 +58,12 @@ public class GameStateManager : NetworkBehaviour
         _gameStartListeners.Remove(listener);
     }
 
+    public void UnregisterListener(IGameEndListener listener)
+    {
+        _gameEndListeners.Remove(listener);
+    }
     public void ChangeState(GameState newState)
     {
-        if (!HasStateAuthority) return;
         if (CurrentState == newState) return;
         Debug.Log($"상태 변경 {CurrentState} => {newState}");
 
@@ -98,7 +107,13 @@ public class GameStateManager : NetworkBehaviour
                 break;
 
             case GameState.End:
-                // ...
+                foreach (var listener in _gameEndListeners)
+                {
+                    listener.OnGameEnd();
+                }
+                spawner.StopWave();
+                Debug.Log("[GameStateManager] 모든 IGameStartListener 초기화 완료");
+                GameManager.Instance.PauseGameTime();
                 break;
         }
     }
