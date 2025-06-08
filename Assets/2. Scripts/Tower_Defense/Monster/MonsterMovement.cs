@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Fusion;
-//using System.Numerics;
 
 [RequireComponent(typeof(Rigidbody))]
 public class MonsterMovement : MonoBehaviour
@@ -11,13 +10,13 @@ public class MonsterMovement : MonoBehaviour
 
     private int currentWaypointIndex = 0;
     private Rigidbody rb;
-    private float fixedY = 1.5f; // 몬스터가 땅 위에 떠 있도록 Y축 고정값 설정
+    private float fixedY = 1.5f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        // Y축 위치 보정 (spawn 시에도 적용되지만 안전하게 Start에서도 고정)
+        // Y축 위치 고정
         Vector3 startPos = transform.position;
         startPos.y = fixedY;
         transform.position = startPos;
@@ -34,16 +33,12 @@ public class MonsterMovement : MonoBehaviour
         float step = data.moveSpeed * Time.fixedDeltaTime;
         rb.MovePosition(Vector3.MoveTowards(transform.position, targetPos, step));
 
-        UnityEngine.Quaternion temp = transform.rotation;
-        temp.y = temp.y + 90;
-        transform.rotation = temp;
-
+        // ✅ 회전 처리 (Y축 고정 회전)
         Vector3 lookDirection = targetPos - transform.position;
+        lookDirection.y = 0f; // 고개를 숙이거나 들지 않게
         if (lookDirection != Vector3.zero)
         {
-            
             Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-            Debug.Log($"{targetRotation} / {lookDirection}");
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.fixedDeltaTime);
         }
 
