@@ -1,11 +1,13 @@
 using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class GameStateManager : NetworkBehaviour
 {
     public static GameStateManager Instance { get; private set; }
     public MonsterSpawner spawner;
+    public GameObject m_end_canvas;
     [Networked] public GameState CurrentState { get; private set; }
 
     private readonly List<IGameReadyListener> _gameReadyListeners = new();
@@ -114,6 +116,7 @@ public class GameStateManager : NetworkBehaviour
                 spawner.StopWave();
                 Debug.Log("[GameStateManager] 모든 IGameStartListener 초기화 완료");
                 GameManager.Instance.PauseGameTime();
+                m_end_canvas.SetActive(true);
                 break;
         }
     }

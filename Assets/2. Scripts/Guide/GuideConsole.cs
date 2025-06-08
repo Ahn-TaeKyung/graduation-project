@@ -4,24 +4,38 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class GuideConsole : MonoBehaviour
+public class GuideConsole : MonoBehaviour, IGameEndListener
 {
     public GameObject consolePanel;
     public TMP_InputField consoleInput;
     public ScrollRect consoleScrollRect;
     public GameObject consoleLinePrefab; // TMP_Text 프리팹
 
+    public GameObject m_end_canvas;
     private PatternStep pattern;
     private int[] pattern9;
-    private bool isConsoleVisible = false;
+    private bool isConsoleVisible = true;
     private string[] parts;
 
     void Start()
     {
         consolePanel.SetActive(isConsoleVisible);
         consoleInput.onSubmit.AddListener(OnInputSubmit);
+        // GameStateManager에 자신을 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[MonsterSpawner] GameStateManager 인스턴스가 없습니다.");
+        }
     }
 
+    public void OnGameEnd()
+    {
+        m_end_canvas.SetActive(true);
+    }
     void Update()
     {
         if (Keyboard.current.escapeKey.wasPressedThisFrame && isConsoleVisible)

@@ -71,7 +71,7 @@ public class MonsterSpawner : MonoBehaviour, IGameStartListener
             GameManager.Instance.UpdateWaveUI(waveCount);
 
         int monstersPerWave = Mathf.Min(10, waveCount + 1);
-        int monsterHealth = 3 + (waveCount - 1) / 5;
+        int monsterHealth = 3 + (waveCount - 1) / 2;
 
         for (int i = 0; i < monstersPerWave; i++)
         {

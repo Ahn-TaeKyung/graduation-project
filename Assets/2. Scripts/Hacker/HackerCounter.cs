@@ -4,7 +4,7 @@ public class HackerCounter : MonoBehaviour, IGameEndListener
 {
     public static int CompleteCount = 0;
     public static int strikeCount = 0;
-
+    public GameObject m_end_canvas;
     public static int moduleCount => StartManager.moduleCount;
 
     public static HackerCounter Instance { get; private set; }
@@ -23,6 +23,7 @@ public class HackerCounter : MonoBehaviour, IGameEndListener
     public void OnGameEnd()
     {
         CheckGameState();
+        m_end_canvas.SetActive(true);
     }
     void Awake()
     {

@@ -4,16 +4,17 @@ using Fusion;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.Collections;
 
 public class HostStartButton : NetworkBehaviour
 {
-    [SerializeField] private UnityEngine.UI.Button m_start_button;
-    [SerializeField] private SceneRef m_game_scene_ref; // 전환할 게임 씬 이름
+    [SerializeField] private Button m_start_button;
+    [SerializeField] private SceneRef m_game_scene_ref;
     [SerializeField] private SceneRef m_current_scene_ref;
 
     public override void Spawned()
     {
-        Debug.Log($"start_button spawned{Runner}/{Runner.IsServer}");
+        Debug.Log($"start_button spawned {Runner}/{Runner.IsServer}");
         if (Runner.IsServer)
         {
             m_start_button.gameObject.SetActive(true);
@@ -28,56 +29,28 @@ public class HostStartButton : NetworkBehaviour
     private void OnStartButtonClicked()
     {
         Debug.Log("게임 시작 버튼 클릭됨");
-
-        // (선택) 플레이어들이 역할 선택했는지 확인할 수도 있음
         CheckAllPlayersRole();
-        SaveAllRolesBeforeSceneLoad();
-        if (Runner.IsServer)
-        {
-            // 씬 이동
-            if (Runner.SceneManager != null)
-            {
-                Debug.Log($"SceneChange{m_game_scene_ref}/ {Runner.SceneManager}");
-                Debug.Log("=== [Runner 상태 디버그 시작] ===");
-
-                Debug.Log($"IsRunning: {Runner.IsRunning}");
-                Debug.Log($"IsServer: {Runner.IsServer}");
-                Debug.Log($"IsClient: {Runner.IsClient}");
-                Debug.Log($"GameMode: {Runner.GameMode}");
-                Debug.Log($"ProvideInput: {Runner.ProvideInput}");
-                Debug.Log($"LocalPlayer: {Runner.LocalPlayer}");
-                Debug.Log($"Player Count: {Runner.ActivePlayers.Count()}");
-                Debug.Log($"SceneManager 존재 여부: {Runner.SceneManager != null}");
-                if (Runner.SessionInfo != null)
-                {
-                    Debug.Log($"Session Name: {Runner.SessionInfo.Name}");
-                    Debug.Log($"Session Region: {Runner.SessionInfo.Region}");
-                }
-
-                Debug.Log("=== [Runner 상태 디버그 끝] ===");
-                // Runner.SceneManager.LoadScene(m_game_scene_ref, new NetworkLoadSceneParameters());
-                Runner.LoadScene("Play", LoadSceneMode.Single);
-                // RPC_LoadGameScene()
-                // RPC_UnLoadGameScene();
-            }
-            else
-            {
-                Debug.LogError("SceneManager가 없습니다! 씬 이동 실패");
-            }
-        }
+        StartCoroutine(WaitAndSaveAllRoles());
     }
 
     private void CheckAllPlayersRole()
     {
         var networkRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
-
         foreach (var role in networkRoles)
         {
             Debug.Log($"플레이어 {role.Object.InputAuthority.PlayerId}의 선택된 역할은 {role.m_player_role}입니다.");
         }
     }
-    public void SaveAllRolesBeforeSceneLoad()
+
+    private IEnumerator WaitAndSaveAllRoles()
     {
+        yield return new WaitUntil(() =>
+        {
+            var roles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
+            Debug.Log($"roles{roles}, roles.Length{roles.Length}, Runner.ActivePlayers.Count{Runner.ActivePlayers.Count()}, roles.All(r => r.m_player_role != 0){roles.All(r => r.m_player_role != 0)}");
+            return roles.Length >= Runner.ActivePlayers.Count();
+        });
+
         var allRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
         var list = new List<RoleData>();
 
@@ -90,6 +63,33 @@ public class HostStartButton : NetworkBehaviour
             });
         }
 
+        // 1. 호스트가 로컬에 저장
         RoleDataManager.SaveRoles(list);
+        Debug.Log("[Host] 역할 정보를 저장하고 클라이언트에게 전송합니다.");
+
+        // 2. RPC로 JSON 문자열 전달
+        string json = JsonUtility.ToJson(new RoleDataListWrapper(list), true);
+        RPC_SendRoleListToClientsViaJson(json);
+
+        // 3. 씬 전환
+        if (Runner.SceneManager != null)
+        {
+            Runner.LoadScene("Play", LoadSceneMode.Single);
+        }
+        else
+        {
+            Debug.LogError("SceneManager가 없습니다! 씬 이동 실패");
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_SendRoleListToClientsViaJson(string json)
+    {
+        if (!Runner.IsServer)
+        {
+            Debug.Log("[Client] 호스트로부터 역할 JSON 수신 → 저장 시작");
+            var list = JsonUtility.FromJson<RoleDataListWrapper>(json).roles;
+            RoleDataManager.SaveRoles(list);
+        }
     }
 }
