@@ -4,41 +4,66 @@ public class ModuleZoom : MonoBehaviour
 {
     public CameraMover cameraMover;
     public CubeGroupFaceController cubeGroupController;
-    public Vector3 zoomOffset = new Vector3(0, 0, 2);
-    public float zoomDuration = 2f;
+    public CubeDragSnap cubedargsnap;
+    public Vector3 zoomOffset = new(0, 0, 2);
+    public float zoomDuration = 0.5f;
     public static bool IsZoomed = false;
+    public bool c_zoomed; //ìì‹ìš© staticì•ˆë¶™ì€ ë³€ìˆ˜
+    private Collider col;
 
+    private ClickDragHandler handler;
+
+    void Awake()
+    {
+        col = GetComponent<Collider>();
+        handler = GetComponent<ClickDragHandler>();
+        if (handler == null)
+            handler = gameObject.AddComponent<ClickDragHandler>();
+        if (cubeGroupController == null) cubeGroupController = FindFirstObjectByType<CubeGroupFaceController>();
+        // ìš°í´ë¦­ ë³µê·€ ì´ë²¤íŠ¸ ë°”ì¸ë”©
+        handler.OnRightClick += OnRightClickRestore;
+    }
+    private void Update()
+    {
+        col.enabled = cubeGroupController.IsCameraFixed;
+    }
     public void OnModuleClickTrigger()
     {
         if (cameraMover == null)
             cameraMover = FindFirstObjectByType<CameraMover>();
         if (cubeGroupController == null)
             cubeGroupController = FindFirstObjectByType<CubeGroupFaceController>();
+        if (cubedargsnap == null)
+            cubedargsnap = FindFirstObjectByType<CubeDragSnap>();
 
-        if (cubeGroupController == null || !cubeGroupController.cameraIsFixed)
+        if (cubeGroupController == null || !cubeGroupController.IsCameraFixed)
             return;
         if (CubeDragSnap.IsDragging)
             return;
-        if (cameraMover != null && cameraMover.IsMoving)
+        if (!CubeDragSnap.IsSnapped)
             return;
-        if (IsZoomed)
+        if (cameraMover != null && CameraMover.isMoving)
             return;
 
         Vector3 worldForward = transform.TransformDirection(Vector3.forward);
         Vector3 zoomTarget = transform.position + worldForward * zoomOffset.z;
         Quaternion zoomRot = Quaternion.LookRotation(transform.position - zoomTarget, transform.TransformDirection(Vector3.up));
-        cameraMover.MoveTo(zoomTarget, zoomRot, zoomDuration);
-        IsZoomed = true;
+        cameraMover.MoveTo(zoomTarget, zoomRot, zoomDuration, () =>
+        {
+            IsZoomed = true;
+            c_zoomed = true;
+        });
+
     }
 
-    void Update()
+    // ìš°í´ë¦­ ì‹œ ë³µê·€ ë™ì‘(ClickDragHandlerì—ì„œë§Œ ê°ì§€)
+    void OnRightClickRestore()
     {
-        // (1) ÀÌµ¿ ÁßÀÌ¶óµµ ¿ìÅ¬¸¯ º¹±Í´Â ¹İµå½Ã Çã¿ë
-        if (IsZoomed && Input.GetMouseButtonDown(1))
+        if (IsZoomed && cubeGroupController != null)
         {
-            if (cubeGroupController != null)
-                cubeGroupController.MoveCameraBackToFace();
+            cubeGroupController.MoveCameraBackToFace();
             IsZoomed = false;
+            c_zoomed = false;
         }
     }
 }

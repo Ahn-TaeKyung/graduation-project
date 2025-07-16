@@ -7,6 +7,7 @@ TagManager:
   - defender
   - hacker
   - guide
+  - Monster
   layers:
   - Default
   - TransparentFX
@@ -23,9 +24,9 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - TowerDefenseUI
+  - BombDefuseUI
+  - BuildZone
   - 
   - 
   - 

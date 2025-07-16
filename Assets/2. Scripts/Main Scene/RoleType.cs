@@ -1,6 +1,6 @@
 public enum RoleType
 {
-    Defender,
-    Hacker,
-    Guide
+    Defender = 0,
+    Hacker = 1,
+    Guide = 2
 }

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MachineTower_lv1
   m_EditorClassIdentifier: 
   towerName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 3473019865734486357, guid: fc43d469ef33a4c4fb6090d26a75b0cd, type: 3}
   cost: 10
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: be01ce6bdb5d6b4489e9fae076e67b52, type: 3}
   race: 0
   level: 1

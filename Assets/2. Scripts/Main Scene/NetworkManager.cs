@@ -5,6 +5,7 @@ using UnityEngine;
 using Fusion;
 using Fusion.Sockets;
 using TMPro;
+using System.Collections;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -53,7 +54,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         string roomID = GenerateRoomID();
         Debug.Log($"생성된 Room ID: {roomID}");
-        
+
         var result = await m_network_runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Host,
@@ -111,7 +112,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.LogError($"방 참가 실패: {result.ShutdownReason}");
         }
-        
+
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -120,12 +121,12 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             Debug.Log($"플레이어 {player} 참가 -> 캐릭터 생성");
             // 고정된 위치에서 스폰하도록 수정 예정
-            Vector3 spawn_position = GetFixedSpawnPosition(player); 
+            Vector3 spawn_position = GetFixedSpawnPosition(player);
             NetworkObject spawned_player = runner.Spawn(m_player_prefab, spawn_position, Quaternion.identity, player);
             if (spawned_player != null)
             {
                 var ui_positioner = spawned_player.GetComponent<PlayerUIPositioner>();
-                if(ui_positioner != null)
+                if (ui_positioner != null)
                 {
                     ui_positioner.m_player_index = player.AsIndex;
                     ui_positioner.SetUIPosition();
@@ -146,7 +147,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         int index = player.AsIndex - 1;
         return spawn_positions[index];
     }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
         if (m_spawn_characters.TryGetValue(player, out NetworkObject networkObject))
         {
@@ -169,15 +170,25 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
 
         Debug.Log($"[{runner.GameMode}] Scene Load Done");
-        
+        StartCoroutine(WaitForGameStateManagerAndChangeState());
     }
     public void OnSceneLoadStart(NetworkRunner runner)
     {
         Debug.Log($"[{runner.GameMode}] Scene Load Start");
-        
+
     }
     public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
     public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    private IEnumerator WaitForGameStateManagerAndChangeState()
+    {
+        yield return new WaitUntil(() =>
+            GameStateManager.Instance != null &&
+            GameStateManager.Instance.Object != null &&
+            GameStateManager.Instance.Object.IsValid
+        );
+
+        GameStateManager.Instance.ChangeState(GameState.Role);
+    }
 }

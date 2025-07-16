@@ -1,122 +1,116 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem; // ✅ 새 Input System 사용
+using System.Collections;
 
-public class CubeDragSnap : MonoBehaviour
+public class CubeDragSnap : MonoBehaviour, IGameReadyListener
 {
     public static bool IsDragging = false;
+    public static bool IsSnapping { get; private set; } = false;
+    public static bool IsSnapped => !IsSnapping;
 
-    private bool dragging = false;
-    private Vector2 prevMousePos;
-    private Vector2 mouseDownPos;
-    private float mouseDownTime;
-    private const float dragThreshold = 5f;
-    private const float clickDelay = 0.07f;
-    int cubeGroupLayerMask;
-
+    private ClickDragHandler handler;
     private Camera hackerCamera;
+    private int cubeGroupLayerMask;
+    private int moduleLayerMask;
+    public CubeGroupFaceController groupController;
+    private GameSceneManager GameSceneManager;
 
-    void Awake()
+    private bool isInitialized = false;
+
+    void Start()
     {
-        cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
+        handler = GetComponent<ClickDragHandler>() ?? gameObject.AddComponent<ClickDragHandler>();
+        handler.OnDrag += OnDragCube;
+        handler.OnLeftClick += OnLeftClickCube;
+        handler.OnRightClick += OnRightClickCube;
+        handler.OnDragEnd += OnDragEndCube;
 
-        GameObject hackerCameraObject = GameObject.FindGameObjectWithTag("hacker");
-        if (hackerCameraObject != null)
+        cubeGroupLayerMask = LayerMask.GetMask("CubeGroup");
+        moduleLayerMask = LayerMask.GetMask("Module");
+
+        // GameStateManager가 준비되었을 때 등록
+        if (GameStateManager.Instance != null)
         {
-            hackerCamera = hackerCameraObject.GetComponent<Camera>();
+            GameStateManager.Instance.RegisterListener(this);
         }
         else
         {
-            Debug.LogError("태그가 'hacker'인 카메라를 찾을 수 없습니다.");
+            Debug.LogWarning("[CubeDragSnap] GameStateManager 인스턴스가 없음.");
         }
     }
 
-    void Update()
+    public void OnGameReady()
     {
-        if (ModuleZoom.IsZoomed || hackerCamera == null) return;
-
-        // 마우스 누르기
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        GameSceneManager = FindFirstObjectByType<GameSceneManager>();
+        RoleType myRole = GameSceneManager.GetMyRole();
+        if (myRole != RoleType.Hacker)
         {
-            mouseDownTime = Time.time;
-            mouseDownPos = Mouse.current.position.ReadValue();
-            prevMousePos = mouseDownPos;
-
-            Ray ray = hackerCamera.ScreenPointToRay(mouseDownPos);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, cubeGroupLayerMask))
-            {
-                if (hit.transform == this.transform)
-                {
-                    dragging = false;
-                    IsDragging = false;
-                }
-                else
-                {
-                    dragging = false;
-                    IsDragging = false;
-                    mouseDownTime = -1000f;
-                }
-            }
-            else
-            {
-                dragging = false;
-                IsDragging = false;
-                mouseDownTime = -1000f;
-            }
+            return; // 내 역할이 아니라면 아무 것도 안 함
         }
-
-        // 드래그 중
-        if (Mouse.current.leftButton.isPressed && mouseDownTime > 0)
+        GameObject hackerCam = GameObject.FindGameObjectWithTag("hacker");
+        if (hackerCam != null)
         {
-            Vector2 currentPos = Mouse.current.position.ReadValue();
-            Vector2 mouseDelta = currentPos - prevMousePos;
-            prevMousePos = currentPos;
-
-            if (!dragging && (currentPos - mouseDownPos).magnitude > dragThreshold)
-            {
-                dragging = true;
-                IsDragging = true;
-            }
-
-            if (dragging)
-            {
-                float rotSpeed = 0.1f;
-                transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
-                transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
-            }
+            hackerCamera = hackerCam.GetComponent<Camera>();
+            isInitialized = true;
         }
-
-        // 마우스 떼기
-        if (Mouse.current.leftButton.wasReleasedThisFrame && mouseDownTime > 0)
+        else
         {
-            Vector2 currentPos = Mouse.current.position.ReadValue();
-            float heldTime = Time.time - mouseDownTime;
-            float totalMove = (currentPos - mouseDownPos).magnitude;
-
-            if (!dragging && heldTime < clickDelay && totalMove < dragThreshold)
-            {
-                Ray ray = hackerCamera.ScreenPointToRay(currentPos);
-                int moduleLayerMask = LayerMask.GetMask("Module");
-                if (Physics.Raycast(ray, out RaycastHit hit, 100f, moduleLayerMask))
-                {
-                    ModuleZoom mz = hit.transform.GetComponent<ModuleZoom>();
-                    if (mz != null)
-                        mz.OnModuleClickTrigger();
-                }
-            }
-
-            dragging = false;
-            IsDragging = false;
-            mouseDownTime = -1000f;
-
-            SnapToClosestFaceSmooth();
+            Debug.LogError("[CubeDragSnap] 해커 카메라를 찾을 수 없습니다.");
         }
     }
 
+    // 이하 기존 코드 유지
+    void OnDragCube(Vector2 mouseDelta)
+    {
+        if (!isInitialized || !groupController.IsCameraFixed) return;
+        if (ModuleZoom.IsZoomed) return;
+
+        IsDragging = true;
+        float rotSpeed = 0.15f;
+        transform.Rotate(hackerCamera.transform.up, -mouseDelta.x * rotSpeed, Space.World);
+        transform.Rotate(hackerCamera.transform.right, mouseDelta.y * rotSpeed, Space.World);
+    }
+
+    void OnLeftClickCube()
+    {
+        if (!isInitialized || !groupController.IsCameraFixed || ModuleZoom.IsZoomed) return;
+
+        Ray ray = hackerCamera.ScreenPointToRay(handler.LastClickPos);
+        int combinedMask = cubeGroupLayerMask | moduleLayerMask;
+        RaycastHit[] hits = Physics.RaycastAll(ray, 100f, combinedMask);
+
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var hit in hits)
+        {
+            int objLayer = hit.transform.gameObject.layer;
+
+            if ((cubeGroupLayerMask & (1 << objLayer)) != 0)
+                break;
+
+            if ((moduleLayerMask & (1 << objLayer)) != 0)
+            {
+                var mz = hit.transform.GetComponent<ModuleZoom>();
+                if (mz != null)
+                    SnapModuleFaceToCamera(hit.transform, hackerCamera, 0.1f, () => mz.OnModuleClickTrigger());
+                break;
+            }
+        }
+
+        IsDragging = false;
+    }
+
+    void OnRightClickCube() => Debug.Log("우클릭");
+
+    void OnDragEndCube()
+    {
+        if (!isInitialized || !groupController.IsCameraFixed) return;
+        IsDragging = false;
+        SnapToClosestFaceSmooth();
+    }
     void SnapToClosestFaceSmooth()
     {
-        if (hackerCamera == null) return;
-
+        if (IsSnapping) return;
+        IsSnapping = true;
         Vector3 toCamera = (hackerCamera.transform.position - transform.position).normalized;
         Vector3[] normals = {
             transform.TransformDirection(Vector3.right),
@@ -174,5 +168,47 @@ public class CubeDragSnap : MonoBehaviour
             yield return null;
         }
         transform.rotation = target;
+        IsSnapping = false;
     }
+    void SnapModuleFaceToCamera(Transform module, Camera cam, float duration, System.Action onComplete = null)
+    {
+        // 1. 모듈의 현재 월드 기준 정면/위
+        Vector3 moduleForwardWorld = module.transform.forward;
+        Vector3 moduleUpWorld = module.transform.up;
+
+        // 2. 카메라의 정면/위
+        Vector3 cameraForward = cam.transform.forward.normalized;
+        Vector3 cameraUp = cam.transform.up.normalized;
+
+        // 3. 목표 회전: 카메라의 forward 반대(-forward), up도 그대로(또는 -up도 가능, 일반적으로 up은 그대로)
+        Quaternion targetRotation = Quaternion.LookRotation(-cameraForward, cameraUp);
+
+        // 4. 현재 모듈의 오리엔테이션(월드기준)
+        Quaternion moduleCurrentRot = Quaternion.LookRotation(moduleForwardWorld, moduleUpWorld);
+
+        // 5. 큐브를 targetRotation으로 맞추기 위해 필요한 회전값 (상대변환)
+        Quaternion delta = targetRotation * Quaternion.Inverse(moduleCurrentRot);
+
+        // 6. 큐브 전체에 적용
+        Quaternion finalRot = delta * transform.rotation;
+
+        StartCoroutine(SmoothSnapRotationWithCallback(finalRot, duration, onComplete));
+    }
+
+    IEnumerator SmoothSnapRotationWithCallback(Quaternion target, float duration, System.Action onComplete)
+    {
+        IsSnapping = true;
+        Quaternion startRot = transform.rotation;
+        float t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duration;
+            transform.rotation = Quaternion.Slerp(startRot, target, Mathf.Clamp01(t));
+            yield return null;
+        }
+        transform.rotation = target;
+        IsSnapping = false;
+        onComplete?.Invoke();
+    }
+
 }

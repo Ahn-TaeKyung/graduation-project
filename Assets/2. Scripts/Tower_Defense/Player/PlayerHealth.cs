@@ -1,22 +1,42 @@
 using UnityEngine;
+using TMPro;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IGameEndListener
 {
     public int maxHealth = 10;
     private int currentHealth;
-    public static bool isGameOver = false;  // 게임 오버 상태 플래그
+    public static bool isGameOver = false;
+
+    [Header("UI")]
+    public TMP_Text healthText; // 텍스트 UI를 인스펙터에서 연결하세요
 
     void Start()
     {
+        // GameStateManager에 자신을 등록
+        if (GameStateManager.Instance != null)
+        {
+            GameStateManager.Instance.RegisterListener(this);
+        }
+        else
+        {
+            Debug.LogWarning("[MonsterSpawner] GameStateManager 인스턴스가 없습니다.");
+        }
         currentHealth = maxHealth;
+        UpdateHealthUI();  // 시작 시 UI 업데이트
+    }
+
+    public void OnGameEnd()
+    {
+        GameOver();
     }
 
     public void TakeDamage(int amount)
     {
         currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0);   // 최소 0으로 클램프
+        currentHealth = Mathf.Max(currentHealth, 0);
 
         Debug.Log($"플레이어 체력: {currentHealth}/{maxHealth}");
+        UpdateHealthUI();
 
         if (currentHealth <= 0 && !isGameOver)
         {
@@ -27,15 +47,13 @@ public class PlayerHealth : MonoBehaviour
     void GameOver()
     {
         isGameOver = true;
+        GameStateManager.Instance.ChangeState(GameState.End);
         Debug.Log("게임 오버!");
         DestroyAllMonstersAndTowers();
-        // 여기서 UI 표시나 BGM 정지 등 추가 작업 가능
     }
 
-    // 게임 오버 시 씬에 있는 모든 몬스터와 타워 삭제
     void DestroyAllMonstersAndTowers()
     {
-        // 모든 Monster 오브젝트 삭제
         GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
         foreach (GameObject monster in monsters)
         {
@@ -43,4 +61,9 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    void UpdateHealthUI()
+    {
+        if (healthText != null)
+            healthText.text = $"<color=red>HP: {currentHealth}/{maxHealth}</color>";
+    }
 }

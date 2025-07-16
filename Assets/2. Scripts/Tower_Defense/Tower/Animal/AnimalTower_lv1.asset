@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: AnimalTower_lv1
   m_EditorClassIdentifier: 
   towerName: 
-  prefab: {fileID: 0}
+  prefab: {fileID: 3473019865734486357, guid: 35285e6bcfd7f99468009b3b1af93941, type: 3}
   cost: 10
-  icon: {fileID: 0}
-  race: 0
+  icon: {fileID: 21300000, guid: cf64948ebcf96ce4e866cfe72c869478, type: 3}
+  race: 3
   level: 1

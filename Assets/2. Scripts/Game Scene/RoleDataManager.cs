@@ -8,7 +8,7 @@ public static class RoleDataManager
 
     public static void SaveRoles(List<RoleData> roleList)
     {
-        var wrapper = new RoleDataList { roles = roleList };
+        var wrapper = new RoleDataListWrapper(roleList);
         string json = JsonUtility.ToJson(wrapper, true);
         File.WriteAllText(FilePath, json);
         Debug.Log($"[RoleDataManager] 역할 정보 저장됨: {FilePath}");
@@ -23,8 +23,8 @@ public static class RoleDataManager
         }
 
         string json = File.ReadAllText(FilePath);
-        var wrapper = JsonUtility.FromJson<RoleDataList>(json);
+        var wrapper = JsonUtility.FromJson<RoleDataListWrapper>(json);
         Debug.Log($"[RoleDataManager] 역할 정보 로드됨");
-        return wrapper.roles;
+        return wrapper.ToList();
     }
 }
