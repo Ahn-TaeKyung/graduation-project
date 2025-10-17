@@ -155,7 +155,19 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
             m_spawn_characters.Remove(player);
         }
     }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        
+        Vector2 move = PlayerInputHandler.MoveInput;
+
+        NetworkInputData data = new NetworkInputData
+        {
+            horizontal = move.x,
+            vertical = move.y
+        };
+
+        input.Set(data);
+    }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
     public void OnConnectedToServer(NetworkRunner runner) { }
