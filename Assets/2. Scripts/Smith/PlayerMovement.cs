@@ -1,44 +1,45 @@
 using UnityEngine;
+using Fusion;
 using UnityEngine.InputSystem; // 새 Input System 네임스페이스
 
 namespace gameScene
 {
+    [RequireComponent(typeof(NetworkObject))]
+    [RequireComponent(typeof(NetworkTransform))]
     [RequireComponent(typeof(Rigidbody))]
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : NetworkBehaviour
     {
-        [Header("Movement Settings")]
-        public float moveSpeed = 5f;
+        [SerializeField] private float moveSpeed = 5f;
 
         private Rigidbody rb;
-        private Vector2 moveInput; // 새 Input System은 Vector2를 기본으로 사용
-        private Vector3 moveDirection;
 
-        void Start()
+        public override void Spawned()
         {
             rb = GetComponent<Rigidbody>();
             rb.freezeRotation = true;
+
+            // 자신의 캐릭터일 때만 카메라 따라오게 설정
+            // if (Object.HasInputAuthority)
+            // {
+            //     Camera.main.transform.SetParent(transform);
+            //     Camera.main.transform.localPosition = new Vector3(0, 10, -8);
+            //     Camera.main.transform.localEulerAngles = new Vector3(45, 0, 0);
+            // }
         }
 
-        void Update()
+        public override void FixedUpdateNetwork()
         {
-            // 키보드 입력 감지
-            if (Keyboard.current == null) return;
+            if (GetInput(out NetworkInputData inputData))
+            {
+                Vector3 move = new Vector3(inputData.horizontal, 0f, inputData.vertical);
 
-            float h = 0f;
-            float v = 0f;
-
-            if (Keyboard.current.aKey.isPressed) h -= 1f;
-            if (Keyboard.current.dKey.isPressed) h += 1f;
-            if (Keyboard.current.sKey.isPressed) v -= 1f;
-            if (Keyboard.current.wKey.isPressed) v += 1f;
-
-            moveInput = new Vector2(h, v).normalized;
-        }
-
-        void FixedUpdate()
-        {
-            moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
-            rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+                // 정규화된 입력값으로 이동
+                if (move.sqrMagnitude > 0.01f)
+                {
+                    Vector3 target = rb.position + move.normalized * moveSpeed * Runner.DeltaTime;
+                    rb.MovePosition(target);
+                }
+            }
         }
     }
 }
