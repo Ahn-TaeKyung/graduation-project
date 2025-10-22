@@ -35,10 +35,10 @@ public class HostStartButton : NetworkBehaviour
 
     private void CheckAllPlayersRole()
     {
-        var networkRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
-        foreach (var role in networkRoles)
+        var networkPlayers = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
+        foreach (var player in networkPlayers)
         {
-            Debug.Log($"플레이어 {role.Object.InputAuthority.PlayerId}의 선택된 역할은 {role.m_player_role}입니다.");
+            Debug.Log($"플레이어 {player.Object.InputAuthority.PlayerId}의 선택된 캐릭터 이미지 번호는  {player.m_player_character_sprite_index} 이고 이름은 {player.m_player_name} 입니다.");
         }
     }
 
@@ -46,29 +46,30 @@ public class HostStartButton : NetworkBehaviour
     {
         yield return new WaitUntil(() =>
         {
-            var roles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
-            Debug.Log($"roles{roles}, roles.Length{roles.Length}, Runner.ActivePlayers.Count{Runner.ActivePlayers.Count()}, roles.All(r => r.m_player_role != 0){roles.All(r => r.m_player_role != 0)}");
+            var roles = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
+            // Debug.Log($"roles{roles}, roles.Length{roles.Length}, Runner.ActivePlayers.Count{Runner.ActivePlayers.Count()}, roles.All(r => r.m_player_role != 0){roles.All(r => r.m_player_role != 0)}");
             return roles.Length >= Runner.ActivePlayers.Count();
         });
 
-        var allRoles = FindObjectsByType<NetworkRole>(FindObjectsSortMode.None);
-        var list = new List<RoleData>();
+        var allPlayers = FindObjectsByType<NetworkPlayer>(FindObjectsSortMode.None);
+        var list = new List<PlayerGameData>();
 
-        foreach (var role in allRoles)
+        foreach (var player in allPlayers)
         {
-            list.Add(new RoleData
+            list.Add(new PlayerGameData
             {
-                m_player_id = role.Object.InputAuthority.PlayerId,
-                m_role = role.m_player_role
+                m_player_id = player.Object.InputAuthority.PlayerId,
+                m_name = player.m_player_name,
+                m_character_sprite_index = player.m_player_character_sprite_index
             });
         }
 
         // 1. 호스트가 로컬에 저장
-        RoleDataManager.SaveRoles(list);
+        PlayerGameDataManager.SavePlayerGameDatas(list);
         Debug.Log("[Host] 역할 정보를 저장하고 클라이언트에게 전송합니다.");
 
         // 2. RPC로 JSON 문자열 전달
-        string json = JsonUtility.ToJson(new RoleDataListWrapper(list), true);
+        string json = JsonUtility.ToJson(new PlayerGameDataListWrapper(list), true);
         RPC_SendRoleListToClientsViaJson(json);
 
         // 3. 씬 전환
@@ -88,8 +89,8 @@ public class HostStartButton : NetworkBehaviour
         if (!Runner.IsServer)
         {
             Debug.Log("[Client] 호스트로부터 역할 JSON 수신 → 저장 시작");
-            var list = JsonUtility.FromJson<RoleDataListWrapper>(json).roles;
-            RoleDataManager.SaveRoles(list);
+            var list = JsonUtility.FromJson<PlayerGameDataListWrapper>(json).players;
+            PlayerGameDataManager.SavePlayerGameDatas(list);
         }
     }
 }

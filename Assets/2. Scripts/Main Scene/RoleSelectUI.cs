@@ -6,20 +6,20 @@ using System.Collections.Generic;
 
 public class RoleSelectUI : NetworkBehaviour
 {
-    [SerializeField] private TMP_Text m_role_text;
+    [SerializeField] private TMP_Text m_player_name;
     [SerializeField] private UnityEngine.UI.Button m_left_button;
     [SerializeField] private UnityEngine.UI.Button m_right_button;
 
-    private RoleType[] m_roles;
-    private NetworkRole m_network_role;
+    public Sprite[] m_player_character_sprites;
+    private NetworkPlayer m_network_role;
 
     public override void Spawned()
     {
-        m_network_role = GetComponent<NetworkRole>();
+        m_network_role = GetComponent<NetworkPlayer>();
 
-        m_roles = (RoleType[])System.Enum.GetValues(typeof(RoleType));
+        // m_roles = (RoleType[])System.Enum.GetValues(typeof(RoleType));
 
-        UpdateRoleText();
+        // UpdateRoleText();
 
         m_left_button.onClick.AddListener(SelectLeft);
         m_right_button.onClick.AddListener(SelectRight);
@@ -42,27 +42,27 @@ public class RoleSelectUI : NetworkBehaviour
         int currentIndex = GetCurrentRoleIndex();
         currentIndex--;
         if (currentIndex < 0)
-            currentIndex = m_roles.Length - 1;
+            currentIndex = m_player_character_sprites.Length - 1;
 
-        m_network_role.SetPlayerRole(m_roles[currentIndex]);
+        m_network_role.SetPlayerCharacterSpriteIndex(currentIndex);
     }
 
     private void SelectRight()
     {
         int currentIndex = GetCurrentRoleIndex();
         currentIndex++;
-        if (currentIndex >= m_roles.Length)
+        if (currentIndex >= m_player_character_sprites.Length)
             currentIndex = 0;
 
-        m_network_role.SetPlayerRole(m_roles[currentIndex]);
+        m_network_role.SetPlayerCharacterSpriteIndex(currentIndex);
     }
 
     private int GetCurrentRoleIndex()
     {
-        RoleType currentRole = m_network_role.m_player_role;
-        for (int i = 0; i < m_roles.Length; i++)
+        Sprite currentCharacterSprite = m_player_character_sprites[m_network_role.m_player_character_sprite_index];
+        for (int i = 0; i < m_player_character_sprites.Length; i++)
         {
-            if (m_roles[i] == currentRole)
+            if (m_player_character_sprites[i] == currentCharacterSprite)
                 return i;
         }
         return 0;
@@ -70,6 +70,7 @@ public class RoleSelectUI : NetworkBehaviour
 
     private void UpdateRoleText()
     {
-        m_role_text.text = m_network_role.m_player_role.ToString();
+        // m_role_text.text = m_network_role.m_player_role.ToString();
+        m_network_role.SetPlayerName(m_player_name.text);
     }
 }
