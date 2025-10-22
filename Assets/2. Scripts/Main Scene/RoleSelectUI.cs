@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class RoleSelectUI : NetworkBehaviour
 {
     [SerializeField] private TMP_Text m_player_name;
+    [SerializeField] private TMP_InputField m_player_name_input;
     [SerializeField] private UnityEngine.UI.Button m_left_button;
     [SerializeField] private UnityEngine.UI.Button m_right_button;
 
@@ -26,6 +27,7 @@ public class RoleSelectUI : NetworkBehaviour
 
         if (!Object.HasInputAuthority)
         {
+            m_player_name_input.interactable = false;
             m_left_button.interactable = false;
             m_right_button.interactable = false;
         }
