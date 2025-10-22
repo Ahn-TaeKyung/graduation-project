@@ -1,24 +1,26 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
-public class RoleData
+public class PlayerGameData
 {
     public int m_player_id;   // 플레이어 식별자 (PlayerRef.PlayerId 등)
-    public RoleType m_role;       // 역할 int 값 (RoleType enum int 변환)
+    public string m_name;       // 역할 int 값 (RoleType enum int 변환)
+    public int m_character_sprite_index;
 }
 
 [System.Serializable]
-public class RoleDataListWrapper
+public class PlayerGameDataListWrapper
 {
-    public List<RoleData> roles;
+    public List<PlayerGameData> players;
 
-    public RoleDataListWrapper(List<RoleData> roleList)
+    public PlayerGameDataListWrapper(List<PlayerGameData> nameList)
     {
-        roles = roleList;
+        players = nameList;
     }
 
-    public List<RoleData> ToList()
+    public List<PlayerGameData> ToList()
     {
-        return roles;
+        return players;
     }
 }

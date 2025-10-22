@@ -20,7 +20,7 @@ public class GameSceneManager : NetworkBehaviour
     public GameObject defenseCanvas;
     public GameObject smithCanvas;
 
-    private RoleType m_my_role;
+    private string m_my_name;
 
     private void Awake()
     {
@@ -53,24 +53,24 @@ public class GameSceneManager : NetworkBehaviour
         base.Spawned();
 
         // 역할 정보 로드 후 내 역할 저장
-        var roles = RoleDataManager.LoadRoles();
+        var playerGameDatas = PlayerGameDataManager.LoadPlayerGameDatas();
 
         int myId = NetworkRunner.GetRunnerForGameObject(gameObject).LocalPlayer.PlayerId;
-        foreach (var role in roles)
+        foreach (var playerGameData in playerGameDatas)
         {
-            if (role.m_player_id == myId)
+            if (playerGameData.m_player_id == myId)
             {
-                m_my_role = role.m_role;
+                m_my_name = playerGameData.m_name;
                 break;
             }
         }
     }
-    public RoleType GetMyRole()
+    public string GetMyName()
     {
-        return m_my_role;
+        return m_my_name;
     }
 
-    public void SetupByRole()
+    public void SetupById()
     {
         m_camera_defender.enabled = false;
         m_camera_smith.enabled = false;
@@ -78,30 +78,30 @@ public class GameSceneManager : NetworkBehaviour
         defenseCanvas.SetActive(false);
         smithCanvas.SetActive(false);
 
-        switch (m_my_role)
-        {
-            case RoleType.Defender:
-                // Debug.Log("디펜더 셋업 완료");
-                // m_camera_defender.gameObject.SetActive(true);
-                // m_camera_defender.enabled = true;
-                // defenseCanvas.SetActive(true);
-                Debug.Log("해커2 셋업 완료");
+        // switch (m_my_role)
+        // {
+        //     case RoleType.Defender:
+        //         // Debug.Log("디펜더 셋업 완료");
+        //         // m_camera_defender.gameObject.SetActive(true);
+        //         // m_camera_defender.enabled = true;
+        //         // defenseCanvas.SetActive(true);
+        //         Debug.Log("해커2 셋업 완료");
                 m_camera_smith.gameObject.SetActive(true);
                 m_camera_smith.enabled = true;
                 smithCanvas.SetActive(true);
-                break;
-            case RoleType.Smith:
-                Debug.Log("해커 셋업 완료");
-                m_camera_smith.gameObject.SetActive(true);
-                m_camera_smith.enabled = true;
-                smithCanvas.SetActive(true);
-                break;
-            default:
-                Debug.LogWarning("알 수 없는 역할");
-                break;
-        }
+        //         break;
+        //     case RoleType.Smith:
+        //         Debug.Log("해커 셋업 완료");
+        //         m_camera_smith.gameObject.SetActive(true);
+        //         m_camera_smith.enabled = true;
+        //         smithCanvas.SetActive(true);
+        //         break;
+        //     default:
+        //         Debug.LogWarning("알 수 없는 역할");
+        //         break;
+        // }
 
-        Debug.Log($"[GameSceneManager] 역할 셋업 완료: {m_my_role}");
+        Debug.Log($"[GameSceneManager] 역할 셋업 완료");
     }
 
     private void SpawnPlayer(PlayerRef player)
