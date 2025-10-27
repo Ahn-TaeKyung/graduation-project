@@ -14,6 +14,9 @@ public class PlayerProximityHighlighter : MonoBehaviour
     private readonly HashSet<InteractableObject> _candidates = new();
     private InteractableObject _current;
 
+    // ✅ PlayerInteractor가 읽을 현재 대상
+    public InteractableObject Current => _current;
+
     // 릴레이가 호출하는 공개 메서드
     public void HandleTriggerEnter(Collider other)
     {
