@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 498567341673003331}
   - component: {fileID: 8675014863105413674}
   - component: {fileID: 5777711311991035201}
+  - component: {fileID: -5256095860051088462}
   m_Layer: 19
   m_Name: Workbench
   m_TagString: Untagged
@@ -67,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 74fe60acf00bf3c44b92073eebefd67b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -104,7 +105,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -142,3 +143,18 @@ MonoBehaviour:
   type: 0
   highlightable: {fileID: 8675014863105413674}
   priority: 100
+--- !u!114 &-5256095860051088462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 870eb946396585f479781ac83a8217a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  craftTime: 2
+  inputType: 5
+  outputPrefab: {fileID: 1277400945525474552, guid: ff246a73f8d013d4da84c311baa834f5, type: 3}
