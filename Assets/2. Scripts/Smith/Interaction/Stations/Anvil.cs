@@ -3,10 +3,15 @@ using UnityEngine;
 public class Anvil : MonoBehaviour, IInteractable
 {
     [Header("Setup")]
-    [SerializeField] private Transform slot;          // 재료 올려둘 자리
+    [SerializeField] private Transform slot;          // 재료 올려둘 Transform
     [SerializeField] private float forgeTime = 2f;    // 홀드 시간
     [SerializeField] private ItemType inputType = ItemType.Ingot;
     [SerializeField] private Item outputPrefab;
+
+    [Header("Placed Visual Tuning")]
+    [SerializeField] private Vector3 slotLocalOffset; // 전시 미세 위치
+    [SerializeField] private Vector3 slotLocalEuler;  // 전시 각도
+    [SerializeField] private float placedScale = 1f;  // 전시 스케일
 
     private Item stored; // 올려둔 재료
 
@@ -18,7 +23,7 @@ public class Anvil : MonoBehaviour, IInteractable
     {
         if (stored == null)
         {
-            // 1) 비어 있을 땐 손에 재료가 있어야 Tap 가능
+            // 1) 비어 있을 때는 손에 재료가 있어야 Tap 가능
             bool ok = p.hand.Held && p.hand.Held.type == inputType;
             hint = ok ? "E - 쇳물 올려두기" : "쇳물이 필요함";
             return ok;
@@ -32,17 +37,14 @@ public class Anvil : MonoBehaviour, IInteractable
         }
     }
 
-    // Tap: 재료를 올려둔다
+    // Tap: 재료를 올려둔다(전시 상태)
     public void OnTap(PlayerInteractor p)
     {
         if (stored != null) return;
         if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
         stored = p.hand.Take();
-        stored.transform.SetParent(slot);
-        stored.transform.localPosition = Vector3.zero;
-        stored.transform.localRotation = Quaternion.identity;
-        stored.gameObject.SetActive(true); // 모루 위에 보이게 두어도 되고, 숨기고 싶으면 false
+        PlaceOnSlot(stored);
     }
 
     // Hold 완료: 결과물 제작
@@ -55,5 +57,18 @@ public class Anvil : MonoBehaviour, IInteractable
 
         var outItem = Instantiate(outputPrefab);
         p.hand.Pick(outItem);
+    }
+
+    // ===== 유틸 =====
+    private void PlaceOnSlot(Item item)
+    {
+        item.transform.SetParent(slot);
+        item.transform.localPosition = slotLocalOffset;
+        item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
+        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
+
+        if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
+        if (item.TryGetComponent(out Collider col)) col.enabled = false;
+        item.gameObject.SetActive(true);
     }
 }

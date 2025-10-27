@@ -8,6 +8,11 @@ public class Workbench : MonoBehaviour, IInteractable
     [SerializeField] private ItemType inputType = ItemType.Plank;
     [SerializeField] private Item outputPrefab;
 
+    [Header("Placed Visual Tuning")]
+    [SerializeField] private Vector3 slotLocalOffset;
+    [SerializeField] private Vector3 slotLocalEuler;
+    [SerializeField] private float placedScale = 1f;
+
     private Item stored;
 
     public InteractionKind Kind => (stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
@@ -35,10 +40,7 @@ public class Workbench : MonoBehaviour, IInteractable
         if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
         stored = p.hand.Take();
-        stored.transform.SetParent(slot);
-        stored.transform.localPosition = Vector3.zero;
-        stored.transform.localRotation = Quaternion.identity;
-        stored.gameObject.SetActive(true);
+        PlaceOnSlot(stored);
     }
 
     public void OnHoldComplete(PlayerInteractor p)
@@ -50,5 +52,18 @@ public class Workbench : MonoBehaviour, IInteractable
 
         var outItem = Instantiate(outputPrefab);
         p.hand.Pick(outItem);
+    }
+
+    // ===== 유틸 =====
+    private void PlaceOnSlot(Item item)
+    {
+        item.transform.SetParent(slot);
+        item.transform.localPosition = slotLocalOffset;
+        item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
+        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
+
+        if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
+        if (item.TryGetComponent(out Collider col)) col.enabled = false;
+        item.gameObject.SetActive(true);
     }
 }
