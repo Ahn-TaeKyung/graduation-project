@@ -1,32 +1,16 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+
 public class PlayerInputHandler : MonoBehaviour
 {
     public static Vector2 MoveInput { get; private set; }
 
-    private PlayerControls controls;
-
-    private void Awake()
+    void Update()
     {
-        controls = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        controls.Enable();
-        controls.Player.Move.performed += OnMove;
-        controls.Player.Move.canceled += OnMove;
-    }
-
-    private void OnDisable()
-    {
-        controls.Player.Move.performed -= OnMove;
-        controls.Player.Move.canceled -= OnMove;
-        controls.Disable();
-    }
-
-    private void OnMove(InputAction.CallbackContext ctx)
-    {
-        MoveInput = ctx.ReadValue<Vector2>();
+        // 테스트 확실히 하려고 구 InputManager로 고정
+        float h = Input.GetAxisRaw("Horizontal"); // A/D, ←/→
+        float v = Input.GetAxisRaw("Vertical");   // W/S, ↑/↓
+        MoveInput = new Vector2(h, v);
+        // 임시 로그: 키를 누르면 반드시 찍혀야 함
+       // if (MoveInput.sqrMagnitude > 0.01f) Debug.Log($"[MoveInput] {MoveInput}");
     }
 }
