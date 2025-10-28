@@ -83,7 +83,7 @@ public class GameStateManager : NetworkBehaviour
             case GameState.Role:
                 if (GameSceneManager.Instance != null)
                 {
-                    GameSceneManager.Instance.SetupByRole();
+                    GameSceneManager.Instance.SetupById();
                 }
                 ChangeState(GameState.Ready);
                 break;

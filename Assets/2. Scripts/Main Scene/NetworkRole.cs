@@ -1,21 +1,36 @@
 using Fusion;
+using UnityEngine;
 
-public class NetworkRole : NetworkBehaviour
+public class NetworkPlayer : NetworkBehaviour
 {
 
     [Networked]
-    public RoleType m_player_role { get; private set; }
-    public void SetPlayerRole(RoleType role)
+    public string m_player_name { get; private set; }
+    [Networked]
+    public int m_player_character_sprite_index { get; private set; }
+    public void SetPlayerName(string name)
     {
         if (HasInputAuthority) // 본인만 변경 가능
         {
-            RPC_SetPlayerRole(role);
+            RPC_SetPlayerName(name);
         }
     }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_SetPlayerRole(RoleType role)
+    public void SetPlayerCharacterSpriteIndex(int spriteIndex)
     {
-        m_player_role = role;
+        if (HasInputAuthority) // 본인만 변경 가능
+        {
+            RPC_SetPlayerCharacterSpriteIndex(spriteIndex);
+        }
+        
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SetPlayerName(string name)
+    {
+        m_player_name = name;
+    }
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_SetPlayerCharacterSpriteIndex(int spriteIndex)
+    {
+        m_player_character_sprite_index = spriteIndex;
     }
 }
