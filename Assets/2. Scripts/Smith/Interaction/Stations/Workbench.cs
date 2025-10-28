@@ -14,9 +14,10 @@ public class Workbench : MonoBehaviour, IInteractable
     [SerializeField] private float placedScale = 1f;
 
     [Header("UI")]
-    [SerializeField] private ProgressBarController progressBar;
+    [SerializeField] private ProgressBarController progressBar; // 진행바 (선택적으로 연결)
 
     private Item stored;
+    private bool isCrafting;
 
     public InteractionKind Kind => (stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
     public float HoldDuration => craftTime;
@@ -46,25 +47,36 @@ public class Workbench : MonoBehaviour, IInteractable
         PlaceOnSlot(stored);
     }
 
+    public void OnHoldStart(PlayerInteractor p)
+    {
+        if (stored != null && p.hand.IsEmpty && progressBar)
+        {
+            progressBar.StartProgress(craftTime);
+            isCrafting = true;
+        }
+    }
+
+    public void OnHoldCancel(PlayerInteractor p)
+    {
+        if (isCrafting && progressBar)
+        {
+            progressBar.StopProgress();
+            isCrafting = false;
+        }
+    }
+
     public void OnHoldComplete(PlayerInteractor p)
     {
         if (stored == null || !p.hand.IsEmpty) return;
+
+        if (progressBar) progressBar.StopProgress();
+        isCrafting = false;
 
         Destroy(stored.gameObject);
         stored = null;
 
         var outItem = Instantiate(outputPrefab);
         p.hand.Pick(outItem);
-    }
-    public void OnHoldStart(PlayerInteractor p)
-    {
-        if (stored != null && p.hand.IsEmpty && progressBar)
-            progressBar.StartProgress(craftTime);
-    }
-
-    public void OnHoldCancel(PlayerInteractor p)
-    {
-        if (progressBar) progressBar.StopProgress();
     }
 
     // ===== 유틸 =====

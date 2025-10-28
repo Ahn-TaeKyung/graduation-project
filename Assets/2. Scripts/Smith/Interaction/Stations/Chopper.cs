@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class Chopper : MonoBehaviour, IInteractable
 {
-    [Header("UI")]
-    [SerializeField] private ProgressBarController progressBar;
-
     [Header("Setup")]
     [SerializeField] private Transform slot;             // 통나무 올려둘 위치
     [SerializeField] private float chopTime = 1.5f;      // 홀드 시간
@@ -16,7 +13,11 @@ public class Chopper : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 slotLocalEuler;     // 전시 각도
     [SerializeField] private float placedScale = 1f;     // 전시 스케일
 
+    [Header("UI")]
+    [SerializeField] private ProgressBarController progressBar; // 진행바 (선택적으로 연결)
+
     private Item stored;                                 // 올려둔 통나무
+    private bool isChopping;
 
     // 비어있으면 Tap, 올라와 있으면 Hold
     public InteractionKind Kind => (stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
@@ -48,10 +49,32 @@ public class Chopper : MonoBehaviour, IInteractable
         PlaceOnSlot(stored);
     }
 
+    // Hold 시작/취소/완료
+    public void OnHoldStart(PlayerInteractor p)
+    {
+        if (stored != null && p.hand.IsEmpty && progressBar)
+        {
+            progressBar.StartProgress(chopTime);
+            isChopping = true;
+        }
+    }
+
+    public void OnHoldCancel(PlayerInteractor p)
+    {
+        if (isChopping && progressBar)
+        {
+            progressBar.StopProgress();
+            isChopping = false;
+        }
+    }
+
     // Hold 완료: 전시 중인 통나무를 소비하고 결과물 지급
     public void OnHoldComplete(PlayerInteractor p)
     {
         if (stored == null || !p.hand.IsEmpty) return;
+
+        if (progressBar) progressBar.StopProgress();
+        isChopping = false;
 
         Destroy(stored.gameObject);
         stored = null;
@@ -60,24 +83,13 @@ public class Chopper : MonoBehaviour, IInteractable
         p.hand.Pick(outItem);
     }
 
-    public void OnHoldStart(PlayerInteractor p)
-    {
-        if (stored != null && p.hand.IsEmpty && progressBar)
-            progressBar.StartProgress(chopTime);
-    }
-
-    public void OnHoldCancel(PlayerInteractor p)
-    {
-        if (progressBar) progressBar.StopProgress();
-    }
-
     // ===== 전시 유틸 =====
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
         item.transform.localPosition = slotLocalOffset;
         item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
-        item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
+        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
 
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
