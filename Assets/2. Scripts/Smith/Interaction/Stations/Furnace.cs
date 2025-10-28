@@ -7,10 +7,13 @@ public class Furnace : MonoBehaviour, IInteractable
     [SerializeField] private ItemType inputType = ItemType.Ore;
     [SerializeField] private Item outputPrefab;
 
-    // ★ 추가: 애니메이터(외형 쪽, Forge 모델에 달린 Animator)
-    [SerializeField] private Animator animator; // 파라미터: Bool "IsSmelting"
-    // (선택) 불/연기 VFX 제어하고 싶다면:
-    [SerializeField] private ParticleSystem[] vfxOnSmelt;
+    //  애니메이션 / VFX
+    [SerializeField] private Animator animator;              
+    [SerializeField] private ParticleSystem[] vfxOnSmelt;     // optional
+
+    //  진행바(UI)
+    [Header("UI")]
+    [SerializeField] private ProgressBarController progressBar;   // World Space Canvas에 붙은 컨트롤러
 
     private Item stored;
     private float timer;
@@ -18,18 +21,27 @@ public class Furnace : MonoBehaviour, IInteractable
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
+    // 선택: 프리팹이 켜져 있어도 시작 시 진행바를 자동으로 숨김
+    private void Awake()
+    {
+        if (progressBar) progressBar.gameObject.SetActive(false);
+    }
+
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
         if (stored == null)
         {
-            hint = (p.hand.Held && p.hand.Held.type == inputType) ? "E - 화로에 넣기" : "광석 필요";
-            return (p.hand.Held && p.hand.Held.type == inputType);
+            bool ok = (p.hand.Held && p.hand.Held.type == inputType);
+            hint = ok ? "E - 화로에 넣기" : "광석 필요";
+            return ok;
         }
         else if (timer >= smeltTime)
         {
-            hint = p.hand.IsEmpty ? "E - 주조물 꺼내기" : "손이 비어야 함";
-            return p.hand.IsEmpty;
+            bool ok = p.hand.IsEmpty;
+            hint = ok ? "E - 주조물 꺼내기" : "손이 비어야 함";
+            return ok;
         }
+
         hint = "용해 중...";
         return false;
     }
@@ -39,14 +51,18 @@ public class Furnace : MonoBehaviour, IInteractable
         if (stored == null)
         {
             // 넣기
+            if (p.hand.Held == null || p.hand.Held.type != inputType) return;
+
             stored = p.hand.Take();
             stored.transform.SetParent(slot);
             stored.transform.localPosition = Vector3.zero;
             stored.gameObject.SetActive(false);
             timer = 0f;
 
-            // ★ 제련 시작 → 애니메이션 ON
+            //  애니메이션/이펙트 ON
             SetSmelting(true);
+            //  진행바 시작
+            if (progressBar) progressBar.StartProgress(smeltTime);
         }
         else if (timer >= smeltTime && p.hand.IsEmpty)
         {
@@ -56,8 +72,11 @@ public class Furnace : MonoBehaviour, IInteractable
             Destroy(stored.gameObject);
             stored = null;
             timer = 0f;
-            // 꺼낼 땐 이미 OFF여도 무방. 안전하게 꺼둠
+
+            //  안전하게 OFF
             SetSmelting(false);
+            //  진행바 정지/숨김
+            if (progressBar) progressBar.StopProgress();
         }
     }
 
@@ -66,26 +85,34 @@ public class Furnace : MonoBehaviour, IInteractable
         if (stored != null && timer < smeltTime)
         {
             timer += Time.deltaTime;
-            // ★ 제련 완료 시점에서 애니메이션 OFF
+
+            // 제련 완료 시점
             if (timer >= smeltTime)
+            {
+                //  애니메이션/이펙트 OFF
                 SetSmelting(false);
+                //  진행바 정지/숨김
+                if (progressBar) progressBar.StopProgress();
+            }
         }
     }
 
     private void SetSmelting(bool on)
     {
         if (animator) animator.SetBool("IsSmelting", on);
+
         if (vfxOnSmelt != null)
         {
             foreach (var ps in vfxOnSmelt)
             {
                 if (!ps) continue;
                 if (on) { if (!ps.isPlaying) ps.Play(); }
-                else { if (ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
+                else    { if (ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
             }
         }
     }
 
+    // Hold 기반 아님: 인터페이스 충족용
     public void OnHoldComplete(PlayerInteractor p) { }
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
