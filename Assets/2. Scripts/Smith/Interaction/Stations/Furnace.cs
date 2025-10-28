@@ -81,10 +81,12 @@ public class Furnace : MonoBehaviour, IInteractable
             {
                 if (!ps) continue;
                 if (on) { if (!ps.isPlaying) ps.Play(); }
-                else    { if (ps.isPlaying)  ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
+                else { if (ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
             }
         }
     }
 
     public void OnHoldComplete(PlayerInteractor p) { }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
 }

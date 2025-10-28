@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Chopper : MonoBehaviour, IInteractable
 {
+    [Header("UI")]
+    [SerializeField] private ProgressBarController progressBar;
+
     [Header("Setup")]
     [SerializeField] private Transform slot;             // 통나무 올려둘 위치
     [SerializeField] private float chopTime = 1.5f;      // 홀드 시간
@@ -57,13 +60,24 @@ public class Chopper : MonoBehaviour, IInteractable
         p.hand.Pick(outItem);
     }
 
+    public void OnHoldStart(PlayerInteractor p)
+    {
+        if (stored != null && p.hand.IsEmpty && progressBar)
+            progressBar.StartProgress(chopTime);
+    }
+
+    public void OnHoldCancel(PlayerInteractor p)
+    {
+        if (progressBar) progressBar.StopProgress();
+    }
+
     // ===== 전시 유틸 =====
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
         item.transform.localPosition = slotLocalOffset;
         item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
-        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
+        item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
 
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;

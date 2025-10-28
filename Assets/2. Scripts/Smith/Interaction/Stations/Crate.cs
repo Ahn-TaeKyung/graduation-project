@@ -53,4 +53,7 @@ public class Crate : MonoBehaviour, IInteractable
         animator.ResetTrigger(openTrigger);
         animator.SetTrigger(openTrigger);
     }
+
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
 }

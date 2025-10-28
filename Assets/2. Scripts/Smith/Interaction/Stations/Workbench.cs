@@ -13,6 +13,9 @@ public class Workbench : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 slotLocalEuler;
     [SerializeField] private float placedScale = 1f;
 
+    [Header("UI")]
+    [SerializeField] private ProgressBarController progressBar;
+
     private Item stored;
 
     public InteractionKind Kind => (stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
@@ -52,6 +55,16 @@ public class Workbench : MonoBehaviour, IInteractable
 
         var outItem = Instantiate(outputPrefab);
         p.hand.Pick(outItem);
+    }
+    public void OnHoldStart(PlayerInteractor p)
+    {
+        if (stored != null && p.hand.IsEmpty && progressBar)
+            progressBar.StartProgress(craftTime);
+    }
+
+    public void OnHoldCancel(PlayerInteractor p)
+    {
+        if (progressBar) progressBar.StopProgress();
     }
 
     // ===== 유틸 =====
