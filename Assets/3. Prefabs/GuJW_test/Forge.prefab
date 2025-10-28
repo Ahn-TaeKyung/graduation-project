@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 193934476993192271}
-  - component: {fileID: 7483040372844176452}
   m_Layer: 0
-  m_Name: Forge
+  m_Name: forge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,21 +35,6 @@ Transform:
   - {fileID: 3227337258724608136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7483040372844176452
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3245558614268916806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6f11f74364dba142ac18705e98764e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flameBurst: {fileID: 8084326093257030262}
-  flameLoop: {fileID: 3644010714039863180}
-  smokeLoop: {fileID: 5710617779611248217}
 --- !u!1 &4467331862694949351
 GameObject:
   m_ObjectHideFlags: 0
