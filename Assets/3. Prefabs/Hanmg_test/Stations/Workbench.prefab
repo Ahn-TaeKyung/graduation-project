@@ -217,7 +217,7 @@ MonoBehaviour:
   outputPrefab: {fileID: 1277400945525474552, guid: ff246a73f8d013d4da84c311baa834f5, type: 3}
   slotLocalOffset: {x: 0, y: 0, z: 0}
   slotLocalEuler: {x: 0, y: 0, z: 0}
-  placedScale: 0.4
+  placedScale: 0.5
   progressBar: {fileID: 4390860291547001345}
 --- !u!1 &5957374179241427300
 GameObject:

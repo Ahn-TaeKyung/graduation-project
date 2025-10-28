@@ -305,7 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  highlightable: {fileID: 0}
+  outlineToggle: {fileID: 0}
   priority: 100
 --- !u!114 &8587366136042209930
 MonoBehaviour:
@@ -325,7 +325,7 @@ MonoBehaviour:
   outputPrefab: {fileID: 1277400945525474552, guid: 76bf3df7a581bd74fa23d5beb207de91, type: 3}
   slotLocalOffset: {x: 0, y: 0, z: 0}
   slotLocalEuler: {x: 0, y: 0, z: 0}
-  placedScale: 0.4
+  placedScale: 0.6
   progressBar: {fileID: 121172493599774824}
 --- !u!114 &8645973364457793842
 MonoBehaviour:
