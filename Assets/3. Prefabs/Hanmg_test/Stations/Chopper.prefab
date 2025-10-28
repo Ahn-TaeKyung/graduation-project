@@ -234,9 +234,9 @@ GameObject:
   - component: {fileID: 1990546504425993632}
   - component: {fileID: 3476294095868595795}
   - component: {fileID: 498567341673003331}
-  - component: {fileID: 8675014863105413674}
   - component: {fileID: 5777711311991035201}
   - component: {fileID: 8587366136042209930}
+  - component: {fileID: 8645973364457793842}
   m_Layer: 19
   m_Name: Chopper
   m_TagString: Untagged
@@ -292,23 +292,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2782364, y: 0.74575806, z: 1.3360596}
   m_Center: {x: 0.022968292, y: -0.12712097, z: -0.0134887695}
---- !u!114 &8675014863105413674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4860882373919045580}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef93fa6beb1f7bd4c9e07062997fbd8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetRenderers:
-  - {fileID: 0}
-  highlightColor: {r: 0.857976, g: 0.8773585, b: 0.053800307, a: 1}
-  highlightIntensity: 3
-  useEmission: 1
 --- !u!114 &5777711311991035201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,7 +305,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  highlightable: {fileID: 8675014863105413674}
+  highlightable: {fileID: 0}
   priority: 100
 --- !u!114 &8587366136042209930
 MonoBehaviour:
@@ -344,6 +327,21 @@ MonoBehaviour:
   slotLocalEuler: {x: 0, y: 0, z: 0}
   placedScale: 0.4
   progressBar: {fileID: 121172493599774824}
+--- !u!114 &8645973364457793842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95c989662e721446a69c6b264a3b753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
+  scale: 1.03
+  buildAtRuntime: 1
 --- !u!1 &7152461951907382655
 GameObject:
   m_ObjectHideFlags: 0
