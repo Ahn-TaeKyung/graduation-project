@@ -7,42 +7,66 @@ public class Crate : MonoBehaviour, IInteractable
     [SerializeField] private Transform spawnPoint;
 
     [Header("Animation")]
-    [SerializeField] private Animator animator;          // ← 자식(Visual_box)의 Animator
-    [SerializeField] private string openTrigger = "Open";
+    [SerializeField] private Animator animator;      // Visual_box의 Animator
+    [SerializeField] private string openBool = "IsOpen"; // Animator Bool 파라미터
+
+    private Item spawned; // 꺼내놓은 재료(있으면 열림 유지)
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     private void Awake()
     {
-        if (!animator) animator = GetComponentInChildren<Animator>(); // 자동 탐색
-        if (!spawnPoint) spawnPoint = transform;                       // 비었으면 자기 위치
+        if (!animator) animator = GetComponentInChildren<Animator>();
+        if (!spawnPoint) spawnPoint = transform;
+        SetOpen(false);
     }
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        hint = p.hand.IsEmpty ? "E - 광석 꺼내기" : "손이 비어야 함";
-        return p.hand.IsEmpty;                                         // 기존 로직 유지  :contentReference[oaicite:1]{index=1}
+        if (spawned == null)
+        {
+            // 아직 아무것도 꺼내지 않음 → 손이 비어야 꺼낼 수 있음
+            bool ok = p.hand.IsEmpty;
+            hint = ok ? "E - 재료 꺼내놓기" : "손이 비어야 함";
+            return ok;                                   // 기존: 손이 비어야 Tap 가능. :contentReference[oaicite:0]{index=0}
+        }
+        else
+        {
+            // 이미 재료가 놓여 있음 → 손이 비면 집을 수 있음
+            bool ok = p.hand.IsEmpty;
+            hint = ok ? "E - 재료 집기" : "손이 비어야 함";
+            return ok;
+        }
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (orePrefab == null)
+        if (spawned == null)
         {
-            Debug.LogWarning("[Crate] Ore Prefab이 비어있습니다!");
-            return;
+            // 1) 꺼내놓기: SpawnPoint에 생성만 하고 손에는 안 줌
+            if (orePrefab == null) { Debug.LogWarning("[Crate] Ore Prefab 비어있음"); return; }
+            Vector3 pos = spawnPoint.position;
+            Quaternion rot = spawnPoint.rotation;
+            spawned = Instantiate(orePrefab, pos, rot);
+            // 손에 바로 주던 기존 동작을 분리했음. :contentReference[oaicite:1]{index=1}
+            SetOpen(true);
         }
-
-        // 애니메이션 트리거
-        if (animator && !string.IsNullOrEmpty(openTrigger))
-            animator.SetTrigger(openTrigger);
-
-        // 기존 스폰 → 손에 Pick (그대로 유지)  :contentReference[oaicite:2]{index=2}
-        Vector3 pos = spawnPoint ? spawnPoint.position : transform.position + Vector3.up * 1f;
-        Quaternion rot = spawnPoint ? spawnPoint.rotation : Quaternion.identity;
-        var item = Instantiate(orePrefab, pos, rot);
-        p.hand.Pick(item);
+        else
+        {
+            // 2) 집기: 손이 비어 있으면 꺼내놓은 걸 집고 닫기
+            if (!p.hand.IsEmpty) return;
+            p.hand.Pick(spawned);
+            spawned = null;
+            SetOpen(false);
+        }
     }
 
     public void OnHoldComplete(PlayerInteractor p) { }
+
+    private void SetOpen(bool open)
+    {
+        if (animator && !string.IsNullOrEmpty(openBool))
+            animator.SetBool(openBool, open);
+    }
 }

@@ -29,29 +29,30 @@ public class Highlightable : MonoBehaviour
                 _mpbs[r] = mpb;
             }
 
-            r.GetPropertyBlock(mpb);
-
             if (on)
             {
-                // 베이스 컬러(표준:_Color, URP:_BaseColor) 둘 다 시도
-                mpb.SetColor("_Color", highlightColor);
-                mpb.SetColor("_BaseColor", highlightColor);
+                r.GetPropertyBlock(mpb);
+
+                // ▶ 색상 틴트: Standard/URP + Arnold 둘 다 시도
+                mpb.SetColor("_Color",      highlightColor);
+                mpb.SetColor("_BaseColor",  highlightColor);
+                mpb.SetColor("BaseColor",   highlightColor);   // ← Arnold
 
                 if (useEmission)
                 {
-                    // 표준/URP 공통으로 자주 쓰이는 이름
-                    mpb.SetColor("_EmissionColor", highlightColor * highlightIntensity);
+                    // ▶ Emission: Standard/URP + Arnold 모두 시도
+                    var emis = highlightColor * highlightIntensity;
+                    mpb.SetColor("_EmissionColor", emis);
+                    mpb.SetColor("EmissionColor",  emis);       // ← Arnold
                 }
+
+                r.SetPropertyBlock(mpb);
             }
             else
             {
-                // 원복: 명시적으로 블랙/기본값
-                mpb.SetColor("_EmissionColor", Color.black);
-                // 베이스 컬러는 머티리얼 원래 값으로 돌리기 위해 Clear
-                mpb.Clear();
+                // ▶ 오버라이드 완전 제거(가장 안전)
+                r.SetPropertyBlock(null);
             }
-
-            r.SetPropertyBlock(mpb);
         }
     }
 }

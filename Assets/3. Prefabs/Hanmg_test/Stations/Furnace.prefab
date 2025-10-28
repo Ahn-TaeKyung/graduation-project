@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetRenderers:
   - {fileID: 4235669406697354734}
-  highlightColor: {r: 0.857976, g: 0.8773585, b: 0.053800307, a: 1}
+  highlightColor: {r: 0.85882354, g: 0.8784314, b: 0.05490196, a: 1}
   highlightIntensity: 3
   useEmission: 1
 --- !u!114 &5777711311991035201
