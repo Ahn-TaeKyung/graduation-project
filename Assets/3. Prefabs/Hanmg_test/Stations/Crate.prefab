@@ -27,7 +27,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0707, y: 1.0707, z: 1.0707}
+  m_LocalScale: {x: 1.0707, y: 1.1744509, z: 1.0707}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1990546504425993632}
@@ -187,7 +187,7 @@ MonoBehaviour:
   orePrefab: {fileID: 1277400945525474552, guid: e5887b4aa39e0b64db075aa218a5a7f5, type: 3}
   spawnPoint: {fileID: 3118457496587425149}
   animator: {fileID: 6145344734796908024}
-  openBool: IsOpen
+  openTrigger: Open
 --- !u!1 &8935126838172780810
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,15 +229,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 324551024105841706, guid: ce0d3792194c22847a3c699ecd4d86ca, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.0096502025
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 324551024105841706, guid: ce0d3792194c22847a3c699ecd4d86ca, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.007924809
+      value: 0.8279396
       objectReference: {fileID: 0}
     - target: {fileID: 324551024105841706, guid: ce0d3792194c22847a3c699ecd4d86ca, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.0096502025
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 324551024105841706, guid: ce0d3792194c22847a3c699ecd4d86ca, type: 3}
       propertyPath: m_LocalPosition.x
