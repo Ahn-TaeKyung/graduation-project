@@ -36,7 +36,6 @@ public class TurretManager : NetworkBehaviour
         // 실제 world pos
         Vector3 worldPos = GridManager.Instance.CellToWorldCenter(cell);
 
-        // Network spawn
         var runner = FindObjectOfType<NetworkRunner>();
         if (runner == null)
         {
@@ -44,22 +43,28 @@ public class TurretManager : NetworkBehaviour
             return;
         }
 
-        // prefab 인스펙터에 NetworkObject를 가진 프리팹을 넣어야 함
         if (prefab == null)
         {
             Debug.LogError("[TurretManager] prefab is null!");
             return;
         }
 
-        // Spawn - Runner.Spawn 사용 (환경에 맞춰 시그니처 조정 가능)
-        var spawned = runner.Spawn(prefab, worldPos, Quaternion.identity, playerRef: owner);
-        if (spawned == null)
+        // Spawn
+        NetworkObject spawned = runner.Spawn(prefab, worldPos, Quaternion.identity);
+
+        // Spawn 후 owner 할당 (클라이언트 권한)
+        if (spawned != null && owner != PlayerRef.None)
         {
-            Debug.LogError("[TurretManager] Spawn failed!");
+            spawned.AssignInputAuthority(owner);
+            Debug.Log("[TurretManager] Turret spawned with owner " + owner);
+        }
+        else if (spawned != null)
+        {
+            Debug.Log("[TurretManager] Turret spawned at " + cell);
         }
         else
         {
-            Debug.Log("[TurretManager] Turret spawned at " + cell);
+            Debug.LogError("[TurretManager] Spawn failed!");
         }
     }
 }

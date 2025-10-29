@@ -195,12 +195,15 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     private IEnumerator WaitForGameStateManagerAndChangeState()
     {
+        Debug.Log("[WaitForGameStateManagerAndChangeState] Waiting");
         yield return new WaitUntil(() =>
+
             GameStateManager.Instance != null &&
             GameStateManager.Instance.Object != null &&
             GameStateManager.Instance.Object.IsValid
         );
 
+        Debug.Log("[WaitForGameStateManagerAndChangeState] Start");
         GameStateManager.Instance.ChangeState(GameState.Role);
     }
 }
