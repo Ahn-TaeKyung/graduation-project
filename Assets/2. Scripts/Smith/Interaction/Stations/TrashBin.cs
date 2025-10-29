@@ -24,4 +24,6 @@ public class TrashBin : MonoBehaviour, IInteractable
     }
 
     public void OnHoldComplete(PlayerInteractor p) { }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
 }
