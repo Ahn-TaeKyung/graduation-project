@@ -10,8 +10,9 @@ public class Chopper : MonoBehaviour, IInteractable
 
     [Header("Placed Visual Tuning")]
     [SerializeField] private Vector3 slotLocalOffset;    // 전시 미세 위치
-    [SerializeField] private Vector3 slotLocalEuler;     // 전시 각도
+    [SerializeField] private Vector3 slotLocalEuler;     // 전시 기본 각도
     [SerializeField] private float placedScale = 1f;     // 전시 스케일
+    [SerializeField] private Vector3 logRotationEuler;   // Log 전용 회전값 추가
 
     [Header("UI")]
     [SerializeField] private ProgressBarController progressBar; // 진행바 (선택적으로 연결)
@@ -88,8 +89,14 @@ public class Chopper : MonoBehaviour, IInteractable
     {
         item.transform.SetParent(slot);
         item.transform.localPosition = slotLocalOffset;
-        item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
-        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
+
+        //  Log 타입이면 logRotationEuler 사용, 아니면 기본 각도 사용
+        if (item.type == ItemType.Log)
+            item.transform.localRotation = Quaternion.Euler(logRotationEuler);
+        else
+            item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
+
+        item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
 
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
