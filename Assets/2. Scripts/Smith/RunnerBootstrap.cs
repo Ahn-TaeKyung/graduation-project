@@ -26,10 +26,10 @@ public class RunnerBootstrap : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     // 입력 주입
-    public void OnInput(NetworkRunner runner, NetworkInput input)
+    void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
-        var m = PlayerInputHandler.MoveInput;
-        input.Set(new NetworkInputData { horizontal = m.x, vertical = m.y });
+        // var m = PlayerInputHandler.MoveInput;
+        // input.Set(new NetworkInputData { horizontal = m.x, vertical = m.y });
     }
 
     // ===== 명시적 인터페이스 구현 =====
