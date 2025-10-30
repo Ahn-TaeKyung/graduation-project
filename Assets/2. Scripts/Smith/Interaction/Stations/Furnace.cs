@@ -3,80 +3,76 @@ using UnityEngine;
 
 public class Furnace : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private Transform slot;     // 없어도 됨 (null 허용)
+    [SerializeField] private Transform slot;
     [SerializeField] private float smeltTime = 3f;
     [SerializeField] private ItemType inputType = ItemType.Ore;
     [SerializeField] private NetworkObject outputPrefab;
-
     [SerializeField] private Animator animator;
     [SerializeField] private ParticleSystem[] vfxOnSmelt;
     [SerializeField] private ProgressBarController progressBar;
 
     [Networked] private NetworkObject Stored { get; set; }
+    [Networked] private float Timer { get; set; }
     [Networked] private bool InUse { get; set; }
-
-    private float timer;
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (InUse) { hint = ""; return false; }
+        if (InUse && Timer < smeltTime)
+        {
+            hint = "용해 중...";
+            return false;
+        }
 
         if (Stored == null)
         {
             bool ok = p.hand.Held && p.hand.Held.type == inputType;
-            hint = ok ? "E - 화로에 넣기" : "";
+            hint = ok ? "E - 넣기" : "";
             return ok;
         }
-        else if (timer >= smeltTime)
+        else
         {
-            bool ok = p.hand.IsEmpty;
-            hint = ok ? "E - 주조물 꺼내기" : "";
+            bool ok = (Timer >= smeltTime) && p.hand.IsEmpty;
+            hint = ok ? "E - 꺼내기" : "";
             return ok;
         }
-
-        hint = "용해 중...";
-        return false;
     }
 
     public void OnTap(PlayerInteractor p)
     {
         if (!Object.HasStateAuthority) return;
-        if (InUse) return;
 
         // 넣기
         if (Stored == null)
         {
             if (p.hand.Held == null || p.hand.Held.type != inputType) return;
+
             var item = p.hand.Take();
             Stored = item.GetComponent<NetworkObject>();
-            timer = 0f;
+            Timer = 0f;
             InUse = true;
 
-            // 🔹 slot이 없으면 그냥 화로 Transform 기준
-            Transform target = slot ? slot : transform;
-            item.transform.SetParent(target);
+            Transform t = slot ? slot : transform;
+            item.transform.SetParent(t);
             item.transform.localPosition = Vector3.zero;
             item.gameObject.SetActive(false);
 
-            SetSmelting(true);
-            if (progressBar) progressBar.StartProgress(smeltTime);
+            RPC_SmeltingVisual(true, smeltTime);   // ← 모두에게 “시작” 알림
         }
         // 꺼내기
-        else if (timer >= smeltTime && p.hand.IsEmpty)
+        else if (Timer >= smeltTime && p.hand.IsEmpty)
         {
-            if (progressBar) progressBar.StopProgress();
+            RPC_SmeltingVisual(false, 0f);
 
             var result = Runner.Spawn(outputPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity, p.NetObj.InputAuthority);
             p.hand.Pick(result.GetComponent<Item>());
 
             Runner.Despawn(Stored);
             Stored = null;
-            timer = 0f;
+            Timer = 0f;
             InUse = false;
-            SetSmelting(false);
         }
     }
 
@@ -84,31 +80,41 @@ public class Furnace : NetworkBehaviour, IInteractable
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
 
+    // 서버만 시간 잰다
     private void Update()
     {
         if (!Object.HasStateAuthority) return;
-        if (Stored == null || timer >= smeltTime) return;
+        if (Stored == null) return;
+        if (!InUse) return;
 
-        timer += Time.deltaTime;
-
-        if (timer >= smeltTime)
+        Timer += Time.deltaTime;
+        if (Timer >= smeltTime)
         {
-            SetSmelting(false);
-            if (progressBar) progressBar.StopProgress();
             InUse = false;
+            RPC_SmeltingVisual(false, 0f);
         }
     }
 
-    private void SetSmelting(bool on)
+    // === 여기서부터는 “모두”가 실행하는 부분 ===
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_SmeltingVisual(bool on, float duration)
     {
-        if (animator) animator.SetBool("IsSmelting", on);
-        if (vfxOnSmelt != null)
+        if (on)
         {
-            foreach (var ps in vfxOnSmelt)
+            if (progressBar) progressBar.StartProgress(duration);
+            if (animator) animator.SetBool("IsSmelting", true);
+            if (vfxOnSmelt != null)
             {
-                if (!ps) continue;
-                if (on) { if (!ps.isPlaying) ps.Play(); }
-                else { if (ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Play();
+            }
+        }
+        else
+        {
+            if (progressBar) progressBar.StopProgress();
+            if (animator) animator.SetBool("IsSmelting", false);
+            if (vfxOnSmelt != null)
+            {
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Stop();
             }
         }
     }
