@@ -1,12 +1,18 @@
+// 파일명: TurretDefinition.cs
+using Fusion;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "TD/TurretDefinition")]
+[CreateAssetMenu(fileName = "TurretDef_", menuName = "TowerDefense/Turret Definition")]
 public class TurretDefinition : ScriptableObject
 {
-    public string turretName;
-    public GameObject turretNetworkPrefab; // NetworkObject 가 포함된 prefab
-    public GameObject ghostPrefab; // ghost preview prefab
-    public Vector2Int size = new Vector2Int(2, 2); // grid 크기 (x,y)
-    public int cost = 10;
-    public Sprite icon;
+    public string ID = "BasicTurret";
+    public string DisplayName = "기본 포탑";
+    public int Cost = 100;
+    public Vector2Int Size = new Vector2Int(1, 1); // 그리드 크기 (1x1)
+
+    [Header("Prefabs")]
+    [Tooltip("설치 전 로컬 미리보기 프리팹 (네트워크 없음)")]
+    public GameObject GhostPrefab;
+    [Tooltip("실제 스폰될 네트워크 프리팹 (NetworkObject 포함)")]
+    public NetworkPrefabRef NetworkPrefab; // Fusion 2.x는 NetworkPrefabRef 사용
 }

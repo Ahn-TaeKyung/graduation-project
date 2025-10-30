@@ -1,87 +1,105 @@
+// 파일명: GridManager.cs
 using UnityEngine;
 
-/// <summary>
-/// GridManager: world <-> cell 변환, cell 점유/해제, 범위 검사 제공
-/// 사용: GridManager.Instance.IsAreaFree(cellOrigin, sizeX,sizeY)
-/// </summary>
 public class GridManager : MonoBehaviour
 {
     public static GridManager Instance { get; private set; }
 
-    [Header("Grid Settings")]
-    public Vector2 originWorld = Vector2.zero; // world 좌표 원점
-    public int width = 50;
-    public int height = 30;
-    public float cellSize = 1f; // 한 칸의 world 단위 크기
+    [Header("Grid Config")]
+    [Tooltip("월드 맵으로 사용할 Ground 오브젝트의 Transform")]
+    [SerializeField] private Transform groundTransform;
+    [Tooltip("Ground 오브젝트의 X축 Scale과 동일해야 함")]
+    [SerializeField] private int gridWidth = 30;
+    [Tooltip("Ground 오브젝트의 Z축 Scale과 동일해야 함")]
+    [SerializeField] private int gridHeight = 20;
+    public float cellSize = 1.0f; // 1셀 = 1유닛
 
-    private bool[,] occupied;
-    private bool[,] pathMask; // 적의 길(설치 금지 영역)
+    private Vector3 _origin; // 그리드의 (0,0) 월드 좌표 (좌측 하단)
+    private bool[,] _occupiedGrid;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
-        occupied = new bool[width, height];
-        pathMask = new bool[width, height];
+        _occupiedGrid = new bool[gridWidth, gridHeight];
+        
+        // Ground 큐브의 중심과 스케일을 기반으로 좌측 하단 (0,0) 원점 계산
+        Vector3 center = groundTransform.position;
+        // Ground 큐브의 스케일은 1유닛 큐브 기준이므로 cellSize를 곱해 실제 월드 크기를 구함
+        Vector3 worldSize = new Vector3(groundTransform.localScale.x * cellSize, 0, groundTransform.localScale.z * cellSize);
+        
+        _origin = center - new Vector3(worldSize.x / 2f, 0, worldSize.z / 2f);
+        _origin.y = groundTransform.position.y; // Ground의 높이
     }
 
-    public Vector2Int WorldToCell(Vector3 worldPos)
+    // 월드 좌표 -> 그리드 좌표
+    public bool WorldToGrid(Vector3 worldPos, out Vector2Int gridPos)
     {
-        var local = new Vector2(worldPos.x - originWorld.x, worldPos.z - originWorld.y);
-        int x = Mathf.FloorToInt(local.x / cellSize);
-        int y = Mathf.FloorToInt(local.y / cellSize);
-        return new Vector2Int(x, y);
-    }
+        gridPos = Vector2Int.zero;
+        Vector3 localPos = worldPos - _origin;
 
-    public Vector3 CellToWorldCenter(Vector2Int cell)
-    {
-        float x = originWorld.x + (cell.x + 0.5f) * cellSize;
-        float z = originWorld.y + (cell.y + 0.5f) * cellSize;
-        return new Vector3(x, 0f, z);
-    }
+        int x = Mathf.FloorToInt(localPos.x / cellSize);
+        int y = Mathf.FloorToInt(localPos.z / cellSize);
 
-    public bool IsInsideGrid(Vector2Int cell)
-    {
-        return cell.x >= 0 && cell.y >= 0 && cell.x < width && cell.y < height;
-    }
+        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
+        {
+            return false; // 그리드 범위 밖
+        }
 
-    // 체크: 주어진 origin cell, sizeX x sizeY 공간이 모두 비어있고 path에 포함되지 않았는가
-    public bool IsAreaFree(Vector2Int originCell, int sizeX, int sizeY)
-    {
-        for (int cx = 0; cx < sizeX; cx++)
-            for (int cy = 0; cy < sizeY; cy++)
-            {
-                var c = new Vector2Int(originCell.x + cx, originCell.y + cy);
-                if (!IsInsideGrid(c)) return false;
-                if (occupied[c.x, c.y]) return false;
-                if (pathMask[c.x, c.y]) return false;
-            }
+        gridPos = new Vector2Int(x, y);
         return true;
     }
 
-    // 마킹: 설치 시점에 점유 처리
-    public void SetAreaOccupied(Vector2Int originCell, int sizeX, int sizeY, bool occupy)
+    // 그리드 좌표 (중심) -> 월드 좌표
+    public Vector3 GridToWorld(Vector2Int gridPos)
     {
-        for (int cx = 0; cx < sizeX; cx++)
-            for (int cy = 0; cy < sizeY; cy++)
-            {
-                var c = new Vector2Int(originCell.x + cx, originCell.y + cy);
-                if (IsInsideGrid(c))
-                    occupied[c.x, c.y] = occupy;
-            }
+        float x = (gridPos.x * cellSize) + (cellSize * 0.5f);
+        float z = (gridPos.y * cellSize) + (cellSize * 0.5f);
+        // Y는 Ground의 Y 레벨 + 0.1 (바닥 뚫림 방지)
+        return _origin + new Vector3(x, 0.1f, z); 
     }
 
-    // 외부에서 Path(적의 길)를 세팅하는 함수 (PathGrid 스크립트가 호출)
-    public void SetPathCells(System.Collections.Generic.IEnumerable<Vector2Int> pathCells)
+    // 특정 구역이 비어있는지 검사
+    public bool IsAreaFree(Vector2Int gridPos, Vector2Int size)
     {
-        // 모두 false 초기화 후 적용 (단순 처리)
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                pathMask[x, y] = false;
+        bool checkPath = PathManager.Instance != null;
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                Vector2Int cell = gridPos + new Vector2Int(x, y);
 
-        foreach (var c in pathCells)
-            if (IsInsideGrid(c))
-                pathMask[c.x, c.y] = true;
+                if (cell.x < 0 || cell.x >= gridWidth || cell.y < 0 || cell.y >= gridHeight)
+                    return false; // 맵 밖
+
+                if (_occupiedGrid[cell.x, cell.y])
+                    return false; // 이미 점유됨
+                
+                // TODO: 여기에 "적 경로"인지 검사하는 로직 추가 (PathManager 참조)
+                if (checkPath && PathManager.Instance.IsGridCellOnPath(cell))
+                {
+                    Debug.Log($"설치 불가: 셀 {cell}은 적 이동 경로입니다.");
+                    return false; 
+                }
+            }
+        }
+        return true;
+    }
+
+    // 구역 점유 (Host에서만 호출되어야 함)
+    public void OccupyArea(Vector2Int gridPos, Vector2Int size, bool occupy)
+    {
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                Vector2Int cell = gridPos + new Vector2Int(x, y);
+                if (cell.x >= 0 && cell.x < gridWidth && cell.y >= 0 && cell.y < gridHeight)
+                {
+                    _occupiedGrid[cell.x, cell.y] = occupy;
+                }
+            }
+        }
     }
 }

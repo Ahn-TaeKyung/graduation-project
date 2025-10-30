@@ -1,10 +1,7 @@
+// 파일명: TurretManager.cs
 using Fusion;
 using UnityEngine;
 
-/// <summary>
-/// TurretManager: Host(StateAuthority)에서 설치요청을 검증하고 실제 NetworkObject 스폰
-/// - GameStateManager가 RPC 수신을 통해 RequestPlaceTurret 호출하면 여기서 Spawn 수행
-/// </summary>
 public class TurretManager : NetworkBehaviour
 {
     public static TurretManager Instance { get; private set; }
@@ -15,56 +12,48 @@ public class TurretManager : NetworkBehaviour
         else Destroy(gameObject);
     }
 
-    // Host에서 호출되어야 함
-    public void SpawnTurretOnHost(NetworkObject prefab, Vector2Int cell, Vector2Int size, PlayerRef owner)
+    // [RpcSources.All] = 모든 클라이언트가 호출 가능
+    // [RpcTargets.StateAuthority] = Host (서버) 에서만 실행됨
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestPlaceTurret(string turretID, Vector2Int gridPos, PlayerRef placer)
     {
-        if (!Object.HasStateAuthority)
+        // Host가 아니면 즉시 리턴 (안전장치)
+        if (!Object.HasStateAuthority) return;
+
+        TurretDefinition def = TurretDatabase.Instance.GetTurretByID(turretID);
+        if (def == null)
         {
-            Debug.LogWarning("[TurretManager] SpawnTurretOnHost should be called on StateAuthority (Host)");
+            Debug.LogError($"[TurretManager] Host: {turretID} ID를 가진 터렛을 찾을 수 없음");
             return;
         }
 
-        if (!GridManager.Instance.IsAreaFree(cell, size.x, size.y))
+        // Host에서 2차 검증 (유효성, 경로, 비용 등)
+        if (GridManager.Instance.IsAreaFree(gridPos, def.Size))
         {
-            Debug.Log("[TurretManager] Host: 설치 불가 (검증 실패)");
-            return;
-        }
+            // 1. 그리드 점유 (Host의 GridManager만 업데이트)
+            GridManager.Instance.OccupyArea(gridPos, def.Size, true);
 
-        // Grid 점유 처리
-        GridManager.Instance.SetAreaOccupied(cell, size.x, size.y, true);
-
-        // 실제 world pos
-        Vector3 worldPos = GridManager.Instance.CellToWorldCenter(cell);
-
-        var runner = FindObjectOfType<NetworkRunner>();
-        if (runner == null)
-        {
-            Debug.LogError("[TurretManager] NetworkRunner not found.");
-            return;
-        }
-
-        if (prefab == null)
-        {
-            Debug.LogError("[TurretManager] prefab is null!");
-            return;
-        }
-
-        // Spawn
-        NetworkObject spawned = runner.Spawn(prefab, worldPos, Quaternion.identity);
-
-        // Spawn 후 owner 할당 (클라이언트 권한)
-        if (spawned != null && owner != PlayerRef.None)
-        {
-            spawned.AssignInputAuthority(owner);
-            Debug.Log("[TurretManager] Turret spawned with owner " + owner);
-        }
-        else if (spawned != null)
-        {
-            Debug.Log("[TurretManager] Turret spawned at " + cell);
+            // 2. 월드 좌표 계산
+            Vector3 worldPos = GridManager.Instance.GridToWorld(gridPos);
+            worldPos.y = 31;
+            // 3. Host가 네트워크 오브젝트 스폰
+            // (주의: 터렛은 Host가 소유합니다. Placer는 InputAuthority를 갖지 않습니다.)
+            NetworkObject spawnedTurret = Runner.Spawn(def.NetworkPrefab, worldPos, Quaternion.identity);
+            if (spawnedTurret != null)
+            {
+                spawnedTurret.AssignInputAuthority(placer);
+                Debug.Log($"[TurretManager] SUCCESS: Turret {turretID} spawned with ID {spawnedTurret.Id}");
+            }
+            else
+            {
+                Debug.LogError($"[TurretManager] FAILED: Runner.Spawn({turretID}) failed! Prefab not registered?");
+            }
+            Debug.Log($"[TurretManager] Host: {placer}가 {turretID}를 {gridPos}에 스폰 성공");
         }
         else
         {
-            Debug.LogError("[TurretManager] Spawn failed!");
+            Debug.LogWarning($"[TurretManager] Host: {placer}의 {gridPos} 스폰 요청 거부 (점유됨)");
+            // TODO: 클라이언트에게 스폰 실패 피드백 (예: RPC 응답)
         }
     }
 }

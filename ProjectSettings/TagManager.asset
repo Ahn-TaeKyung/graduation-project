@@ -23,9 +23,9 @@ TagManager:
   - Module
   - 
   - 
-  - 
-  - TowerDefenseUI
-  - BombDefuseUI
+  - Ground
+  - Enemy
+  - Bullet
   - BuildZone
   - 
   - Interactable

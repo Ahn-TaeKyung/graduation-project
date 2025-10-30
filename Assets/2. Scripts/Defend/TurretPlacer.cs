@@ -1,135 +1,151 @@
+// 파일명: TurretPlacer.cs
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System;
+// using UnityEngine.UI; // UI 버튼 직접 참조 제거
 
-/// <summary>
-/// TurretPlacer: 플레이어 로컬에서 Defend 모드일 때 마우스로 타일 선택, ghost 표시, 설치 요청 전송
-/// - 이 스크립트는 PlayerPrefab에 붙여짐
-/// </summary>
 public class TurretPlacer : NetworkBehaviour
 {
-    [Header("References")]
-    public Camera defendCamera; // 씬의 DefendCamera (씬에 고정)
-    public Transform ghostParent;
+    [Header("Setup (Prefab)")]
+    [Tooltip("자신의 자식인 GhostContainer Transform")]
+    [SerializeField] private Transform ghostParent;
+    [SerializeField] private LayerMask groundLayer;
+    
+    // [제거됨] 씬 UI 참조 필드
+    // [SerializeField] private GameObject placementConfirmPanel;
+    // [SerializeField] private Button placeButton;
+    // [SerializeField] private Button cancelButton;
 
-    [Header("Config")]
-    public TurretDefinition[] turretOptions; // 인스펙터에서 등록
-    public int selectedIndex = 0; // 선택된 turret 타입
+    private Camera _defendCamera;
+    private GameObject _currentGhost;
+    [SerializeField] private GameObject TowerPanel;
+    private Renderer _ghostRenderer; // 고스트 색상 변경용
+    private TurretDefinition _currentTurretDef;
+    private Vector2Int _currentGridPos;
+    private bool _canPlace;
+    private bool _isPlacing; // 현재 드래그(설치) 중인지 여부
 
-    private GameObject currentGhost;
-    private Vector2Int currentCell;
-    private bool currentCanPlace = false;
+    public static TurretPlacer LocalInstance { get; private set; }
 
-    private void Start()
+    public override void Spawned()
     {
-        // defendCamera는 GameObject.Find로도 찾을 수 있으나, Inspector에 할당하는걸 권장
-        if (defendCamera == null)
-            defendCamera = GameObject.Find("DefendCamera")?.GetComponent<Camera>();
+        if (Object.HasInputAuthority)
+        {
+            LocalInstance = this;
+            _defendCamera = GameObject.Find("DefendCamera")?.GetComponent<Camera>();
+            TowerPanel = GameObject.Find("BuildPanel")?.GetComponent<GameObject>();
+            // [제거됨] 버튼 리스너 연결 로직
+        }
     }
 
     private void Update()
     {
-        if (!Object.HasInputAuthority) return;
-
-        // Defend 모드일때만 동작: 카메라 활성화 여부로 판단하거나 GameState 체크
-        if (defendCamera == null) return;
-        if (!defendCamera.enabled) // 또는 isDefendView 파라미터로
-            return;
-
-        // 마우스 위치 -> cell 계산
-        if (!Mouse.current.leftButton.isPressed && Mouse.current.position.IsActuated())
+        if (!Object.HasInputAuthority || _defendCamera == null || !_defendCamera.enabled)
         {
-            Vector2 mouse = Mouse.current.position.ReadValue();
-            Ray ray = defendCamera.ScreenPointToRay(mouse);
-            if (Physics.Raycast(ray, out RaycastHit hit, 100f, LayerMask.GetMask("Ground")))
+            if (_isPlacing) CancelPlacement(); // 모드 전환 시 강제 취소
+            return;
+        }
+
+        if (_isPlacing)
+        {
+            UpdatePlacement();
+        }
+    }
+
+    // 1. (UIDragToPlace가 호출) 드래그 시작
+    public void StartPlacing(TurretDefinition def)
+    {
+        if (!Object.HasInputAuthority) return;
+        if (_currentGhost != null) Destroy(_currentGhost);
+        if (def == null || def.GhostPrefab == null) return;
+        
+        if (_defendCamera == null || !_defendCamera.enabled)
+        {
+            Debug.LogWarning("DefendCamera가 활성화되지 않아 설치를 시작할 수 없습니다.");
+            return;
+        }
+
+        _isPlacing = true;
+        _currentTurretDef = def;
+        _currentGhost = Instantiate(def.GhostPrefab, ghostParent); 
+        _ghostRenderer = _currentGhost.GetComponentInChildren<Renderer>(true);
+        if (_ghostRenderer == null)
+        {
+            Debug.LogError($"[TurretPlacer] GhostPrefab에 Renderer 컴포넌트가 없습니다! {def.DisplayName}");
+            // 오류가 났더라도 계속 진행은 가능하게 함 (색상 변경만 포기)
+        }
+        _currentGhost.SetActive(false);
+
+        // [수정됨] 씬 UI의 싱글톤을 직접 호출
+        PlacementConfirmPanel.Instance.HidePanel();
+    }
+
+    // 2. (Update에서 호출) 드래그 중
+    public void UpdatePlacement()
+    {
+        if (_currentGhost == null || _defendCamera == null) return;
+
+        Ray ray = _defendCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (Physics.Raycast(ray, out RaycastHit hit, 200f, groundLayer))
+        {
+            if (!_currentGhost.activeSelf) _currentGhost.SetActive(true);
+
+            if (GridManager.Instance.WorldToGrid(hit.point, out _currentGridPos))
             {
-                Vector3 worldPos = hit.point;
-                var cell = GridManager.Instance.WorldToCell(worldPos);
-                if (cell != currentCell)
-                {
-                    currentCell = cell;
-                    UpdateGhost();
-                }
+                _currentGhost.transform.position = GridManager.Instance.GridToWorld(_currentGridPos);
+                _canPlace = GridManager.Instance.IsAreaFree(_currentGridPos, _currentTurretDef.Size);
+                if (_ghostRenderer != null)
+                    _ghostRenderer.material.color = _canPlace ? Color.green : Color.red;
             }
         }
-
-        // 마우스 클릭 (설치 시도) - 왼클릭
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        else
         {
-            TryRequestPlace(currentCell);
-        }
-
-        // Q/E 등으로 turret 선택 변경 (예시)
-        if (Keyboard.current.qKey.wasPressedThisFrame)
-            SelectPrev();
-        if (Keyboard.current.eKey.wasPressedThisFrame)
-            SelectNext();
-    }
-
-    private void UpdateGhost()
-    {
-        DestroyCurrentGhost();
-
-        var def = turretOptions[selectedIndex];
-        if (def == null) return;
-
-        // world pos center
-        Vector3 center = GridManager.Instance.CellToWorldCenter(currentCell);
-        currentGhost = Instantiate(def.ghostPrefab, center, Quaternion.identity, ghostParent);
-        GhostTurret ghost = currentGhost.GetComponent<GhostTurret>();
-        if (ghost != null)
-        {
-            ghost.SetSize(def.size.x, def.size.y);
-            currentCanPlace = GridManager.Instance.IsAreaFree(currentCell, def.size.x, def.size.y);
-            ghost.SetValid(currentCanPlace);
+            if (_currentGhost.activeSelf) _currentGhost.SetActive(false);
+            _canPlace = false;
         }
     }
 
-    private void DestroyCurrentGhost()
+    // 3. (UIDragToPlace가 호출) 드래그 끝 (드롭)
+    public void EndPlacing()
     {
-        if (currentGhost != null)
-            Destroy(currentGhost);
-        currentGhost = null;
-    }
+        if (!Object.HasInputAuthority || !_isPlacing) return;
 
-    private void TryRequestPlace(Vector2Int cell)
-    {
-        var def = turretOptions[selectedIndex];
-        if (def == null) return;
-
-        if (!GridManager.Instance.IsInsideGrid(cell))
+        if (_canPlace)
         {
-            Debug.Log("[TurretPlacer] cell out of bounds");
-            return;
+            // [수정됨] 씬 UI의 싱글톤을 직접 호출
+            PlacementConfirmPanel.Instance.ShowPanel();
         }
-
-        bool canPlace = GridManager.Instance.IsAreaFree(cell, def.size.x, def.size.y);
-        if (!canPlace)
+        else
         {
-            Debug.Log("[TurretPlacer] 설치 불가");
-            return;
+            CancelPlacement();
         }
-
-        // 네트워크로 설치 요청 전송 (클라이언트 -> Host)
-        // 방법: GameStateManager.RequestPlaceTurret(...) 호출 (아래 참고)
-        GameStateManager.Instance.RequestPlaceTurretRPC(cell, selectedIndex, Runner.LocalPlayer); // wrapper will handle RPC
+        _isPlacing = false; // 드래그 종료
     }
 
-    private void SelectNext()
+    // 4. (PlacementConfirmPanel이 호출) 설치 확정
+    public void ConfirmPlacement()
     {
-        selectedIndex = (selectedIndex + 1) % turretOptions.Length;
-        UpdateGhost();
+        if (_currentGhost == null || !_canPlace) return;
+
+        TurretManager.Instance.RPC_RequestPlaceTurret(
+            _currentTurretDef.ID,
+            _currentGridPos,
+            Runner.LocalPlayer
+        );
+
+        Destroy(_currentGhost);
+        _currentGhost = null;
+        // 패널 숨기기는 PlacementConfirmPanel이 스스로 처리
     }
 
-    private void SelectPrev()
+    // 5. (PlacementConfirmPanel이 호출) 설치 취소
+    public void CancelPlacement()
     {
-        selectedIndex = (selectedIndex - 1 + turretOptions.Length) % turretOptions.Length;
-        UpdateGhost();
-    }
-
-    private void OnDestroy()
-    {
-        DestroyCurrentGhost();
+        if (_currentGhost != null) Destroy(_currentGhost);
+        _currentGhost = null;
+        
+        // [수정됨] 씬 UI의 싱글톤을 직접 호출 (이미 켜져있을 수 있으므로)
+        PlacementConfirmPanel.Instance.HidePanel();
+        _isPlacing = false;
     }
 }

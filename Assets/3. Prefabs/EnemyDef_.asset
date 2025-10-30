@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c7acd444124bfe449c05009e6feb552, type: 3}
+  m_Name: EnemyDef_
+  m_EditorClassIdentifier: 
+  ID: BasicMonster
+  DisplayName: "\uAE30\uBCF8 \uBAAC\uC2A4\uD130"
+  MaxHealth: 100
+  MoveSpeed: 2
+  DamageToGoal: 1
+  NetworkPrefab:
+    RawGuidValue: 7f582b21326b37847b639e3907b4d065

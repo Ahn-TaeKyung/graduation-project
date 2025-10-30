@@ -15,7 +15,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
             return;
 
         // 씬 내 카메라를 찾아서 참조
-        buildCamera = GameObject.Find("BuildCamera")?.GetComponent<Camera>();
+        buildCamera = GameObject.Find("SmithCamera")?.GetComponent<Camera>();
         defendCamera = GameObject.Find("DefendCamera")?.GetComponent<Camera>();
 
         if (buildCamera == null || defendCamera == null)
