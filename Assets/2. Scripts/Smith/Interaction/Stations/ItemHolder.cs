@@ -1,8 +1,9 @@
-using UnityEngine;
 using System.Linq;
+using Fusion;
+using UnityEngine;
 
 [DisallowMultipleComponent]
-public class ItemHolder : MonoBehaviour, IInteractable
+public class ItemHolder : NetworkBehaviour, IInteractable
 {
     [Header("Slot Setup")]
     [SerializeField] private Transform slot;
@@ -11,35 +12,34 @@ public class ItemHolder : MonoBehaviour, IInteractable
     [SerializeField] private float placedScale = 1f;
 
     [Header("Allowed Items")]
-    [Tooltip("체크 시 어떤 아이템이든 올릴 수 있음 (allowedTypes 무시)")]
     [SerializeField] private bool allowAll = false;
-    [Tooltip("allowAll이 꺼져 있을 때 허용할 타입들")]
     [SerializeField] private ItemType[] allowedTypes = new ItemType[0];
-    [Tooltip("비허용 아이템일 때 보여줄 커스텀 문구 (비워두면 자동 생성됨)")]
     [SerializeField] private string customAllowedHint;
 
     [Header("Rotation per Type")]
-    [Tooltip("Sword가 올라올 때 회전값")]
     [SerializeField] private Vector3 swordRotation = new Vector3(0, 90, 0);
-    [Tooltip("Bow가 올라올 때 회전값")]
     [SerializeField] private Vector3 bowRotation = new Vector3(0, 45, 0);
 
-    private Item stored;
+    // 🔐 이 홀더 위에 올려진 네트워크 아이템
+    [Networked]
+    private NetworkObject Stored { get; set; }
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (stored == null)
+        // 아무것도 안 올라가 있음 → 올리기 모드
+        if (Stored == null)
         {
-            if (p.hand.Held == null)
+            var held = p.hand.Held;
+            if (held == null)
             {
                 hint = "들고 있는 아이템이 없음";
                 return false;
             }
 
-            if (!IsAllowed(p.hand.Held))
+            if (!IsAllowed(held))
             {
                 hint = string.IsNullOrEmpty(customAllowedHint)
                     ? $"허용 아이템만 올릴 수 있음: {BuildAllowedListText()}"
@@ -50,6 +50,7 @@ public class ItemHolder : MonoBehaviour, IInteractable
             hint = "E - 아이템 올려두기";
             return true;
         }
+        // 뭐가 올라가 있음 → 집기 모드
         else
         {
             bool ok = p.hand.IsEmpty;
@@ -60,19 +61,41 @@ public class ItemHolder : MonoBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        if (stored == null)
-        {
-            if (p.hand.Held == null) return;
-            if (!IsAllowed(p.hand.Held)) return;
+        // 상태 바꾸는 건 권한 있는 쪽만
+        if (!Object.HasStateAuthority) return;
 
-            stored = p.hand.Take();
-            PlaceOnSlot(stored);
+        // 1) 비어있을 때 → 플레이어 손에서 가져와 올리기
+        if (Stored == null)
+        {
+            var held = p.hand.Held;
+            if (held == null) return;
+            if (!IsAllowed(held)) return;
+
+            var no = held.GetComponent<NetworkObject>();
+            if (no == null) return;
+
+            // 플레이어 손 비우기
+            p.hand.Take();
+
+            // 네트워크에 "이 홀더 위에는 이거 올라감" 이라고 기록
+            Stored = no;
+
+            // 모든 클라에서 똑같이 보이게
+            PlaceOnSlot(held);
         }
+        // 2) 뭔가 올라가 있을 때 → 플레이어 손에 다시 주기
         else
         {
             if (!p.hand.IsEmpty) return;
-            p.hand.Pick(stored);
-            stored = null;
+
+            var item = Stored.GetComponent<Item>();
+            if (item == null) return;
+
+            // 네트워크에서 홀더 비우기
+            Stored = null;
+
+            // 플레이어 손에 들려주기
+            p.hand.Pick(item);
         }
     }
 
@@ -115,12 +138,21 @@ public class ItemHolder : MonoBehaviour, IInteractable
 
         switch (item.type)
         {
-            case ItemType.Sword:
-                return swordRotation;
-            case ItemType.Bow:
-                return bowRotation;
-            default:
-                return slotEuler;
+            case ItemType.Sword: return swordRotation;
+            case ItemType.Bow: return bowRotation;
+            default: return slotEuler;
         }
+    }
+
+
+    private void LateUpdate()
+    {
+        if (Stored == null) return;
+
+        var item = Stored.GetComponent<Item>();
+        if (item == null) return;
+
+        
+        PlaceOnSlot(item);
     }
 }

@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdPoint: {fileID: 6545013192773784179}
+  _HeldNet: {fileID: 0}
 --- !u!1 &4734532361239239215
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,8 +162,10 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 801823533186838491}
   - {fileID: -7149973595889402254}
+  - {fileID: 2562271495733685669}
   - {fileID: 6230396933530331355}
   - {fileID: 7912536888391439185}
+  - {fileID: 3763114999079752670}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &801823533186838491
 MonoBehaviour:
@@ -281,9 +284,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 16384
-  placementConfirmPanel: {fileID: 0}
-  placeButton: {fileID: 0}
-  cancelButton: {fileID: 0}
+  TowerPanel: {fileID: 0}
 --- !u!1 &6285668711749316202
 GameObject:
   m_ObjectHideFlags: 0

@@ -45,6 +45,8 @@ GameObject:
   - component: {fileID: 498567341673003331}
   - component: {fileID: 5777711311991035201}
   - component: {fileID: 5187035014243098270}
+  - component: {fileID: 5963470344524244881}
+  - component: {fileID: 3317539536353192030}
   m_Layer: 19
   m_Name: CounterTop_hand
   m_TagString: Untagged
@@ -179,6 +181,40 @@ MonoBehaviour:
   customAllowedHint: 
   swordRotation: {x: 0, y: 0, z: 90}
   bowRotation: {x: 0, y: 45, z: 45}
+--- !u!114 &5963470344524244881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3674083688
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 5187035014243098270}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &3317539536353192030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95c989662e721446a69c6b264a3b753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 0}
+  scale: 1.03
+  buildAtRuntime: 1
 --- !u!1 &5084913640367905132
 GameObject:
   m_ObjectHideFlags: 0

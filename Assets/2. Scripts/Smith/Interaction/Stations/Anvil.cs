@@ -1,95 +1,125 @@
+using Fusion;
 using UnityEngine;
 
-public class Anvil : MonoBehaviour, IInteractable
+public class Anvil : NetworkBehaviour, IInteractable
 {
     [Header("Setup")]
     [SerializeField] private Transform slot;
     [SerializeField] private float forgeTime = 2f;
     [SerializeField] private ItemType inputType = ItemType.Ingot;
-    [SerializeField] private Item outputPrefab;
+    [SerializeField] private NetworkObject outputPrefab;
 
-    [Header("Placed Visual Tuning")]
+    [Header("Slot Visual")]
     [SerializeField] private Vector3 slotLocalOffset;
     [SerializeField] private Vector3 slotLocalEuler;
     [SerializeField] private float placedScale = 1f;
 
     [Header("UI")]
-    [SerializeField] private ProgressBarController progressBar; //  진행바 연결
+    [SerializeField] private ProgressBarController progressBar;
 
-    private Item stored;
-    private bool isForging;
+    // 이 모루 하나에만 적용되는 플래그
+    [Networked] private NetworkObject Stored { get; set; }
+    [Networked] private bool InUse { get; set; }
 
-    public InteractionKind Kind => (stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
+    public InteractionKind Kind => (Stored == null) ? InteractionKind.Tap : InteractionKind.Hold;
     public float HoldDuration => forgeTime;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (stored == null)
+        // 이 모루만 잠긴 상태면 못 씀
+        if (InUse)
+        {
+            hint = "";       // 굳이 "사용 중" 안 띄움
+            return false;
+        }
+
+        if (Stored == null)
         {
             bool ok = p.hand.Held && p.hand.Held.type == inputType;
-            hint = ok ? "E - 쇳물 올려두기" : "쇳물이 필요함";
+            hint = ok ? "E - 재료 올리기" : "";
             return ok;
         }
         else
         {
             bool ok = p.hand.IsEmpty;
-            hint = ok ? "E 꾹 - 검 단조" : "손이 비어야 함";
+            hint = ok ? $"E 꾹 - {inputType} 단조" : "";
             return ok;
         }
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (stored != null) return;
-        if (p.hand.Held == null || p.hand.Held.type != inputType) return;
+        if (!Object.HasStateAuthority) return;
+        if (InUse) return;             // 이 모루만 잠금
 
-        stored = p.hand.Take();
-        PlaceOnSlot(stored);
+        // 빈 모루 → 손에 든 재료 올리기
+        if (Stored == null)
+        {
+            if (p.hand.Held == null) return;
+            if (p.hand.Held.type != inputType) return;
+
+            var item = p.hand.Take();
+            var no = item.GetComponent<NetworkObject>();
+            Stored = no;
+            PlaceOnSlot(item);
+        }
     }
 
-    //  Hold 시작,취소,완료
     public void OnHoldStart(PlayerInteractor p)
     {
-        if (stored != null && p.hand.IsEmpty && progressBar)
-        {
-            progressBar.StartProgress(forgeTime);
-            isForging = true;
-        }
+        if (!Object.HasStateAuthority) return;
+        if (InUse) return;
+        if (Stored == null) return;
+        if (!p.hand.IsEmpty) return;
+
+        InUse = true; // 이 모루만 잠금
+        if (progressBar) progressBar.StartProgress(forgeTime);
     }
 
     public void OnHoldCancel(PlayerInteractor p)
     {
-        if (isForging && progressBar)
-        {
-            progressBar.StopProgress();
-            isForging = false;
-        }
+        if (!Object.HasStateAuthority) return;
+        if (!InUse) return;
+
+        InUse = false;
+        if (progressBar) progressBar.StopProgress();
     }
 
     public void OnHoldComplete(PlayerInteractor p)
     {
-        if (stored == null || !p.hand.IsEmpty) return;
+        if (!Object.HasStateAuthority) return;
+        if (!InUse) return;
+        if (Stored == null) { InUse = false; return; }
+        if (!p.hand.IsEmpty) { InUse = false; return; }
 
         if (progressBar) progressBar.StopProgress();
-        isForging = false;
 
-        Destroy(stored.gameObject);
-        stored = null;
+        // 1) 재료 제거
+        Runner.Despawn(Stored);
+        Stored = null;
 
-        var outItem = Instantiate(outputPrefab);
-        p.hand.Pick(outItem);
+        // 2) 결과물 스폰
+        var spawned = Runner.Spawn(
+            outputPrefab,
+            slot.position,
+            slot.rotation,
+            p.NetObj.InputAuthority
+        );
+        var item = spawned.GetComponent<Item>();
+        p.hand.Pick(item);
+
+        // 3) 잠금 해제 
+        InUse = false;
     }
 
-    // ===== 유틸 =====
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
         item.transform.localPosition = slotLocalOffset;
         item.transform.localRotation = Quaternion.Euler(slotLocalEuler);
-        item.transform.localScale    = Vector3.one * Mathf.Max(0.0001f, placedScale);
+        item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
 
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
-        item.gameObject.SetActive(true);
     }
 }

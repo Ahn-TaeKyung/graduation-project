@@ -1,8 +1,10 @@
+using Fusion;
 using UnityEngine;
 
-public class WoodPile : MonoBehaviour, IInteractable
+public class WoodPile : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private Item logPrefab;
+    [SerializeField] private NetworkObject logPrefab;
+
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
@@ -14,7 +16,17 @@ public class WoodPile : MonoBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        var item = Instantiate(logPrefab);
+        if (!Object.HasStateAuthority) return; // 서버/호스트만 스폰
+        if (!p.hand.IsEmpty) return;
+
+        var spawned = Runner.Spawn(
+            logPrefab,
+            transform.position + Vector3.up * 0.5f,
+            Quaternion.identity,
+            p.NetObj.InputAuthority
+        );
+
+        var item = spawned.GetComponent<Item>();
         p.hand.Pick(item);
     }
 

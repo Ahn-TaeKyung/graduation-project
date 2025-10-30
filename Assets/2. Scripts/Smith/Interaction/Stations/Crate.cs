@@ -1,14 +1,15 @@
+using Fusion;
 using UnityEngine;
 
-public class Crate : MonoBehaviour, IInteractable
+public class Crate : NetworkBehaviour, IInteractable
 {
     [Header("Spawn Settings")]
-    [SerializeField] private Item orePrefab;
+    [SerializeField] private NetworkObject orePrefab;   // Item → NetworkObject
     [SerializeField] private Transform spawnPoint;
 
     [Header("Animation")]
-    [SerializeField] private Animator animator;                 // Visual_box의 Animator
-    [SerializeField] private string openTrigger = "Open"; // Animator Trigger 파라미터
+    [SerializeField] private Animator animator;
+    [SerializeField] private string openTrigger = "Open";
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
@@ -21,13 +22,14 @@ public class Crate : MonoBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        bool ok = p.hand.IsEmpty; // 손이 비어 있어야만 꺼낼 수 있음
+        bool ok = p.hand.IsEmpty;
         hint = ok ? "E - 재료 받기" : "손이 비어야 함";
         return ok;
     }
 
     public void OnTap(PlayerInteractor p)
     {
+        // 손 안 비었으면 X
         if (!p.hand.IsEmpty) return;
         if (!orePrefab)
         {
@@ -35,17 +37,38 @@ public class Crate : MonoBehaviour, IInteractable
             return;
         }
 
-        // 1) 재료 생성
-        var item = Instantiate(orePrefab, spawnPoint.position, spawnPoint.rotation);
+        // 서버/호스트만 스폰
+        if (!Object.HasStateAuthority) return;
 
-        // 2) 손에 바로 들려주기
-        p.hand.Pick(item);
+        var runner = NetworkManager.Instance.m_network_runner;
 
-        // 3) 매번 열기 애니메이션 재생
-        PlayOpen();
+        // 1) 네트워크로 아이템 생성
+        var spawned = runner.Spawn(
+            orePrefab,
+            spawnPoint.position,
+            spawnPoint.rotation,
+            p.NetObj.InputAuthority   
+        );
+
+        // 2) 손에 들려주기
+        var item = spawned.GetComponent<Item>();
+        if (item != null)
+            p.hand.Pick(item);
+
+        // 3) 모든 클라에서 열기 애니메이션 재생
+        RPC_PlayOpen();
     }
 
     public void OnHoldComplete(PlayerInteractor p) { }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
+
+    // === 애니메이션 전체에게 날리기 ===
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayOpen()
+    {
+        PlayOpen();
+    }
 
     private void PlayOpen()
     {
@@ -53,7 +76,4 @@ public class Crate : MonoBehaviour, IInteractable
         animator.ResetTrigger(openTrigger);
         animator.SetTrigger(openTrigger);
     }
-
-    public void OnHoldStart(PlayerInteractor p) { }
-    public void OnHoldCancel(PlayerInteractor p) { }
 }

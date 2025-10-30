@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 5777711311991035201}
   - component: {fileID: 8587366136042209930}
   - component: {fileID: 8645973364457793842}
+  - component: {fileID: 4672503235831236141}
   m_Layer: 19
   m_Name: Chopper
   m_TagString: Untagged
@@ -305,7 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  outlineToggle: {fileID: 0}
+  outlineToggle: {fileID: 8645973364457793842}
   priority: 100
 --- !u!114 &8587366136042209930
 MonoBehaviour:
@@ -322,7 +323,7 @@ MonoBehaviour:
   slot: {fileID: 7242737097548725295}
   chopTime: 1.5
   inputType: 4
-  outputPrefab: {fileID: 1277400945525474552, guid: 76bf3df7a581bd74fa23d5beb207de91, type: 3}
+  outputPrefab: {fileID: 8451611573471486493, guid: 76bf3df7a581bd74fa23d5beb207de91, type: 3}
   slotLocalOffset: {x: 0, y: 0, z: 0}
   slotLocalEuler: {x: 0, y: 0, z: 0}
   placedScale: 0.6
@@ -343,6 +344,25 @@ MonoBehaviour:
   outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
   scale: 1.03
   buildAtRuntime: 1
+--- !u!114 &4672503235831236141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1080291087
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8587366136042209930}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &7152461951907382655
 GameObject:
   m_ObjectHideFlags: 0
