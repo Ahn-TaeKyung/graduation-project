@@ -20,21 +20,18 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        // 1) 지금 돌고 있으면 막기
         if (InUse && Timer < smeltTime)
         {
             hint = "용해 중...";
             return false;
         }
 
-        // 2) 아직 아무것도 안 들어 있음 → 넣기 시도
         if (Stored == null)
         {
             bool ok = p.hand.Held && p.hand.Held.type == inputType;
             hint = ok ? "E - 넣기" : "";
             return ok;
         }
-        // 3) 다 만들어짐 → 꺼내기 시도
         else
         {
             bool ok = (Timer >= smeltTime) && p.hand.IsEmpty;
@@ -45,7 +42,8 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        // 상태 권한 체크 전에 Object null부터 확인
+        // 권한 없는 쪽은 요청만 보내게 하려면 여기에서 RPC_RequestTap(...)을 부르면 되고,
+        // 지금은 일단 단순하게 상태 권한 있는 쪽만 처리하게 둘게.
         if (!Object || !Object.HasStateAuthority) return;
 
         // 넣기
@@ -54,14 +52,17 @@ public class Furnace : NetworkBehaviour, IInteractable
             if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
             var item = p.hand.Take();
-            Stored = item.GetComponent<NetworkObject>();
+            var itemNet = item.GetComponent<NetworkObject>();
+            Stored = itemNet;
             Timer = 0f;
             InUse = true;
 
             Transform t = slot ? slot : transform;
             item.transform.SetParent(t);
             item.transform.localPosition = Vector3.zero;
-            item.gameObject.SetActive(false);
+
+            //  여기서 모든 클라에 “이 아이템은 이제 손에서 뗀 거고 꺼라”라고 알림
+            RPC_HideHeldItem(itemNet);
 
             RPC_SmeltingVisual(true, smeltTime);
         }
@@ -91,9 +92,8 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     private void Update()
     {
-        // ✅ 여기 방어 코드 추가
-        if (!Object) return;                      // 아직 네트워크 오브젝트가 아님
-        if (!Object.HasStateAuthority) return;    // 권한 없는 쪽에서는 시간 안 감
+        if (!Object) return;
+        if (!Object.HasStateAuthority) return;
         if (Stored == null) return;
         if (!InUse) return;
 
@@ -101,10 +101,11 @@ public class Furnace : NetworkBehaviour, IInteractable
         if (Timer >= smeltTime)
         {
             InUse = false;
-            RPC_SmeltingVisual(false, 0f);        // 이때 클라들한테 “다 됨” 알려줌
+            RPC_SmeltingVisual(false, 0f);
         }
     }
 
+    // === 시각 효과 공용 RPC ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void RPC_SmeltingVisual(bool on, float duration)
     {
@@ -114,8 +115,7 @@ public class Furnace : NetworkBehaviour, IInteractable
             if (animator) animator.SetBool("IsSmelting", true);
             if (vfxOnSmelt != null)
             {
-                foreach (var ps in vfxOnSmelt)
-                    if (ps) ps.Play();
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Play();
             }
         }
         else
@@ -124,9 +124,19 @@ public class Furnace : NetworkBehaviour, IInteractable
             if (animator) animator.SetBool("IsSmelting", false);
             if (vfxOnSmelt != null)
             {
-                foreach (var ps in vfxOnSmelt)
-                    if (ps) ps.Stop();
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Stop();
             }
         }
+    }
+
+    // === 여기서 문제 났던 RPC 추가 ===
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_HideHeldItem(NetworkObject itemNet)
+    {
+        if (!itemNet) return;
+
+        // 모든 클라에서 이 아이템을 비활성화
+        itemNet.transform.SetParent(null);
+        itemNet.gameObject.SetActive(false);
     }
 }

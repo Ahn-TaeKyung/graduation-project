@@ -7,7 +7,7 @@ public class Workbench : NetworkBehaviour, IInteractable
     [SerializeField] private Transform slot;
     [SerializeField] private float craftTime = 2f;
     [SerializeField] private ItemType inputType = ItemType.Plank;
-    [SerializeField] private NetworkObject outputPrefab;   // Item → NetworkObject
+    [SerializeField] private NetworkObject outputPrefab;
 
     [Header("Placed Visual Tuning")]
     [SerializeField] private Vector3 slotLocalOffset;
@@ -17,7 +17,6 @@ public class Workbench : NetworkBehaviour, IInteractable
     [Header("UI")]
     [SerializeField] private ProgressBarController progressBar;
 
-    // 이 작업대 하나에 대해서만 공유되는 상태
     [Networked] private NetworkObject Stored { get; set; }
     [Networked] private bool InUse { get; set; }
 
@@ -26,10 +25,9 @@ public class Workbench : NetworkBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        // 이 작업대만 사용 중이면 못 씀
         if (InUse)
         {
-            hint = "";   // "사용중" 안 띄운다 했으니까 빈칸
+            hint = "";
             return false;
         }
 
@@ -50,12 +48,11 @@ public class Workbench : NetworkBehaviour, IInteractable
     public void OnTap(PlayerInteractor p)
     {
         if (!Object.HasStateAuthority) return;
-        if (InUse) return;          // 이 작업대만 잠겨있을 수 있음
+        if (InUse) return;
 
         if (Stored != null) return;
         if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
-        // 손에서 빼서 작업대에 올리기
         var item = p.hand.Take();
         var no = item.GetComponent<NetworkObject>();
         Stored = no;
@@ -70,8 +67,9 @@ public class Workbench : NetworkBehaviour, IInteractable
         if (Stored == null) return;
         if (!p.hand.IsEmpty) return;
 
-        InUse = true;   
-        if (progressBar) progressBar.StartProgress(craftTime);
+        InUse = true;
+        //  전체 클라에 "bar 켜!" 보내기
+        RPC_Progress(true, craftTime);
     }
 
     public void OnHoldCancel(PlayerInteractor p)
@@ -80,38 +78,37 @@ public class Workbench : NetworkBehaviour, IInteractable
         if (!InUse) return;
 
         InUse = false;
-        if (progressBar) progressBar.StopProgress();
+        //  전체에 "bar 꺼" 보내기
+        RPC_Progress(false, 0f);
     }
 
     public void OnHoldComplete(PlayerInteractor p)
     {
         if (!Object.HasStateAuthority) return;
         if (!InUse) return;
-        if (Stored == null) { InUse = false; return; }
-        if (!p.hand.IsEmpty) { InUse = false; return; }
+        if (Stored == null) { InUse = false; RPC_Progress(false, 0f); return; }
+        if (!p.hand.IsEmpty) { InUse = false; RPC_Progress(false, 0f); return; }
 
-        if (progressBar) progressBar.StopProgress();
+        // 끝났으니까 bar 멈춤
+        RPC_Progress(false, 0f);
 
-        // 1) 올려둔 재료 제거
+        // 1) 재료 제거
         Runner.Despawn(Stored);
         Stored = null;
 
-        // 2) 결과물 생성 (네트워크)
+        // 2) 결과물 생성
         var spawned = Runner.Spawn(
             outputPrefab,
             slot.position,
             slot.rotation,
             p.NetObj.InputAuthority
         );
-
         var item = spawned.GetComponent<Item>();
         p.hand.Pick(item);
 
-       
         InUse = false;
     }
 
-    // ===== 유틸 =====
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
@@ -124,7 +121,6 @@ public class Workbench : NetworkBehaviour, IInteractable
         item.gameObject.SetActive(true);
     }
 
-    
     private void LateUpdate()
     {
         if (Stored == null) return;
@@ -134,5 +130,14 @@ public class Workbench : NetworkBehaviour, IInteractable
 
         if (item.transform.parent != slot)
             PlaceOnSlot(item);
+    }
+
+    
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_Progress(bool on, float duration)
+    {
+        if (!progressBar) return;
+        if (on) progressBar.StartProgress(duration);
+        else progressBar.StopProgress();
     }
 }

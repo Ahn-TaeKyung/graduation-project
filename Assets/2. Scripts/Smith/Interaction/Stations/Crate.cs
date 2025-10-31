@@ -76,4 +76,5 @@ public class Crate : NetworkBehaviour, IInteractable
         animator.ResetTrigger(openTrigger);
         animator.SetTrigger(openTrigger);
     }
+    
 }

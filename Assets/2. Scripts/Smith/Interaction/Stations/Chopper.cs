@@ -28,10 +28,10 @@ public class Chopper : NetworkBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        
+
         if (InUse)
         {
-            hint = "";        
+            hint = "";
             return false;
         }
 
@@ -77,7 +77,7 @@ public class Chopper : NetworkBehaviour, IInteractable
         if (Stored != null && p.hand.IsEmpty)
         {
             InUse = true; // 이 Chopper만 잠금
-            if (progressBar) progressBar.StartProgress(chopTime);
+            RPC_Progress(true, chopTime);
         }
     }
 
@@ -149,5 +149,12 @@ public class Chopper : NetworkBehaviour, IInteractable
 
         if (item.transform.parent != slot)
             PlaceOnSlot(item);
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_Progress(bool on, float duration)
+    {
+        if (!progressBar) return;
+        if (on) progressBar.StartProgress(duration);
+        else progressBar.StopProgress();
     }
 }

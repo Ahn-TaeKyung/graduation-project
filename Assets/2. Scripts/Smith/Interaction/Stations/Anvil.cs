@@ -17,7 +17,6 @@ public class Anvil : NetworkBehaviour, IInteractable
     [Header("UI")]
     [SerializeField] private ProgressBarController progressBar;
 
-    // 이 모루 하나에만 적용되는 플래그
     [Networked] private NetworkObject Stored { get; set; }
     [Networked] private bool InUse { get; set; }
 
@@ -26,10 +25,9 @@ public class Anvil : NetworkBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        // 이 모루만 잠긴 상태면 못 씀
         if (InUse)
         {
-            hint = "";       // 굳이 "사용 중" 안 띄움
+            hint = "";
             return false;
         }
 
@@ -50,9 +48,8 @@ public class Anvil : NetworkBehaviour, IInteractable
     public void OnTap(PlayerInteractor p)
     {
         if (!Object.HasStateAuthority) return;
-        if (InUse) return;             // 이 모루만 잠금
+        if (InUse) return;
 
-        // 빈 모루 → 손에 든 재료 올리기
         if (Stored == null)
         {
             if (p.hand.Held == null) return;
@@ -72,8 +69,9 @@ public class Anvil : NetworkBehaviour, IInteractable
         if (Stored == null) return;
         if (!p.hand.IsEmpty) return;
 
-        InUse = true; // 이 모루만 잠금
-        if (progressBar) progressBar.StartProgress(forgeTime);
+        InUse = true;
+        
+        RPC_Progress(true, forgeTime);
     }
 
     public void OnHoldCancel(PlayerInteractor p)
@@ -82,23 +80,22 @@ public class Anvil : NetworkBehaviour, IInteractable
         if (!InUse) return;
 
         InUse = false;
-        if (progressBar) progressBar.StopProgress();
+        RPC_Progress(false, 0f);
     }
 
     public void OnHoldComplete(PlayerInteractor p)
     {
         if (!Object.HasStateAuthority) return;
         if (!InUse) return;
-        if (Stored == null) { InUse = false; return; }
-        if (!p.hand.IsEmpty) { InUse = false; return; }
+        if (Stored == null) { InUse = false; RPC_Progress(false, 0f); return; }
+        if (!p.hand.IsEmpty) { InUse = false; RPC_Progress(false, 0f); return; }
 
-        if (progressBar) progressBar.StopProgress();
+        // 끝났으니까 바 멈춤
+        RPC_Progress(false, 0f);
 
-        // 1) 재료 제거
         Runner.Despawn(Stored);
         Stored = null;
 
-        // 2) 결과물 스폰
         var spawned = Runner.Spawn(
             outputPrefab,
             slot.position,
@@ -108,7 +105,6 @@ public class Anvil : NetworkBehaviour, IInteractable
         var item = spawned.GetComponent<Item>();
         p.hand.Pick(item);
 
-        // 3) 잠금 해제 
         InUse = false;
     }
 
@@ -122,6 +118,7 @@ public class Anvil : NetworkBehaviour, IInteractable
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
     }
+
     private void LateUpdate()
     {
         if (Stored == null) return;
@@ -131,5 +128,15 @@ public class Anvil : NetworkBehaviour, IInteractable
 
         if (item.transform.parent != slot)
             PlaceOnSlot(item);
+    }
+
+    
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_Progress(bool on, float duration)
+    {
+        if (!progressBar) return;
+
+        if (on) progressBar.StartProgress(duration);
+        else progressBar.StopProgress();
     }
 }

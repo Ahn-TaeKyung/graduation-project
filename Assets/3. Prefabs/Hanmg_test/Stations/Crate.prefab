@@ -68,6 +68,7 @@ GameObject:
   - component: {fileID: 14427922781213862}
   - component: {fileID: 8230193259509310835}
   - component: {fileID: 1472539295763986665}
+  - component: {fileID: 7204706556232125412}
   m_Layer: 19
   m_Name: Crate
   m_TagString: Untagged
@@ -224,6 +225,14 @@ MonoBehaviour:
   outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
   scale: 1.03
   buildAtRuntime: 1
+--- !u!33 &7204706556232125412
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &8935126838172780810
 GameObject:
   m_ObjectHideFlags: 0
