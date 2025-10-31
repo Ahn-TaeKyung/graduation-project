@@ -6,6 +6,8 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
     private Camera buildCamera;
     private Camera defendCamera;
 
+    private Canvas towerBox;
+
     private bool isDefendView = false;
     private bool isCameraControlEnabled = false;
 
@@ -17,7 +19,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         // 씬 내 카메라를 찾아서 참조
         buildCamera = GameObject.Find("SmithCamera")?.GetComponent<Camera>();
         defendCamera = GameObject.Find("DefendCamera")?.GetComponent<Camera>();
-
+        towerBox = GameObject.Find("TowerCanvas")?.GetComponent<Canvas>();
         if (buildCamera == null || defendCamera == null)
         {
             if (defendCamera == null)
@@ -86,6 +88,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
             return;
 
         buildCamera.enabled = !defend;
+        towerBox.enabled = defend;
         defendCamera.enabled = defend;
 
         Debug.Log($"[CameraSwitch] {(defend ? "Defend Mode" : "Build Mode")} 활성화됨");
@@ -103,6 +106,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         {
             buildCamera.enabled = true;
             defendCamera.enabled = false;
+            towerBox.enabled = false;
         }
 
         Debug.Log("[CameraSwitch] Game Ready - BuildCamera 활성화됨");
