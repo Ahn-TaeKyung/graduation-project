@@ -45,11 +45,30 @@ public class Workbench : NetworkBehaviour, IInteractable
         }
     }
 
+    // ====== TAP ======
     public void OnTap(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
-        if (InUse) return;
+        // 권한 없는 클라는 서버한테 요청만
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
 
+        HandleTap(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    void HandleTap(PlayerInteractor p)
+    {
+        if (InUse) return;
         if (Stored != null) return;
         if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
@@ -60,43 +79,97 @@ public class Workbench : NetworkBehaviour, IInteractable
         PlaceOnSlot(item);
     }
 
+    // ====== HOLD START ======
     public void OnHoldStart(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestHoldStart(p.NetObj.InputAuthority);
+            return;
+        }
+
+        HandleHoldStart(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestHoldStart(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleHoldStart(p);
+    }
+
+    void HandleHoldStart(PlayerInteractor p)
+    {
         if (InUse) return;
         if (Stored == null) return;
         if (!p.hand.IsEmpty) return;
 
         InUse = true;
-        //  전체 클라에 "bar 켜!" 보내기
         RPC_Progress(true, craftTime);
     }
 
+    // ====== HOLD CANCEL ======
     public void OnHoldCancel(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
-        if (!InUse) return;
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestHoldCancel(p.NetObj.InputAuthority);
+            return;
+        }
 
+        HandleHoldCancel(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestHoldCancel(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleHoldCancel(p);
+    }
+
+    void HandleHoldCancel(PlayerInteractor p)
+    {
+        if (!InUse) return;
         InUse = false;
-        //  전체에 "bar 꺼" 보내기
         RPC_Progress(false, 0f);
     }
 
+    // ====== HOLD COMPLETE ======
     public void OnHoldComplete(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestHoldComplete(p.NetObj.InputAuthority);
+            return;
+        }
+
+        HandleHoldComplete(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestHoldComplete(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleHoldComplete(p);
+    }
+
+    void HandleHoldComplete(PlayerInteractor p)
+    {
         if (!InUse) return;
         if (Stored == null) { InUse = false; RPC_Progress(false, 0f); return; }
         if (!p.hand.IsEmpty) { InUse = false; RPC_Progress(false, 0f); return; }
 
-        // 끝났으니까 bar 멈춤
+        // 바 멈추기
         RPC_Progress(false, 0f);
 
-        // 1) 재료 제거
+        // 재료 소모
         Runner.Despawn(Stored);
         Stored = null;
 
-        // 2) 결과물 생성
+        // 결과물 생성
         var spawned = Runner.Spawn(
             outputPrefab,
             slot.position,
@@ -109,6 +182,7 @@ public class Workbench : NetworkBehaviour, IInteractable
         InUse = false;
     }
 
+    // ===== UTIL =====
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
@@ -132,12 +206,23 @@ public class Workbench : NetworkBehaviour, IInteractable
             PlaceOnSlot(item);
     }
 
-    
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void RPC_Progress(bool on, float duration)
     {
         if (!progressBar) return;
         if (on) progressBar.StartProgress(duration);
         else progressBar.StopProgress();
+    }
+
+    // 👇 임시 플레이어 찾기 (원하면 공용 헬퍼로 빼)
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
     }
 }

@@ -42,10 +42,26 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        // 권한 없는 쪽은 요청만 보내게 하려면 여기에서 RPC_RequestTap(...)을 부르면 되고,
-        // 지금은 일단 단순하게 상태 권한 있는 쪽만 처리하게 둘게.
-        if (!Object || !Object.HasStateAuthority) return;
+        // 권한 없으면 서버에 요청
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
 
+        HandleTap(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    private void HandleTap(PlayerInteractor p)
+    {
         // 넣기
         if (Stored == null)
         {
@@ -61,7 +77,7 @@ public class Furnace : NetworkBehaviour, IInteractable
             item.transform.SetParent(t);
             item.transform.localPosition = Vector3.zero;
 
-            //  여기서 모든 클라에 “이 아이템은 이제 손에서 뗀 거고 꺼라”라고 알림
+            // 전체에 이 아이템 끄라고 알리기
             RPC_HideHeldItem(itemNet);
 
             RPC_SmeltingVisual(true, smeltTime);
@@ -86,10 +102,6 @@ public class Furnace : NetworkBehaviour, IInteractable
         }
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
-    public void OnHoldStart(PlayerInteractor p) { }
-    public void OnHoldCancel(PlayerInteractor p) { }
-
     private void Update()
     {
         if (!Object) return;
@@ -105,9 +117,8 @@ public class Furnace : NetworkBehaviour, IInteractable
         }
     }
 
-    // === 시각 효과 공용 RPC ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_SmeltingVisual(bool on, float duration)
+    private void RPC_SmeltingVisual(bool on, float duration)
     {
         if (on)
         {
@@ -129,14 +140,26 @@ public class Furnace : NetworkBehaviour, IInteractable
         }
     }
 
-    // === 여기서 문제 났던 RPC 추가 ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_HideHeldItem(NetworkObject itemNet)
+    private void RPC_HideHeldItem(NetworkObject itemNet)
     {
         if (!itemNet) return;
-
-        // 모든 클라에서 이 아이템을 비활성화
         itemNet.transform.SetParent(null);
         itemNet.gameObject.SetActive(false);
     }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
 }

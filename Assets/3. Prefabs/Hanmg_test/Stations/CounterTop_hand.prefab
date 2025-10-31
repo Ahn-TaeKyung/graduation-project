@@ -173,14 +173,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slot: {fileID: 1737146808741889401}
-  slotOffset: {x: 0, y: 0, z: 0}
-  slotEuler: {x: 0, y: 0, z: 0}
+  slotLocalOffset: {x: 0, y: 0, z: 0}
+  slotLocalEuler: {x: 0, y: 0, z: 0}
   placedScale: 0.7
-  allowAll: 1
-  allowedTypes: 
-  customAllowedHint: 
-  swordRotation: {x: 0, y: 0, z: 90}
-  bowRotation: {x: 0, y: 45, z: 45}
+  swordLocalEuler: {x: 0, y: 0, z: 90}
+  bowLocalEuler: {x: 0, y: 45, z: 45}
+  allowedType: 0
 --- !u!114 &5963470344524244881
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,72 +1,95 @@
 using Fusion;
 using UnityEngine;
 
-public class WeaponDeliveryStation : NetworkBehaviour, IInteractable
+public class DeliveryStation : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private Transform dropPoint;   // 선택: 이펙트 찍을 위치
+    [SerializeField] private Animator animator;
+    [SerializeField] private string openTrigger = "OpenTrigger";
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (p.hand.IsEmpty)
+        if (!p.hand.IsEmpty && p.hand.Held != null)
         {
-            hint = "납품할 무기가 없음";
-            return false;
+            var t = p.hand.Held.type;
+            if (t == ItemType.Sword || t == ItemType.Bow)
+            {
+                hint = "E - 무기 납품";
+                return true;
+            }
         }
 
-        var item = p.hand.Held;
-        if (!IsDeliverable(item))
-        {
-            hint = "검/활만 납품 가능";
-            return false;
-        }
-
-        hint = "E - 납품하기";
-        return true;
+        hint = "";
+        return false;
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        // 쓰레기통이랑 똑같이: 서버/호스트만 실제 처리
-        if (!Object.HasStateAuthority) return;
-
-        var it = p.hand.Take();
-        if (it == null) return;
-
-        var item = it.GetComponent<Item>();
-        if (item != null && IsDeliverable(item))
+        // 클라이언트면 RPC로 서버에 요청
+        if (!Object || !Object.HasStateAuthority)
         {
-            // 이름 있으면 넣고
-            string playerName = p.name;
-            SaveWeapon.Add(item.type.ToString());
-#if UNITY_EDITOR
-            Debug.Log($"[WeaponDeliveryStation] {item.type} 납품됨 by {playerName}");
-#endif
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
         }
 
-        // 이펙트용 위치
-        if (dropPoint)
-            it.transform.position = dropPoint.position;
+        HandleTap(p);
+    }
 
-        // 네트워크 아이템이면 Despawn, 아니면 Destroy
-        var no = it.GetComponent<NetworkObject>();
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    void HandleTap(PlayerInteractor p)
+    {
+        if (p.hand.IsEmpty || p.hand.Held == null) return;
+
+        var item = p.hand.Held;
+
+        // 활/검만 허용
+        if (item.type != ItemType.Sword && item.type != ItemType.Bow)
+            return;
+
+        // 손에서 빼고 제거
+        var taken = p.hand.Take();
+        var no = taken.GetComponent<NetworkObject>();
         if (no != null)
             Runner.Despawn(no);
         else
-            Destroy(it.gameObject);
+            Destroy(taken.gameObject);
+
+        // 서버가 json에 저장
+        SaveWeapon.Add(item.type.ToString());
+
+        // 애니메이션 실행
+        RPC_PlayOpen();
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_PlayOpen()
+    {
+        if (!animator) return;
+        animator.ResetTrigger(openTrigger);
+        animator.SetTrigger(openTrigger);
+    }
+
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
 
-    // === Helper ===
-    private bool IsDeliverable(Item item)
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
     {
-        if (item == null) return false;
-        return item.type == ItemType.Sword || item.type == ItemType.Bow;
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
     }
-    
 }

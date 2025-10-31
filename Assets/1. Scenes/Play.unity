@@ -8394,6 +8394,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 384074534}
     m_Modifications:
+    - target: {fileID: -3619078710334589617, guid: b2692ea3cf2997044852df119631d3ec, type: 3}
+      propertyPath: woodPrefab
+      value: 
+      objectReference: {fileID: 7798359105062806601, guid: 20594f46667694b4791b7195697c683b, type: 3}
     - target: {fileID: 1990546504425993632, guid: b2692ea3cf2997044852df119631d3ec, type: 3}
       propertyPath: m_LocalPosition.x
       value: 81.52

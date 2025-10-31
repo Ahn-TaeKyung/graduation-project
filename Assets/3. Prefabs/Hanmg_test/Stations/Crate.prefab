@@ -187,10 +187,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a35664a68fdcc5f4c86d2f736c55de75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  orePrefab: {fileID: 3694880187279557671, guid: e5887b4aa39e0b64db075aa218a5a7f5, type: 3}
-  spawnPoint: {fileID: 3118457496587425149}
+  itemPrefab: {fileID: 3694880187279557671, guid: e5887b4aa39e0b64db075aa218a5a7f5, type: 3}
   animator: {fileID: 6145344734796908024}
-  openTrigger: Open
 --- !u!114 &8230193259509310835
 MonoBehaviour:
   m_ObjectHideFlags: 0

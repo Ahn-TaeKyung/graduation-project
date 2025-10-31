@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac76e7b154d1fe946b639836a2a06abd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logPrefab: {fileID: 7798359105062806601, guid: 20594f46667694b4791b7195697c683b, type: 3}
+  woodPrefab: {fileID: 7798359105062806601, guid: 20594f46667694b4791b7195697c683b, type: 3}
 --- !u!114 &2283566587763760352
 MonoBehaviour:
   m_ObjectHideFlags: 0
