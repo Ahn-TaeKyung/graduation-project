@@ -3,32 +3,61 @@ using UnityEngine;
 
 public class TrashBin : NetworkBehaviour, IInteractable
 {
-    [SerializeField] private Transform dropPoint;
-
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
         bool ok = !p.hand.IsEmpty;
-        hint = ok ? "E - 버리기" : "버릴 아이템이 없음";
+        hint = ok ? "E - 버리기" : "";
         return ok;
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return; // 서버/호스트만 디스폰
-        var it = p.hand.Take();
-        if (it == null) return;
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
 
-        // 이펙트 / 사운드 재생 (옵션)
-        if (dropPoint)
-            it.transform.position = dropPoint.position;
-
-        Runner.Despawn(it.GetComponent<NetworkObject>());
+        HandleTap(p);
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    void HandleTap(PlayerInteractor p)
+    {
+        if (p.hand.IsEmpty) return;
+
+        var item = p.hand.Take();
+        if (!item) return;
+
+        var no = item.GetComponent<NetworkObject>();
+        if (no)
+            Runner.Despawn(no);
+        else
+            Destroy(item.gameObject);
+    }
+
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
 }

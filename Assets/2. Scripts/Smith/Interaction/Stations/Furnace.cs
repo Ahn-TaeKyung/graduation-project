@@ -42,31 +42,57 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
+        // 권한 없으면 서버에 요청
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
 
+        HandleTap(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    private void HandleTap(PlayerInteractor p)
+    {
         // 넣기
         if (Stored == null)
         {
             if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
             var item = p.hand.Take();
-            Stored = item.GetComponent<NetworkObject>();
+            var itemNet = item.GetComponent<NetworkObject>();
+            Stored = itemNet;
             Timer = 0f;
             InUse = true;
 
             Transform t = slot ? slot : transform;
             item.transform.SetParent(t);
             item.transform.localPosition = Vector3.zero;
-            item.gameObject.SetActive(false);
 
-            RPC_SmeltingVisual(true, smeltTime);   // ← 모두에게 “시작” 알림
+            // 전체에 이 아이템 끄라고 알리기
+            RPC_HideHeldItem(itemNet);
+
+            RPC_SmeltingVisual(true, smeltTime);
         }
         // 꺼내기
         else if (Timer >= smeltTime && p.hand.IsEmpty)
         {
             RPC_SmeltingVisual(false, 0f);
 
-            var result = Runner.Spawn(outputPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity, p.NetObj.InputAuthority);
+            var result = Runner.Spawn(
+                outputPrefab,
+                transform.position + Vector3.up * 0.5f,
+                Quaternion.identity,
+                p.NetObj.InputAuthority
+            );
             p.hand.Pick(result.GetComponent<Item>());
 
             Runner.Despawn(Stored);
@@ -76,13 +102,9 @@ public class Furnace : NetworkBehaviour, IInteractable
         }
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
-    public void OnHoldStart(PlayerInteractor p) { }
-    public void OnHoldCancel(PlayerInteractor p) { }
-
-    // 서버만 시간 잰다
     private void Update()
     {
+        if (!Object) return;
         if (!Object.HasStateAuthority) return;
         if (Stored == null) return;
         if (!InUse) return;
@@ -95,9 +117,8 @@ public class Furnace : NetworkBehaviour, IInteractable
         }
     }
 
-    // === 여기서부터는 “모두”가 실행하는 부분 ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_SmeltingVisual(bool on, float duration)
+    private void RPC_SmeltingVisual(bool on, float duration)
     {
         if (on)
         {
@@ -118,4 +139,27 @@ public class Furnace : NetworkBehaviour, IInteractable
             }
         }
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_HideHeldItem(NetworkObject itemNet)
+    {
+        if (!itemNet) return;
+        itemNet.transform.SetParent(null);
+        itemNet.gameObject.SetActive(false);
+    }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
 }

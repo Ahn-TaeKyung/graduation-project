@@ -3,77 +3,78 @@ using UnityEngine;
 
 public class Crate : NetworkBehaviour, IInteractable
 {
-    [Header("Spawn Settings")]
-    [SerializeField] private NetworkObject orePrefab;   // Item → NetworkObject
-    [SerializeField] private Transform spawnPoint;
-
-    [Header("Animation")]
+    [SerializeField] private NetworkObject itemPrefab;
     [SerializeField] private Animator animator;
-    [SerializeField] private string openTrigger = "Open";
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
-    private void Awake()
-    {
-        if (!animator) animator = GetComponentInChildren<Animator>();
-        if (!spawnPoint) spawnPoint = transform;
-    }
-
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
+        // 손이 비어 있어야 꺼낼 수 있음
         bool ok = p.hand.IsEmpty;
-        hint = ok ? "E - 재료 받기" : "손이 비어야 함";
+        hint = ok ? "E - 꺼내기" : "";
         return ok;
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        // 손 안 비었으면 X
-        if (!p.hand.IsEmpty) return;
-        if (!orePrefab)
+        // 클라 → 서버
+        if (!Object || !Object.HasStateAuthority)
         {
-            Debug.LogWarning("[Crate] Ore Prefab 비어있음");
+            RPC_RequestTap(p.NetObj.InputAuthority);
             return;
         }
 
-        // 서버/호스트만 스폰
-        if (!Object.HasStateAuthority) return;
+        HandleTap(p);
+    }
 
-        var runner = NetworkManager.Instance.m_network_runner;
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
 
-        // 1) 네트워크로 아이템 생성
-        var spawned = runner.Spawn(
-            orePrefab,
-            spawnPoint.position,
-            spawnPoint.rotation,
-            p.NetObj.InputAuthority   
+    private void HandleTap(PlayerInteractor p)
+    {
+        if (!p.hand.IsEmpty) return;
+
+        // 아이템 스폰
+        var spawned = Runner.Spawn(
+            itemPrefab,
+            transform.position + Vector3.up * 0.5f,
+            Quaternion.identity,
+            p.NetObj.InputAuthority
         );
 
-        // 2) 손에 들려주기
-        var item = spawned.GetComponent<Item>();
-        if (item != null)
-            p.hand.Pick(item);
+        p.hand.Pick(spawned.GetComponent<Item>());
 
-        // 3) 모든 클라에서 열기 애니메이션 재생
+        // 애니는 전체로
         RPC_PlayOpen();
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
-    public void OnHoldStart(PlayerInteractor p) { }
-    public void OnHoldCancel(PlayerInteractor p) { }
-
-    // === 애니메이션 전체에게 날리기 ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayOpen()
     {
-        PlayOpen();
+        if (animator == null) return;
+        animator.ResetTrigger("Open");
+        animator.SetTrigger("Open");
     }
 
-    private void PlayOpen()
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
     {
-        if (!animator || string.IsNullOrEmpty(openTrigger)) return;
-        animator.ResetTrigger(openTrigger);
-        animator.SetTrigger(openTrigger);
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
     }
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
 }

@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using System.Linq;
 
 [Serializable]
 public class SavedWeapon
 {
-    public string itemType;     // "Sword" / "Bow"
-    public string playerName;   // 누가 넣었는지
-    public string time;         // 언제 넣었는지
+    public string itemType; // "Sword" or "Bow"
+    public int count;
 }
 
 [Serializable]
@@ -19,7 +19,6 @@ public class SavedWeaponData
 
 public static class SaveWeapon
 {
-    // 네가 원하는 파일명
     private static string FilePath => Path.Combine(Application.persistentDataPath, "saveWeapon.json");
 
     public static SavedWeaponData Load()
@@ -27,8 +26,16 @@ public static class SaveWeapon
         if (!File.Exists(FilePath))
             return new SavedWeaponData();
 
-        var json = File.ReadAllText(FilePath);
-        return JsonUtility.FromJson<SavedWeaponData>(json);
+        try
+        {
+            var json = File.ReadAllText(FilePath);
+            return JsonUtility.FromJson<SavedWeaponData>(json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveWeapon] Load failed: {e.Message}");
+            return new SavedWeaponData();
+        }
     }
 
     public static void Save(SavedWeaponData data)
@@ -36,19 +43,20 @@ public static class SaveWeapon
         var json = JsonUtility.ToJson(data, true);
         File.WriteAllText(FilePath, json);
 #if UNITY_EDITOR
-        Debug.Log($"[SaveWeapon] Saved to: {FilePath}");
+        Debug.Log($"[SaveWeapon] Saved to {FilePath}");
 #endif
     }
 
-    public static void Add(string itemType, string playerName = "")
+    public static void Add(string itemType)
     {
         var data = Load();
-        data.items.Add(new SavedWeapon
-        {
-            itemType = itemType,
-            playerName = playerName,
-            time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-        });
+        var entry = data.items.FirstOrDefault(i => i.itemType == itemType);
+
+        if (entry != null)
+            entry.count++;
+        else
+            data.items.Add(new SavedWeapon { itemType = itemType, count = 1 });
+
         Save(data);
     }
 }
