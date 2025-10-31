@@ -302,8 +302,8 @@ MonoBehaviour:
   _ColorIndex: 0
   targetRenderer: {fileID: 3315229680160646512}
   colorMats:
-  - {fileID: 2100000, guid: ed4a4a61ad610304582f18203176fbd2, type: 2}
   - {fileID: 2100000, guid: a634663a0f239714b9886dfe42f6bd06, type: 2}
+  - {fileID: 2100000, guid: ed4a4a61ad610304582f18203176fbd2, type: 2}
 --- !u!1 &6285668711749316202
 GameObject:
   m_ObjectHideFlags: 0
