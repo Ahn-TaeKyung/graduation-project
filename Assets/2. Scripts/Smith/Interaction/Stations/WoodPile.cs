@@ -29,6 +29,7 @@ public class WoodPile : NetworkBehaviour, IInteractable
         var item = spawned.GetComponent<Item>();
         p.hand.Pick(item);
     }
+    
 
     public void OnHoldComplete(PlayerInteractor p) { }
     public void OnHoldStart(PlayerInteractor p) { }

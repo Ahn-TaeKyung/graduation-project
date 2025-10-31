@@ -152,7 +152,8 @@ public class ItemHolder : NetworkBehaviour, IInteractable
         var item = Stored.GetComponent<Item>();
         if (item == null) return;
 
-        
+
         PlaceOnSlot(item);
     }
+    
 }

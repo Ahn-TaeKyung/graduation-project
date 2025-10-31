@@ -140,4 +140,14 @@ public class Chopper : NetworkBehaviour, IInteractable
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
         item.gameObject.SetActive(true);
     }
+    private void LateUpdate()
+    {
+        if (Stored == null) return;
+
+        var item = Stored.GetComponent<Item>();
+        if (item == null) return;
+
+        if (item.transform.parent != slot)
+            PlaceOnSlot(item);
+    }
 }

@@ -40,7 +40,7 @@ public class WeaponDeliveryStation : NetworkBehaviour, IInteractable
         {
             // 이름 있으면 넣고
             string playerName = p.name;
-            SaveWeapon.Add(item.type.ToString(), playerName);
+            SaveWeapon.Add(item.type.ToString());
 #if UNITY_EDITOR
             Debug.Log($"[WeaponDeliveryStation] {item.type} 납품됨 by {playerName}");
 #endif
@@ -68,4 +68,5 @@ public class WeaponDeliveryStation : NetworkBehaviour, IInteractable
         if (item == null) return false;
         return item.type == ItemType.Sword || item.type == ItemType.Bow;
     }
+    
 }

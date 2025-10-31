@@ -122,4 +122,14 @@ public class Anvil : NetworkBehaviour, IInteractable
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
         if (item.TryGetComponent(out Collider col)) col.enabled = false;
     }
+    private void LateUpdate()
+    {
+        if (Stored == null) return;
+
+        var item = Stored.GetComponent<Item>();
+        if (item == null) return;
+
+        if (item.transform.parent != slot)
+            PlaceOnSlot(item);
+    }
 }

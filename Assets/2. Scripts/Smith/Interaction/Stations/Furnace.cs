@@ -20,18 +20,21 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
+        // 1) 지금 돌고 있으면 막기
         if (InUse && Timer < smeltTime)
         {
             hint = "용해 중...";
             return false;
         }
 
+        // 2) 아직 아무것도 안 들어 있음 → 넣기 시도
         if (Stored == null)
         {
             bool ok = p.hand.Held && p.hand.Held.type == inputType;
             hint = ok ? "E - 넣기" : "";
             return ok;
         }
+        // 3) 다 만들어짐 → 꺼내기 시도
         else
         {
             bool ok = (Timer >= smeltTime) && p.hand.IsEmpty;
@@ -42,7 +45,8 @@ public class Furnace : NetworkBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
-        if (!Object.HasStateAuthority) return;
+        // 상태 권한 체크 전에 Object null부터 확인
+        if (!Object || !Object.HasStateAuthority) return;
 
         // 넣기
         if (Stored == null)
@@ -59,14 +63,19 @@ public class Furnace : NetworkBehaviour, IInteractable
             item.transform.localPosition = Vector3.zero;
             item.gameObject.SetActive(false);
 
-            RPC_SmeltingVisual(true, smeltTime);   // ← 모두에게 “시작” 알림
+            RPC_SmeltingVisual(true, smeltTime);
         }
         // 꺼내기
         else if (Timer >= smeltTime && p.hand.IsEmpty)
         {
             RPC_SmeltingVisual(false, 0f);
 
-            var result = Runner.Spawn(outputPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity, p.NetObj.InputAuthority);
+            var result = Runner.Spawn(
+                outputPrefab,
+                transform.position + Vector3.up * 0.5f,
+                Quaternion.identity,
+                p.NetObj.InputAuthority
+            );
             p.hand.Pick(result.GetComponent<Item>());
 
             Runner.Despawn(Stored);
@@ -80,10 +89,11 @@ public class Furnace : NetworkBehaviour, IInteractable
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
 
-    // 서버만 시간 잰다
     private void Update()
     {
-        if (!Object.HasStateAuthority) return;
+        // ✅ 여기 방어 코드 추가
+        if (!Object) return;                      // 아직 네트워크 오브젝트가 아님
+        if (!Object.HasStateAuthority) return;    // 권한 없는 쪽에서는 시간 안 감
         if (Stored == null) return;
         if (!InUse) return;
 
@@ -91,11 +101,10 @@ public class Furnace : NetworkBehaviour, IInteractable
         if (Timer >= smeltTime)
         {
             InUse = false;
-            RPC_SmeltingVisual(false, 0f);
+            RPC_SmeltingVisual(false, 0f);        // 이때 클라들한테 “다 됨” 알려줌
         }
     }
 
-    // === 여기서부터는 “모두”가 실행하는 부분 ===
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     void RPC_SmeltingVisual(bool on, float duration)
     {
@@ -105,7 +114,8 @@ public class Furnace : NetworkBehaviour, IInteractable
             if (animator) animator.SetBool("IsSmelting", true);
             if (vfxOnSmelt != null)
             {
-                foreach (var ps in vfxOnSmelt) if (ps) ps.Play();
+                foreach (var ps in vfxOnSmelt)
+                    if (ps) ps.Play();
             }
         }
         else
@@ -114,7 +124,8 @@ public class Furnace : NetworkBehaviour, IInteractable
             if (animator) animator.SetBool("IsSmelting", false);
             if (vfxOnSmelt != null)
             {
-                foreach (var ps in vfxOnSmelt) if (ps) ps.Stop();
+                foreach (var ps in vfxOnSmelt)
+                    if (ps) ps.Stop();
             }
         }
     }
