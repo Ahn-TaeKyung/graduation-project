@@ -1,107 +1,96 @@
+using Fusion;
 using UnityEngine;
-using System.Linq;
 
-[DisallowMultipleComponent]
-public class ItemHolder : MonoBehaviour, IInteractable
+public class ItemHolder : NetworkBehaviour, IInteractable
 {
-    [Header("Slot Setup")]
     [SerializeField] private Transform slot;
-    [SerializeField] private Vector3 slotOffset;
-    [SerializeField] private Vector3 slotEuler;
+    [SerializeField] private Vector3 slotLocalOffset;
+    [SerializeField] private Vector3 slotLocalEuler;
     [SerializeField] private float placedScale = 1f;
 
-    [Header("Allowed Items")]
-    [Tooltip("체크 시 어떤 아이템이든 올릴 수 있음 (allowedTypes 무시)")]
-    [SerializeField] private bool allowAll = false;
-    [Tooltip("allowAll이 꺼져 있을 때 허용할 타입들")]
-    [SerializeField] private ItemType[] allowedTypes = new ItemType[0];
-    [Tooltip("비허용 아이템일 때 보여줄 커스텀 문구 (비워두면 자동 생성됨)")]
-    [SerializeField] private string customAllowedHint;
+    [Header("Optional per-item rotation")]
+    [SerializeField] private Vector3 swordLocalEuler = new Vector3(0, 0, 90);
+    [SerializeField] private Vector3 bowLocalEuler   = new Vector3(0, 45, 45);
 
-    [Header("Rotation per Type")]
-    [Tooltip("Sword가 올라올 때 회전값")]
-    [SerializeField] private Vector3 swordRotation = new Vector3(0, 90, 0);
-    [Tooltip("Bow가 올라올 때 회전값")]
-    [SerializeField] private Vector3 bowRotation = new Vector3(0, 45, 0);
+    [SerializeField] private ItemType allowedType = ItemType.None;
 
-    private Item stored;
+    [Networked] private NetworkObject Stored { get; set; }
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (stored == null)
+        if (Stored == null)
         {
-            if (p.hand.Held == null)
-            {
-                hint = "들고 있는 아이템이 없음";
-                return false;
-            }
-
-            if (!IsAllowed(p.hand.Held))
-            {
-                hint = string.IsNullOrEmpty(customAllowedHint)
-                    ? $"허용 아이템만 올릴 수 있음: {BuildAllowedListText()}"
-                    : customAllowedHint;
-                return false;
-            }
-
-            hint = "E - 아이템 올려두기";
-            return true;
+            bool ok = p.hand.Held && (allowedType == ItemType.None || p.hand.Held.type == allowedType);
+            hint = ok ? "E - 올려두기" : "";
+            return ok;
         }
         else
         {
             bool ok = p.hand.IsEmpty;
-            hint = ok ? "E - 아이템 집기" : "손이 비어 있어야 함";
+            hint = ok ? "E - 가져가기" : "";
             return ok;
         }
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (stored == null)
+        if (!Object || !Object.HasStateAuthority)
+        {
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
+
+        HandleTap(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    private void HandleTap(PlayerInteractor p)
+    {
+        if (Stored == null)
         {
             if (p.hand.Held == null) return;
-            if (!IsAllowed(p.hand.Held)) return;
+            if (allowedType != ItemType.None && p.hand.Held.type != allowedType) return;
 
-            stored = p.hand.Take();
-            PlaceOnSlot(stored);
+            var item = p.hand.Take();
+            var no = item.GetComponent<NetworkObject>();
+            Stored = no;
+
+            PlaceOnSlot(item);
         }
         else
         {
             if (!p.hand.IsEmpty) return;
-            p.hand.Pick(stored);
-            stored = null;
+
+            var item = Stored.GetComponent<Item>();
+            Stored = null;
+
+            p.hand.Pick(item);
         }
-    }
-
-    public void OnHoldComplete(PlayerInteractor p) { }
-    public void OnHoldStart(PlayerInteractor p) { }
-    public void OnHoldCancel(PlayerInteractor p) { }
-
-    // ===== Helper Methods =====
-
-    private bool IsAllowed(Item item)
-    {
-        if (allowAll) return true;
-        if (item == null) return false;
-        if (allowedTypes == null || allowedTypes.Length == 0) return false;
-        return allowedTypes.Contains(item.type);
-    }
-
-    private string BuildAllowedListText()
-    {
-        if (allowAll) return "모든 아이템";
-        if (allowedTypes == null || allowedTypes.Length == 0) return "지정 없음";
-        return string.Join(", ", allowedTypes.Select(x => x.ToString()));
     }
 
     private void PlaceOnSlot(Item item)
     {
         item.transform.SetParent(slot);
-        item.transform.localPosition = slotOffset;
-        item.transform.localRotation = Quaternion.Euler(GetRotationForItem(item));
+        item.transform.localPosition = slotLocalOffset;
+
+        // 🔥 타입별 회전 적용
+        Vector3 eulerToUse = slotLocalEuler;
+        if (item.type == ItemType.Sword)
+            eulerToUse = swordLocalEuler;
+        else if (item.type == ItemType.Bow)
+            eulerToUse = bowLocalEuler;
+
+        item.transform.localRotation = Quaternion.Euler(eulerToUse);
         item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
 
         if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
@@ -109,18 +98,28 @@ public class ItemHolder : MonoBehaviour, IInteractable
         item.gameObject.SetActive(true);
     }
 
-    private Vector3 GetRotationForItem(Item item)
+    private void LateUpdate()
     {
-        if (item == null) return slotEuler;
+        if (Stored == null) return;
+        var item = Stored.GetComponent<Item>();
+        if (!item) return;
 
-        switch (item.type)
-        {
-            case ItemType.Sword:
-                return swordRotation;
-            case ItemType.Bow:
-                return bowRotation;
-            default:
-                return slotEuler;
-        }
+        if (item.transform.parent != slot)
+            PlaceOnSlot(item);
     }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
+
+    public void OnHoldStart(PlayerInteractor p) { }
+    public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
 }

@@ -1,3 +1,4 @@
+using Fusion;
 using UnityEngine;
 
 public enum ItemType
@@ -7,7 +8,7 @@ public enum ItemType
     Log, Plank, Bow
 }
 
-public class Item : MonoBehaviour
+public class Item : NetworkBehaviour
 {
     public ItemType type;
 }

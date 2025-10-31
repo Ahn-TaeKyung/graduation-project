@@ -258,6 +258,8 @@ GameObject:
   - component: {fileID: 498567341673003331}
   - component: {fileID: 5777711311991035201}
   - component: {fileID: 3563808934765351950}
+  - component: {fileID: 6046541308706546860}
+  - component: {fileID: 3034190573140564082}
   m_Layer: 19
   m_Name: Furnace
   m_TagString: Untagged
@@ -325,7 +327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  outlineToggle: {fileID: 0}
+  outlineToggle: {fileID: 3034190573140564082}
   priority: 100
 --- !u!114 &3563808934765351950
 MonoBehaviour:
@@ -342,10 +344,44 @@ MonoBehaviour:
   slot: {fileID: 0}
   smeltTime: 3
   inputType: 1
-  outputPrefab: {fileID: 1277400945525474552, guid: fc6258ca363f1f448ac254698462485e, type: 3}
+  outputPrefab: {fileID: 2084202945099930731, guid: fc6258ca363f1f448ac254698462485e, type: 3}
   animator: {fileID: 130082591718133042}
   vfxOnSmelt: []
   progressBar: {fileID: 6973403842704365936}
+--- !u!114 &6046541308706546860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 193478004
+  ObjectInterest: 1
+  Flags: 327681
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 3563808934765351950}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &3034190573140564082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95c989662e721446a69c6b264a3b753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
+  scale: 1.03
+  buildAtRuntime: 1
 --- !u!1 &8534193292424057794
 GameObject:
   m_ObjectHideFlags: 0
