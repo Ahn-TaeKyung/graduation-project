@@ -153,17 +153,21 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             runner.Despawn(networkObject);
             m_spawn_characters.Remove(player);
+            
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        
+
         Vector2 move = PlayerInputHandler.MoveInput;
+
+        bool dashNow = Input.GetKeyDown(KeyCode.LeftShift);
 
         NetworkInputData data = new NetworkInputData
         {
             horizontal = move.x,
-            vertical = move.y
+            vertical = move.y,
+            dash = PlayerInputHandler.DashPressed || dashNow
         };
 
         input.Set(data);
