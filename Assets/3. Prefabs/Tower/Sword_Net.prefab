@@ -160,12 +160,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a909f1605955ebc488ab2fd58e87a078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 5
+  range: 3
   attackRate: 0.2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 32768
   aoeRadius: 1
-  damage: 50
+  damage: 25
   aoeEffectPrefab:
     RawGuidValue: 8b50e8fed807d8d499f8c51c5a3b0586

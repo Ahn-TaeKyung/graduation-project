@@ -12,6 +12,8 @@ public class EnemyDefinition : ScriptableObject
     public float MaxHealth = 100f;
     public float MoveSpeed = 2f;
     public int DamageToGoal = 1;
+    public int Armor = 0;
+    public int MagicArmor = 0;
 
     [Header("Prefabs")]
     [Tooltip("실제 스폰될 네트워크 프리팹 (NetworkObject 포함)")]

@@ -1,3 +1,4 @@
+// 파일명: DeliveryStation.cs (수정됨)
 using Fusion;
 using UnityEngine;
 
@@ -20,7 +21,6 @@ public class DeliveryStation : NetworkBehaviour, IInteractable
                 return true;
             }
         }
-
         hint = "";
         return false;
     }
@@ -33,7 +33,6 @@ public class DeliveryStation : NetworkBehaviour, IInteractable
             RPC_RequestTap(p.NetObj.InputAuthority);
             return;
         }
-
         HandleTap(p);
     }
 
@@ -45,15 +44,19 @@ public class DeliveryStation : NetworkBehaviour, IInteractable
         HandleTap(p);
     }
 
+    // Host에서 실행
     void HandleTap(PlayerInteractor p)
     {
         if (p.hand.IsEmpty || p.hand.Held == null) return;
-
         var item = p.hand.Held;
-
-        // 활/검만 허용
-        if (item.type != ItemType.Sword && item.type != ItemType.Bow)
+        
+        // [수정] ItemType을 TurretID 문자열로 변환
+        string turretID = GetTurretIDFromItemType(item.type);
+        if (turretID == null)
+        {
+            Debug.LogWarning($"제출할 수 없는 아이템 타입: {item.type}");
             return;
+        }
 
         // 손에서 빼고 제거
         var taken = p.hand.Take();
@@ -63,11 +66,26 @@ public class DeliveryStation : NetworkBehaviour, IInteractable
         else
             Destroy(taken.gameObject);
 
-        // 서버가 json에 저장
-        SaveWeapon.Add(item.type.ToString());
+        // [핵심 수정] JSON 저장 대신 네트워크 인벤토리에 RPC 호출
+        if (SharedWeaponInventory.Instance != null)
+        {
+            SharedWeaponInventory.Instance.RPC_AddWeapon(turretID);
+        }
 
         // 애니메이션 실행
         RPC_PlayOpen();
+    }
+    
+    // [신규 헬퍼] ItemType을 TurretDefinition의 ID와 일치시킵니다.
+    // (이 부분은 당신의 TurretDefinition ID 설정에 맞게 수정해야 합니다)
+    private string GetTurretIDFromItemType(ItemType type)
+    {
+        if (type == ItemType.Sword)
+            return "SwordTurret"; // TurretDef_Sword의 ID
+        if (type == ItemType.Bow)
+            return "BowTurret"; // TurretDef_Bow의 ID
+        
+        return null; // 그 외 아이템은 제출 불가
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
