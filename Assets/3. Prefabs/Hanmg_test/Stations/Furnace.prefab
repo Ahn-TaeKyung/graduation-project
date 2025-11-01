@@ -158,7 +158,7 @@ RectTransform:
   m_GameObject: {fileID: 4266410844904239882}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.00379, y: 0.005, z: 0.0071099997}
+  m_LocalScale: {x: 0.00379, y: 0.0036002498, z: 0.0071099997}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 455289667276225897}
@@ -245,6 +245,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fillImage: {fileID: 5024764718282599293}
+  faceCamera: 1
+  targetCamera: {fileID: 0}
 --- !u!1 &4860882373919045580
 GameObject:
   m_ObjectHideFlags: 0
