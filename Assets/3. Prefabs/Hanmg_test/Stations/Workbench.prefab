@@ -504,6 +504,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: crafting_table
       objectReference: {fileID: 0}
+    - target: {fileID: 560482236314779611, guid: 46d9b84f9acdcb84e9fef66474b7b08b, type: 3}
+      propertyPath: m_Layer
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 904356230758475105, guid: 46d9b84f9acdcb84e9fef66474b7b08b, type: 3}
       propertyPath: m_LocalScale.y
       value: 1.1012
