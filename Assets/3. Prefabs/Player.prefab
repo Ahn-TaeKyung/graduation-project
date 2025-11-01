@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   holdPoint: {fileID: 6545013192773784179}
+  _HeldNet: {fileID: 0}
 --- !u!1 &4734532361239239215
 GameObject:
   m_ObjectHideFlags: 0
@@ -64,6 +65,7 @@ GameObject:
   - component: {fileID: 2562271495733685669}
   - component: {fileID: 6230396933530331355}
   - component: {fileID: 7912536888391439185}
+  - component: {fileID: 1914420268457681398}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -161,8 +163,11 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 801823533186838491}
   - {fileID: -7149973595889402254}
+  - {fileID: 2562271495733685669}
   - {fileID: 6230396933530331355}
   - {fileID: 7912536888391439185}
+  - {fileID: 1914420268457681398}
+  - {fileID: 3763114999079752670}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &801823533186838491
 MonoBehaviour:
@@ -281,9 +286,24 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 16384
-  placementConfirmPanel: {fileID: 0}
-  placeButton: {fileID: 0}
-  cancelButton: {fileID: 0}
+  TowerPanel: {fileID: 0}
+--- !u!114 &1914420268457681398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4734532361239239215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2d363d3b4784fd42911dbdfbf54a446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ColorIndex: 0
+  targetRenderer: {fileID: 3315229680160646512}
+  colorMats:
+  - {fileID: 2100000, guid: a634663a0f239714b9886dfe42f6bd06, type: 2}
+  - {fileID: 2100000, guid: ed4a4a61ad610304582f18203176fbd2, type: 2}
 --- !u!1 &6285668711749316202
 GameObject:
   m_ObjectHideFlags: 0

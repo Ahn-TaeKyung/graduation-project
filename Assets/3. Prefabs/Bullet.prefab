@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5527069736829264676}
   - component: {fileID: 7433208169981908626}
   - component: {fileID: 1442756750953799193}
-  - component: {fileID: -7727555084635256422}
+  - component: {fileID: 7014567124769669134}
   m_Layer: 16
   m_Name: Bullet
   m_TagString: Untagged
@@ -147,7 +147,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 5527069736829264676}
   - {fileID: 1442756750953799193}
-  - {fileID: -7727555084635256422}
+  - {fileID: 7014567124769669134}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &1442756750953799193
 MonoBehaviour:
@@ -166,7 +166,7 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &-7727555084635256422
+--- !u!114 &7014567124769669134
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -175,9 +175,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4071277427161472268}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f95657a57026264bac8a4a1e9cd02bc, type: 3}
+  m_Script: {fileID: 11500000, guid: ab93e97aa4109304c8f5d06153274751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 20
-  damage: 20
+  damage: 10
   despawnTime: 3

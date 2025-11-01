@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 5873572587657563073}
   - component: {fileID: 8270750870611235226}
   - component: {fileID: 2449234757996991269}
-  - component: {fileID: 7465329220972176887}
-  - component: {fileID: 5846901247717492430}
+  - component: {fileID: 2124378145280985249}
+  - component: {fileID: 7463868101311594817}
   m_Layer: 0
   m_Name: Monster
   m_TagString: Monster
@@ -84,7 +84,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 1
---- !u!114 &7465329220972176887
+--- !u!114 &2124378145280985249
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,22 +93,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 4813334322773859007}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51d58de6e1dd75d4aa76aca60632172a, type: 3}
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 4360046c6c5bcd9479d3d2e72f157ac4, type: 2}
-  waypoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
---- !u!114 &5846901247717492430
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
+--- !u!114 &7463868101311594817
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -117,10 +110,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4813334322773859007}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ae03919bf3cb734c87663a093452786, type: 3}
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 4360046c6c5bcd9479d3d2e72f157ac4, type: 2}
+  SortKey: 3733284462
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2124378145280985249}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1001 &7525061859046658022
 PrefabInstance:
   m_ObjectHideFlags: 0

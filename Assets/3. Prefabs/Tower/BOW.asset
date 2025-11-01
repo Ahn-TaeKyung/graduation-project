@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: "\uAD81\uC218 \uD3EC\uD0D1"
   Cost: 100
   Size: {x: 2, y: 2}
+  AttackRange: 9
   GhostPrefab: {fileID: 6643095262441085969, guid: 9885b9ddf5bb50641919d62d909ac34f, type: 3}
   NetworkPrefab:
     RawGuidValue: c5db54bd6d0c9c141a625556d10fd080

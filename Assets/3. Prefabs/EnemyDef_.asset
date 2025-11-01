@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: BasicMonster
   DisplayName: "\uAE30\uBCF8 \uBAAC\uC2A4\uD130"
-  MaxHealth: 100
+  MaxHealth: 50
   MoveSpeed: 2
   DamageToGoal: 1
+  Armor: 0
+  MagicArmor: 0
   NetworkPrefab:
-    RawGuidValue: 7f582b21326b37847b639e3907b4d065
+    RawGuidValue: 928a1377c1cd4515b208fef3a396b8ea

@@ -30,7 +30,7 @@ public class GridManager : MonoBehaviour
         Vector3 worldSize = new Vector3(groundTransform.localScale.x * cellSize, 0, groundTransform.localScale.z * cellSize);
         
         _origin = center - new Vector3(worldSize.x / 2f, 0, worldSize.z / 2f);
-        _origin.y = groundTransform.position.y; // Ground의 높이
+        _origin.y = groundTransform.position.y + 0.5f; // Ground의 높이
     }
 
     // 월드 좌표 -> 그리드 좌표

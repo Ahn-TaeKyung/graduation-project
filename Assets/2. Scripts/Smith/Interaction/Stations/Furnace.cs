@@ -1,119 +1,165 @@
+using Fusion;
 using UnityEngine;
 
-public class Furnace : MonoBehaviour, IInteractable
+public class Furnace : NetworkBehaviour, IInteractable
 {
     [SerializeField] private Transform slot;
     [SerializeField] private float smeltTime = 3f;
     [SerializeField] private ItemType inputType = ItemType.Ore;
-    [SerializeField] private Item outputPrefab;
+    [SerializeField] private NetworkObject outputPrefab;
+    [SerializeField] private Animator animator;
+    [SerializeField] private ParticleSystem[] vfxOnSmelt;
+    [SerializeField] private ProgressBarController progressBar;
 
-    //  애니메이션 / VFX
-    [SerializeField] private Animator animator;              
-    [SerializeField] private ParticleSystem[] vfxOnSmelt;     // optional
-
-    //  진행바(UI)
-    [Header("UI")]
-    [SerializeField] private ProgressBarController progressBar;   // World Space Canvas에 붙은 컨트롤러
-
-    private Item stored;
-    private float timer;
+    [Networked] private NetworkObject Stored { get; set; }
+    [Networked] private float Timer { get; set; }
+    [Networked] private bool InUse { get; set; }
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
-    // 선택: 프리팹이 켜져 있어도 시작 시 진행바를 자동으로 숨김
-    private void Awake()
-    {
-        if (progressBar) progressBar.gameObject.SetActive(false);
-    }
-
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        if (stored == null)
+        if (InUse && Timer < smeltTime)
         {
-            bool ok = (p.hand.Held && p.hand.Held.type == inputType);
-            hint = ok ? "E - 화로에 넣기" : "광석 필요";
-            return ok;
-        }
-        else if (timer >= smeltTime)
-        {
-            bool ok = p.hand.IsEmpty;
-            hint = ok ? "E - 주조물 꺼내기" : "손이 비어야 함";
-            return ok;
+            hint = "용해 중...";
+            return false;
         }
 
-        hint = "용해 중...";
-        return false;
+        if (Stored == null)
+        {
+            bool ok = p.hand.Held && p.hand.Held.type == inputType;
+            hint = ok ? "E - 넣기" : "";
+            return ok;
+        }
+        else
+        {
+            bool ok = (Timer >= smeltTime) && p.hand.IsEmpty;
+            hint = ok ? "E - 꺼내기" : "";
+            return ok;
+        }
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (stored == null)
+        // 권한 없으면 서버에 요청
+        if (!Object || !Object.HasStateAuthority)
         {
-            // 넣기
+            RPC_RequestTap(p.NetObj.InputAuthority);
+            return;
+        }
+
+        HandleTap(p);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
+    {
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
+    }
+
+    private void HandleTap(PlayerInteractor p)
+    {
+        // 넣기
+        if (Stored == null)
+        {
             if (p.hand.Held == null || p.hand.Held.type != inputType) return;
 
-            stored = p.hand.Take();
-            stored.transform.SetParent(slot);
-            stored.transform.localPosition = Vector3.zero;
-            stored.gameObject.SetActive(false);
-            timer = 0f;
+            var item = p.hand.Take();
+            var itemNet = item.GetComponent<NetworkObject>();
+            Stored = itemNet;
+            Timer = 0f;
+            InUse = true;
 
-            //  애니메이션/이펙트 ON
-            SetSmelting(true);
-            //  진행바 시작
-            if (progressBar) progressBar.StartProgress(smeltTime);
+            Transform t = slot ? slot : transform;
+            item.transform.SetParent(t);
+            item.transform.localPosition = Vector3.zero;
+
+            // 전체에 이 아이템 끄라고 알리기
+            RPC_HideHeldItem(itemNet);
+
+            RPC_SmeltingVisual(true, smeltTime);
         }
-        else if (timer >= smeltTime && p.hand.IsEmpty)
+        // 꺼내기
+        else if (Timer >= smeltTime && p.hand.IsEmpty)
         {
-            // 꺼내기
-            var outItem = Instantiate(outputPrefab);
-            p.hand.Pick(outItem);
-            Destroy(stored.gameObject);
-            stored = null;
-            timer = 0f;
+            RPC_SmeltingVisual(false, 0f);
 
-            //  안전하게 OFF
-            SetSmelting(false);
-            //  진행바 정지/숨김
-            if (progressBar) progressBar.StopProgress();
+            var result = Runner.Spawn(
+                outputPrefab,
+                transform.position + Vector3.up * 0.5f,
+                Quaternion.identity,
+                p.NetObj.InputAuthority
+            );
+            p.hand.Pick(result.GetComponent<Item>());
+
+            Runner.Despawn(Stored);
+            Stored = null;
+            Timer = 0f;
+            InUse = false;
         }
     }
 
     private void Update()
     {
-        if (stored != null && timer < smeltTime)
-        {
-            timer += Time.deltaTime;
+        if (!Object) return;
+        if (!Object.HasStateAuthority) return;
+        if (Stored == null) return;
+        if (!InUse) return;
 
-            // 제련 완료 시점
-            if (timer >= smeltTime)
-            {
-                //  애니메이션/이펙트 OFF
-                SetSmelting(false);
-                //  진행바 정지/숨김
-                if (progressBar) progressBar.StopProgress();
-            }
+        Timer += Time.deltaTime;
+        if (Timer >= smeltTime)
+        {
+            InUse = false;
+            RPC_SmeltingVisual(false, 0f);
         }
     }
 
-    private void SetSmelting(bool on)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_SmeltingVisual(bool on, float duration)
     {
-        if (animator) animator.SetBool("IsSmelting", on);
-
-        if (vfxOnSmelt != null)
+        if (on)
         {
-            foreach (var ps in vfxOnSmelt)
+            if (progressBar) progressBar.StartProgress(duration);
+            if (animator) animator.SetBool("IsSmelting", true);
+            if (vfxOnSmelt != null)
             {
-                if (!ps) continue;
-                if (on) { if (!ps.isPlaying) ps.Play(); }
-                else    { if (ps.isPlaying) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting); }
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Play();
+            }
+        }
+        else
+        {
+            if (progressBar) progressBar.StopProgress();
+            if (animator) animator.SetBool("IsSmelting", false);
+            if (vfxOnSmelt != null)
+            {
+                foreach (var ps in vfxOnSmelt) if (ps) ps.Stop();
             }
         }
     }
 
-    // Hold 기반 아님: 인터페이스 충족용
-    public void OnHoldComplete(PlayerInteractor p) { }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_HideHeldItem(NetworkObject itemNet)
+    {
+        if (!itemNet) return;
+        itemNet.transform.SetParent(null);
+        itemNet.gameObject.SetActive(false);
+    }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
 }

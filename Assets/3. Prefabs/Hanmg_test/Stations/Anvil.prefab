@@ -311,6 +311,7 @@ GameObject:
   - component: {fileID: 5777711311991035201}
   - component: {fileID: 8117651428003910320}
   - component: {fileID: 5566807357474402560}
+  - component: {fileID: 5022223552462156875}
   m_Layer: 19
   m_Name: Anvil
   m_TagString: Untagged
@@ -371,7 +372,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  outlineToggle: {fileID: 0}
+  outlineToggle: {fileID: 5566807357474402560}
   priority: 100
 --- !u!114 &8117651428003910320
 MonoBehaviour:
@@ -388,7 +389,7 @@ MonoBehaviour:
   slot: {fileID: 4253082870860050852}
   forgeTime: 2
   inputType: 2
-  outputPrefab: {fileID: 1277400945525474552, guid: e5deebf6dec30e94eb93206aceb19ff8, type: 3}
+  outputPrefab: {fileID: 2037982524072483367, guid: e5deebf6dec30e94eb93206aceb19ff8, type: 3}
   slotLocalOffset: {x: 0, y: 0, z: 0}
   slotLocalEuler: {x: 0, y: 0, z: 0}
   placedScale: 0.4
@@ -408,6 +409,25 @@ MonoBehaviour:
   outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
   scale: 1
   buildAtRuntime: 1
+--- !u!114 &5022223552462156875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 1599221569
+  ObjectInterest: 1
+  Flags: 327681
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8117651428003910320}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &7097799653804753032
 GameObject:
   m_ObjectHideFlags: 0

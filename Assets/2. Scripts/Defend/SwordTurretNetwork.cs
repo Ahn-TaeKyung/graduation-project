@@ -97,7 +97,7 @@ public class SwordTurretNetwork : NetworkBehaviour
                 enemy.Object.Id.IsValid &&
                 !enemy.IsDead)
             {
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage - enemy.Definition.Armor);
             }
         }
     }

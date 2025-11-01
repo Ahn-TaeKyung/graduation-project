@@ -1,29 +1,24 @@
-// 파일명: TurretPlacer.cs
+// 파일명: TurretPlacer.cs (수정)
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
-// using UnityEngine.UI; // UI 버튼 직접 참조 제거
 
 public class TurretPlacer : NetworkBehaviour
 {
     [Header("Setup (Prefab)")]
-    [Tooltip("자신의 자식인 GhostContainer Transform")]
     [SerializeField] private Transform ghostParent;
     [SerializeField] private LayerMask groundLayer;
     
-    // [제거됨] 씬 UI 참조 필드
-    // [SerializeField] private GameObject placementConfirmPanel;
-    // [SerializeField] private Button placeButton;
-    // [SerializeField] private Button cancelButton;
-
     private Camera _defendCamera;
     private GameObject _currentGhost;
-    [SerializeField] private GameObject TowerPanel;
-    private Renderer _ghostRenderer; // 고스트 색상 변경용
+    private Renderer _ghostRenderer;
     private TurretDefinition _currentTurretDef;
     private Vector2Int _currentGridPos;
     private bool _canPlace;
-    private bool _isPlacing; // 현재 드래그(설치) 중인지 여부
+    private bool _isPlacing;
+
+    // [신규] 현재 고스트의 공격 범위 비주얼
+    private Transform _currentGhostRangeVisual;
 
     public static TurretPlacer LocalInstance { get; private set; }
 
@@ -33,8 +28,6 @@ public class TurretPlacer : NetworkBehaviour
         {
             LocalInstance = this;
             _defendCamera = GameObject.Find("DefendCamera")?.GetComponent<Camera>();
-            TowerPanel = GameObject.Find("BuildPanel")?.GetComponent<GameObject>();
-            // [제거됨] 버튼 리스너 연결 로직
         }
     }
 
@@ -56,27 +49,35 @@ public class TurretPlacer : NetworkBehaviour
     public void StartPlacing(TurretDefinition def)
     {
         if (!Object.HasInputAuthority) return;
-        if (_currentGhost != null) Destroy(_currentGhost);
+        if (_currentGhost != null) Destroy(_currentGhost); 
         if (def == null || def.GhostPrefab == null) return;
-        
-        if (_defendCamera == null || !_defendCamera.enabled)
-        {
-            Debug.LogWarning("DefendCamera가 활성화되지 않아 설치를 시작할 수 없습니다.");
-            return;
-        }
+        if (_defendCamera == null || !_defendCamera.enabled) return;
+
+        // [신규] 그리드 표시
+        GridVisualizer.Instance.ShowGrid();
 
         _isPlacing = true;
         _currentTurretDef = def;
         _currentGhost = Instantiate(def.GhostPrefab, ghostParent); 
         _ghostRenderer = _currentGhost.GetComponentInChildren<Renderer>(true);
         if (_ghostRenderer == null)
-        {
             Debug.LogError($"[TurretPlacer] GhostPrefab에 Renderer 컴포넌트가 없습니다! {def.DisplayName}");
-            // 오류가 났더라도 계속 진행은 가능하게 함 (색상 변경만 포기)
-        }
-        _currentGhost.SetActive(false);
 
-        // [수정됨] 씬 UI의 싱글톤을 직접 호출
+        // [신규] 공격 범위 비주얼 찾기 및 설정
+        _currentGhostRangeVisual = _currentGhost.transform.Find("RangeVisual");
+        if (_currentGhostRangeVisual != null)
+        {
+            // AttackRange가 반지름(radius)이므로 스케일(지름)은 * 2
+            float diameter = def.AttackRange * 2.0f;
+            // Y 스케일은 프리팹에 설정된 얇은 값을 유지
+            _currentGhostRangeVisual.localScale = new Vector3(diameter, _currentGhostRangeVisual.localScale.y, diameter);
+        }
+        else
+        {
+            Debug.LogWarning($"[TurretPlacer] {def.GhostPrefab.name}에 'RangeVisual' 자식이 없습니다.");
+        }
+
+        _currentGhost.SetActive(false); // 처음엔 숨김
         PlacementConfirmPanel.Instance.HidePanel();
     }
 
@@ -88,6 +89,7 @@ public class TurretPlacer : NetworkBehaviour
         Ray ray = _defendCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
         if (Physics.Raycast(ray, out RaycastHit hit, 200f, groundLayer))
         {
+            // 고스트와 범위 표시 켜기
             if (!_currentGhost.activeSelf) _currentGhost.SetActive(true);
 
             if (GridManager.Instance.WorldToGrid(hit.point, out _currentGridPos))
@@ -100,6 +102,7 @@ public class TurretPlacer : NetworkBehaviour
         }
         else
         {
+            // 맵 밖으로 나가면 고스트와 범위 표시 끄기
             if (_currentGhost.activeSelf) _currentGhost.SetActive(false);
             _canPlace = false;
         }
@@ -110,16 +113,18 @@ public class TurretPlacer : NetworkBehaviour
     {
         if (!Object.HasInputAuthority || !_isPlacing) return;
 
+        // [신규] 그리드 숨기기 (드롭 시)
+        GridVisualizer.Instance.HideGrid();
+
         if (_canPlace)
         {
-            // [수정됨] 씬 UI의 싱글톤을 직접 호출
             PlacementConfirmPanel.Instance.ShowPanel();
         }
         else
         {
-            CancelPlacement();
+            CancelPlacement(); // CancelPlacement가 고스트를 파괴함
         }
-        _isPlacing = false; // 드래그 종료
+        _isPlacing = false;
     }
 
     // 4. (PlacementConfirmPanel이 호출) 설치 확정
@@ -127,25 +132,39 @@ public class TurretPlacer : NetworkBehaviour
     {
         if (_currentGhost == null || !_canPlace) return;
 
+        // [신규] 그리드 숨기기 (확정 시)
+        GridVisualizer.Instance.HideGrid();
+
+        // ... (재고 확인 및 RPC 호출 로직) ...
+        int stock = SharedWeaponInventory.Instance.GetWeaponCount(_currentTurretDef.ID);
+        if (stock <= 0)
+        {
+            CancelPlacement();
+            return;
+        }
+        SharedWeaponInventory.Instance.RPC_UseWeapon(_currentTurretDef.ID);
         TurretManager.Instance.RPC_RequestPlaceTurret(
             _currentTurretDef.ID,
             _currentGridPos,
             Runner.LocalPlayer
         );
 
-        Destroy(_currentGhost);
+        Destroy(_currentGhost); // 고스트와 RangeVisual 자식이 함께 파괴됨
         _currentGhost = null;
-        // 패널 숨기기는 PlacementConfirmPanel이 스스로 처리
+        _currentGhostRangeVisual = null; // 참조 초기화
     }
 
     // 5. (PlacementConfirmPanel이 호출) 설치 취소
     public void CancelPlacement()
     {
-        if (_currentGhost != null) Destroy(_currentGhost);
+        // [신규] 그리드 숨기기 (취소 시)
+        GridVisualizer.Instance.HideGrid();
+
+        if (_currentGhost != null) Destroy(_currentGhost); // 고스트와 RangeVisual 자식이 함께 파괴됨
         _currentGhost = null;
+        _currentGhostRangeVisual = null; // 참조 초기화
         
-        // [수정됨] 씬 UI의 싱글톤을 직접 호출 (이미 켜져있을 수 있으므로)
-        PlacementConfirmPanel.Instance.HidePanel();
+        PlacementConfirmPanel.Instance.HidePanel(); // (이중 확인)
         _isPlacing = false;
     }
 }

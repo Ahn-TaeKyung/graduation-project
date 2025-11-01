@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 498567341673003331}
   - component: {fileID: 5777711311991035201}
   - component: {fileID: -3619078710334589617}
+  - component: {fileID: 2283566587763760352}
+  - component: {fileID: 2811186044823899826}
   m_Layer: 19
   m_Name: WoodPile
   m_TagString: Untagged
@@ -79,7 +81,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  outlineToggle: {fileID: 0}
+  outlineToggle: {fileID: 2811186044823899826}
   priority: 100
 --- !u!114 &-3619078710334589617
 MonoBehaviour:
@@ -93,7 +95,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac76e7b154d1fe946b639836a2a06abd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logPrefab: {fileID: 1277400945525474552, guid: 20594f46667694b4791b7195697c683b, type: 3}
+  woodPrefab: {fileID: 7798359105062806601, guid: 20594f46667694b4791b7195697c683b, type: 3}
+--- !u!114 &2283566587763760352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3337988502
+  ObjectInterest: 1
+  Flags: 327681
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: -3619078710334589617}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &2811186044823899826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4860882373919045580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f95c989662e721446a69c6b264a3b753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 33c4b97d56fae71458f7eade71619b6e, type: 2}
+  scale: 1.03
+  buildAtRuntime: 1
 --- !u!1 &6753945265915541170
 GameObject:
   m_ObjectHideFlags: 0

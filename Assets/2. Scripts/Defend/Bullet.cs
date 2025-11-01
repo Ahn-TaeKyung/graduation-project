@@ -51,7 +51,7 @@ public class Bullet : NetworkBehaviour
                     // TakeDamage를 호출하기 전에 적이 유효한지(스폰 완료 && 살아있는지) 확인합니다.
                     if (enemy != null && enemy.Object != null && enemy.Object.Id.IsValid && !enemy.IsDead)
                     {
-                        enemy.TakeDamage(damage);
+                        enemy.TakeDamage(damage-enemy.Definition.Armor);
                     }
                     
                     // 총알은 적의 유효성(살았든 죽었든)과 관계없이 적중했으므로 제거합니다.

@@ -10,6 +10,10 @@ public class TurretDefinition : ScriptableObject
     public int Cost = 100;
     public Vector2Int Size = new Vector2Int(1, 1); // 그리드 크기 (1x1)
 
+    [Header("Stats")]
+    [Tooltip("타겟 탐지 및 고스트 비주얼에 사용될 공격 범위 (유닛 단위)")]
+    public float AttackRange = 10f; // 예: BowTurret은 10, SwordTurret은 3
+    
     [Header("Prefabs")]
     [Tooltip("설치 전 로컬 미리보기 프리팹 (네트워크 없음)")]
     public GameObject GhostPrefab;

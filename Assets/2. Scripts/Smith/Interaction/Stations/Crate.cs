@@ -1,59 +1,80 @@
+using Fusion;
 using UnityEngine;
 
-public class Crate : MonoBehaviour, IInteractable
+public class Crate : NetworkBehaviour, IInteractable
 {
-    [Header("Spawn Settings")]
-    [SerializeField] private Item orePrefab;
-    [SerializeField] private Transform spawnPoint;
-
-    [Header("Animation")]
-    [SerializeField] private Animator animator;                 // Visual_box의 Animator
-    [SerializeField] private string openTrigger = "Open"; // Animator Trigger 파라미터
+    [SerializeField] private NetworkObject itemPrefab;
+    [SerializeField] private Animator animator;
 
     public InteractionKind Kind => InteractionKind.Tap;
     public float HoldDuration => 0f;
 
-    private void Awake()
-    {
-        if (!animator) animator = GetComponentInChildren<Animator>();
-        if (!spawnPoint) spawnPoint = transform;
-    }
-
     public bool CanInteract(PlayerInteractor p, out string hint)
     {
-        bool ok = p.hand.IsEmpty; // 손이 비어 있어야만 꺼낼 수 있음
-        hint = ok ? "E - 재료 받기" : "손이 비어야 함";
+        // 손이 비어 있어야 꺼낼 수 있음
+        bool ok = p.hand.IsEmpty;
+        hint = ok ? "E - 꺼내기" : "";
         return ok;
     }
 
     public void OnTap(PlayerInteractor p)
     {
-        if (!p.hand.IsEmpty) return;
-        if (!orePrefab)
+        // 클라 → 서버
+        if (!Object || !Object.HasStateAuthority)
         {
-            Debug.LogWarning("[Crate] Ore Prefab 비어있음");
+            RPC_RequestTap(p.NetObj.InputAuthority);
             return;
         }
 
-        // 1) 재료 생성
-        var item = Instantiate(orePrefab, spawnPoint.position, spawnPoint.rotation);
-
-        // 2) 손에 바로 들려주기
-        p.hand.Pick(item);
-
-        // 3) 매번 열기 애니메이션 재생
-        PlayOpen();
+        HandleTap(p);
     }
 
-    public void OnHoldComplete(PlayerInteractor p) { }
-
-    private void PlayOpen()
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RPC_RequestTap(PlayerRef who)
     {
-        if (!animator || string.IsNullOrEmpty(openTrigger)) return;
-        animator.ResetTrigger(openTrigger);
-        animator.SetTrigger(openTrigger);
+        var p = FindPlayerByRef(who);
+        if (p == null) return;
+        HandleTap(p);
     }
 
+    private void HandleTap(PlayerInteractor p)
+    {
+        if (!p.hand.IsEmpty) return;
+
+        // 아이템 스폰
+        var spawned = Runner.Spawn(
+            itemPrefab,
+            transform.position + Vector3.up * 0.5f,
+            Quaternion.identity,
+            p.NetObj.InputAuthority
+        );
+
+        p.hand.Pick(spawned.GetComponent<Item>());
+
+        // 애니는 전체로
+        RPC_PlayOpen();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_PlayOpen()
+    {
+        if (animator == null) return;
+        animator.ResetTrigger("Open");
+        animator.SetTrigger("Open");
+    }
+
+    private PlayerInteractor FindPlayerByRef(PlayerRef who)
+    {
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        foreach (var pi in all)
+        {
+            if (pi.Object != null && pi.Object.InputAuthority == who)
+                return pi;
+        }
+        return null;
+    }
     public void OnHoldStart(PlayerInteractor p) { }
     public void OnHoldCancel(PlayerInteractor p) { }
+    public void OnHoldComplete(PlayerInteractor p) { }
+
 }

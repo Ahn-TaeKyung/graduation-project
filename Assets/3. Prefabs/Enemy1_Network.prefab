@@ -204,10 +204,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Definition: {fileID: 11400000, guid: 053194253db83b94f848b924169c60bc, type: 2}
-  _Health: 0
+  _Health: 100
   _IsDead:
     _value: 0
-  visualsRoot: {fileID: 3942983335750322853}
+  visualsRoot: {fileID: 1931298151966786, guid: 928a1377c1cd4515b208fef3a396b8ea, type: 3}
 --- !u!114 &-7602602816167045475
 MonoBehaviour:
   m_ObjectHideFlags: 0

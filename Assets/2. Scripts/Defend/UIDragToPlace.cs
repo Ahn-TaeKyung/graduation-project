@@ -1,4 +1,4 @@
-// 파일명: UIDragToPlace.cs
+// 파일명: UIDragToPlace.cs (수정됨)
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,13 +12,11 @@ public class UIDragToPlace : MonoBehaviour, IPointerDownHandler, IDragHandler, I
 
     private void Start()
     {
-        // 데이터베이스에서 터렛 정보 찾아오기
         _turretDef = TurretDatabase.Instance.GetTurretByID(turretID);
         if (_turretDef == null)
             Debug.LogError($"[UIDragToPlace] {turretID} ID를 가진 터렛을 Database에서 찾을 수 없음");
     }
 
-    // 로컬 플레이어의 TurretPlacer를 찾는 안전한 방법
     private TurretPlacer GetLocalPlacer()
     {
         if (_localPlacer == null)
@@ -28,30 +26,40 @@ public class UIDragToPlace : MonoBehaviour, IPointerDownHandler, IDragHandler, I
         return _localPlacer;
     }
 
-    // 마우스로 이 UI를 클릭했을 때
     public void OnPointerDown(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
         if (_turretDef == null) return;
         
-        // 로컬 플레이어의 TurretPlacer에게 "설치 시작" 알림
+        // [핵심 수정] 드래그 시작 전 재고 확인
+        if (SharedWeaponInventory.Instance != null)
+        {
+            int stock = SharedWeaponInventory.Instance.GetWeaponCount(turretID);
+            if (stock <= 0)
+            {
+                Debug.Log($"[TurretPlacer] {turretID} 재고 없음! (UI에서 차단)");
+                // TODO: 여기에 "재고가 없습니다" UI 안내 문구 표시
+                // ShowStockMessage("재고가 없습니다!");
+                return; // 재고가 없으면 드래그를 시작하지 않음
+            }
+        }
+        else
+        {
+            Debug.LogError("SharedWeaponInventory.Instance를 찾을 수 없습니다.");
+            return;
+        }
+        
+        // 재고가 있으면 설치 시작
         GetLocalPlacer()?.StartPlacing(_turretDef);
     }
 
-    // 드래그 중일 때 (매 프레임 호출)
-    public void OnDrag(PointerEventData eventData)
-    {
-        // TurretPlacer는 Update에서 스스로 위치를 갱신하므로,
-        // 여기서 TurretPlacer.UpdatePlacement()를 호출할 필요가 없음
-        // (만약 TurretPlacer.Update가 아닌 이벤트 기반으로 하려면 여기서 호출)
-    }
+    public void OnDrag(PointerEventData eventData) { } // 로직 없음
 
-    // 마우스를 뗐을 때 (맵이든 UI든 어디서든)
     public void OnPointerUp(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
         
-        // 로컬 플레이어의 TurretPlacer에게 "설치 종료(드롭)" 알림
+        // 드래그 종료 알림
         GetLocalPlacer()?.EndPlacing();
     }
 }
