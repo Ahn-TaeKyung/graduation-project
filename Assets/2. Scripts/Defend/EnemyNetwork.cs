@@ -1,6 +1,7 @@
 // 파일명: EnemyNetwork.cs (수정됨)
 using Fusion;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyNetwork : NetworkBehaviour
 {
@@ -105,6 +106,13 @@ public class EnemyNetwork : NetworkBehaviour
     private void ReachGoal()
     {
         if (!Object.HasStateAuthority) return;
+
+        // [핵심 수정] 게임 매니저에 피해 주기
+        if (GameStateManager.Instance != null && Definition != null)
+        {
+            GameStateManager.Instance.RPC_PlayerTakeDamage(Definition.DamageToGoal);
+        }
+        
         Runner.Despawn(Object); 
     }
 
@@ -114,11 +122,11 @@ public class EnemyNetwork : NetworkBehaviour
     // 클라이언트에서 시각적 업데이트 처리
     private void UpdateHealthVisual(float currentHealth)
     {
-        // TODO: 몬스터 머리 위의 체력바를 업데이트하는 로직
+        // // TODO: 몬스터 머리 위의 체력바를 업데이트하는 로직
         // if (healthBar != null && Definition != null && Definition.MaxHealth > 0)
         // {
         //     healthBar.fillAmount = currentHealth / Definition.MaxHealth;
         // }
         // Debug.Log($"Enemy Health Updated: {currentHealth}");
     }
-}
+}   

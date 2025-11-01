@@ -15,8 +15,8 @@ MonoBehaviour:
   ID: SwordTurret
   DisplayName: "\uAC80\uC0AC \uD3EC\uD0D1"
   Cost: 100
-  Size: {x: 2, y: 1}
-  AttackRange: 4
+  Size: {x: 1, y: 1}
+  AttackRange: 3
   GhostPrefab: {fileID: 5747317224876716724, guid: 20da70f904fc26840b9e20744670feb7, type: 3}
   NetworkPrefab:
     RawGuidValue: 3ca302b662f692a4984d527fdae175c8

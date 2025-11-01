@@ -10,7 +10,7 @@ public class MonsterSpawner : NetworkBehaviour, IGameStartListener
 
     [Header("Stage Configuration")]
     [Tooltip("현재 스테이지에서 사용할 StageData 에셋")]
-    [SerializeField] private StageData currentStageData;
+    public StageData currentStageData;
 
     // [제거됨] basicEnemyDef, AromorEnemyDef (이제 StageData가 관리)
     // [제거됨] timeBetweenWaves, timeBetweenSpawns (이제 WaveData가 관리)

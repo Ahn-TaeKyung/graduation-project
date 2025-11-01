@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: GuardMonster
   DisplayName: "\uAC11\uC637 \uBAAC\uC2A4\uD130"
-  MaxHealth: 100
+  MaxHealth: 50
   MoveSpeed: 2
   DamageToGoal: 1
-  Armor: 16
+  Armor: 8
   MagicArmor: 0
   NetworkPrefab:
     RawGuidValue: e2aafa8770d34a9591b41bedf4e318ba
