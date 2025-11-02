@@ -35139,6 +35139,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmithCamera
       objectReference: {fileID: 0}
+    - target: {fileID: 5866691607713223671, guid: dc36357b58d0f074fabce8810962d177, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7519967880728607540, guid: dc36357b58d0f074fabce8810962d177, type: 3}
       propertyPath: m_LocalPosition.x
       value: -2000.32

@@ -17,6 +17,6 @@ MonoBehaviour:
   Cost: 100
   Size: {x: 1, y: 1}
   AttackRange: 3
-  GhostPrefab: {fileID: 5747317224876716724, guid: 20da70f904fc26840b9e20744670feb7, type: 3}
+  GhostPrefab: {fileID: 6643095262441085969, guid: 9885b9ddf5bb50641919d62d909ac34f, type: 3}
   NetworkPrefab:
     RawGuidValue: 3ca302b662f692a4984d527fdae175c8

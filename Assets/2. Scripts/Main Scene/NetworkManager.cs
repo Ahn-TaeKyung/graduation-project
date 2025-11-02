@@ -137,9 +137,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     }
     private Vector3[] spawn_positions = new Vector3[]
     {
-        new Vector3(-7, 1, 0), // 1번 플레이어
-        new Vector3(7, 1, 0),  // 2번 플레이어
-        new Vector3(0, 1, 0)   // 3번 플레이어
+        new Vector3(-7, 0, 0), // 1번 플레이어
+        new Vector3(7, 0, 0),  // 2번 플레이어
+        new Vector3(0, 0, 0)   // 3번 플레이어
     };
 
     private Vector3 GetFixedSpawnPosition(PlayerRef player)
