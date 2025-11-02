@@ -43,9 +43,16 @@ public class GameSceneManager : NetworkBehaviour
         }
 
         // 씬 진입 시 Room에 있는 모든 플레이어 스폰
-        foreach (PlayerRef player in runner.ActivePlayers)
+        if (Object.HasStateAuthority)
         {
-            SpawnPlayer(player);
+            // (로그: GameSceneManager.Spawned () (at ...GameSceneManager.cs:48))
+            // 당신의 코드 48라인 근처에 이 로직이 있을 것입니다.
+            
+            // 예시: 모든 플레이어를 스폰시키는 로직
+            foreach (var player in Runner.ActivePlayers)
+            {
+                SpawnPlayer(player); // (로그: GameSceneManager.SpawnPlayer ... :121)
+            }
         }
 
         // Host/Client 추가 입장 처리

@@ -138,8 +138,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     private Vector3[] spawn_positions = new Vector3[]
     {
         new Vector3(-7, 1, 0), // 1번 플레이어
-        new Vector3(0, 1, 0),  // 2번 플레이어
-        new Vector3(7, 1, 0)   // 3번 플레이어
+        new Vector3(7, 1, 0),  // 2번 플레이어
+        new Vector3(0, 1, 0)   // 3번 플레이어
     };
 
     private Vector3 GetFixedSpawnPosition(PlayerRef player)
@@ -153,17 +153,21 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         {
             runner.Despawn(networkObject);
             m_spawn_characters.Remove(player);
+            
         }
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        
+
         Vector2 move = PlayerInputHandler.MoveInput;
+
+        bool dashNow = Input.GetKeyDown(KeyCode.LeftShift);
 
         NetworkInputData data = new NetworkInputData
         {
             horizontal = move.x,
-            vertical = move.y
+            vertical = move.y,
+            dash = PlayerInputHandler.DashPressed || dashNow
         };
 
         input.Set(data);

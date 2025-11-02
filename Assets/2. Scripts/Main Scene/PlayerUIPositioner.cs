@@ -32,7 +32,7 @@ public class PlayerUIPositioner : NetworkBehaviour
                 if (role_text_transform != null)
                     role_text_transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(-640, 0);
                 break;
-            case 2:
+            case 3:
                 if (left_button_transform != null)
                     left_button_transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(750, 0);
                 if (right_button_transform != null)
@@ -40,7 +40,7 @@ public class PlayerUIPositioner : NetworkBehaviour
                 if (role_text_transform != null)
                     role_text_transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 break;
-            case 3:
+            case 2:
                 if (left_button_transform != null)
                     left_button_transform.GetComponent<RectTransform>().anchoredPosition = new Vector2(1390, 0);
                 if (right_button_transform != null)
