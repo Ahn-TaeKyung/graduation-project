@@ -1,7 +1,7 @@
 using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGameEndListener
+public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGameEndListener, IGameStartListener
 {
     private Camera buildCamera;
     private Camera defendCamera;
@@ -42,6 +42,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         {
             GameStateManager.Instance.RegisterListener((IGameReadyListener)this);
             GameStateManager.Instance.RegisterListener((IGameEndListener)this);
+            GameStateManager.Instance.RegisterListener((IGameStartListener)this);
             Debug.Log("[CameraSwitch] GameStateManager에 리스너 등록 완료");
             if (GameStateManager.Instance.CurrentState == GameState.Ready)
             {
@@ -61,6 +62,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         {
             GameStateManager.Instance.UnregisterListener((IGameReadyListener)this);
             GameStateManager.Instance.UnregisterListener((IGameEndListener)this);
+            GameStateManager.Instance.UnregisterListener((IGameStartListener)this);
         }
     }
 
@@ -99,19 +101,19 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         if (!Object.HasInputAuthority)
             return;
 
-        isCameraControlEnabled = true;
-        isDefendView = false;
-
-        if (buildCamera != null && defendCamera != null)
-        {
-            buildCamera.enabled = true;
-            defendCamera.enabled = false;
-            towerBox.enabled = false;
-        }
-
+        isCameraControlEnabled = false;
+        SwitchCamera(false);
         Debug.Log("[CameraSwitch] Game Ready - BuildCamera 활성화됨");
     }
-
+    // [신규] 'Start' 상태 (30초 준비)
+    public void OnGameStart()
+    {
+        if (!Object.HasInputAuthority) return;
+        isCameraControlEnabled = true; // [수정] Start 상태부터 탭 전환 활성화
+        
+        // Start 상태가 되면 DefendCamera로 자동 전환
+        SwitchCamera(true); 
+    }
     public void OnGameEnd()
     {
         if (!Object.HasInputAuthority)

@@ -5,5 +5,6 @@ public enum GameState
     Ready,
     Start,
     Play,
-    End
+    End,
+    Clear
 }

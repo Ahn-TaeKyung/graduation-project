@@ -1,0 +1,1222 @@
+fileFormatVersion: 2
+guid: 6dd9e50b673fd0540bd1df714e48d48b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -737141533171918033
+    second: Map Road_0
+  - first:
+      213: -8367583896560442597
+    second: Map Road_1
+  - first:
+      213: -6898724294344962863
+    second: Map Road_2
+  - first:
+      213: -4339370056785356491
+    second: Map Road_3
+  - first:
+      213: -582305377353180257
+    second: Map Road_4
+  - first:
+      213: -6857483571355598341
+    second: Map Road_5
+  - first:
+      213: 5079097254948161884
+    second: Map Road_6
+  - first:
+      213: -3254241346031132396
+    second: Map Road_7
+  - first:
+      213: -3070929484766920613
+    second: Map Road_8
+  - first:
+      213: 5271312984781116003
+    second: Map Road_9
+  - first:
+      213: -4484517398957794586
+    second: Map Road_10
+  - first:
+      213: 5633973078711827843
+    second: Map Road_11
+  - first:
+      213: -6119780610310930749
+    second: Map Road_12
+  - first:
+      213: 8898837313140223762
+    second: Map Road_13
+  - first:
+      213: 5790231201424674006
+    second: Map Road_14
+  - first:
+      213: 3632702835059878187
+    second: Map Road_15
+  - first:
+      213: -37428230696385379
+    second: Map Road_16
+  - first:
+      213: 9134886647064105195
+    second: Map Road_17
+  - first:
+      213: 2264838834910802757
+    second: Map Road_18
+  - first:
+      213: 2647133187385623253
+    second: Map Road_19
+  - first:
+      213: 1067005021060275774
+    second: Map Road_20
+  - first:
+      213: -313368815756855701
+    second: Map Road_21
+  - first:
+      213: -5431934383790260893
+    second: Map Road_22
+  - first:
+      213: 120964458249701462
+    second: Map Road_23
+  - first:
+      213: -3626645626069581818
+    second: Map Road_24
+  - first:
+      213: 283900805636692558
+    second: Map Road_25
+  - first:
+      213: -5709639852020930415
+    second: Map Road_26
+  - first:
+      213: 5242540580902034101
+    second: Map Road_27
+  - first:
+      213: 6312364806757590663
+    second: Map Road_28
+  - first:
+      213: -2844057096969030441
+    second: Map Road_29
+  - first:
+      213: -1196923358597488161
+    second: Map Road_30
+  - first:
+      213: 2946912991646838378
+    second: Map Road_31
+  - first:
+      213: 1236740242187827119
+    second: Map Road_32
+  - first:
+      213: -415801706023090821
+    second: Map Road_33
+  - first:
+      213: -6859762893827981088
+    second: Map Road_34
+  - first:
+      213: -6980590798878279711
+    second: Map Road_35
+  - first:
+      213: 5130312566307550200
+    second: Map Road_36
+  - first:
+      213: 1664842036863637963
+    second: Map Road_37
+  - first:
+      213: -1089988215810501790
+    second: Map Road_38
+  - first:
+      213: 256204217955972316
+    second: Map Road_39
+  - first:
+      213: -6324817003776031807
+    second: Map Road_40
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Map Road_0
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 490
+        width: 28
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2bd91e5ea525c5f0800000000000000
+      internalID: -737141533171918033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 503
+        width: 28
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b136c3987ce50eb80800000000000000
+      internalID: -8367583896560442597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_2
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 494
+        width: 28
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dc06382ecec240a0800000000000000
+      internalID: -6898724294344962863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_3
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 465
+        width: 26
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5399750ace577c3c0800000000000000
+      internalID: -4339370056785356491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_4
+      rect:
+        serializedVersion: 2
+        x: 214
+        y: 463
+        width: 23
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9b5010385c3be7f0800000000000000
+      internalID: -582305377353180257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_5
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 426
+        width: 21
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf1c54c360355d0a0800000000000000
+      internalID: -6857483571355598341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_6
+      rect:
+        serializedVersion: 2
+        x: 229
+        y: 415
+        width: 14
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c59c8dc0b049c7640800000000000000
+      internalID: 5079097254948161884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 379
+        width: 10
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 411ec6cccbc96d2d0800000000000000
+      internalID: -3254241346031132396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_8
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 370
+        width: 19
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b50c13277edd165d0800000000000000
+      internalID: -3070929484766920613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_9
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 343
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36258c52b37772940800000000000000
+      internalID: 5271312984781116003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_10
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 325
+        width: 20
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eadf068f2bc3c1c0800000000000000
+      internalID: -4484517398957794586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_11
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 295
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38d7bbe3aa4ef2e40800000000000000
+      internalID: 5633973078711827843
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_12
+      rect:
+        serializedVersion: 2
+        x: 622
+        y: 311
+        width: 25
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cef71b75fb221ba0800000000000000
+      internalID: -6119780610310930749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_13
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 312
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21fe6b363650f7b70800000000000000
+      internalID: 8898837313140223762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_14
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 295
+        width: 26
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dc0d4889980b5050800000000000000
+      internalID: 5790231201424674006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_15
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 280
+        width: 16
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b296c4a4bf3f96230800000000000000
+      internalID: 3632702835059878187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_16
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 264
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9445c4f8370b7ff0800000000000000
+      internalID: -37428230696385379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_17
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 277
+        width: 25
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be017bdb103a5ce70800000000000000
+      internalID: 9134886647064105195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_18
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 260
+        width: 19
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5433e54bbe25e6f10800000000000000
+      internalID: 2264838834910802757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_19
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 255
+        width: 27
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d2844bdb918cb420800000000000000
+      internalID: 2647133187385623253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_20
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 258
+        width: 26
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3e1bd5d963cece00800000000000000
+      internalID: 1067005021060275774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_21
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 262
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b66b02de8b0b6abf0800000000000000
+      internalID: -313368815756855701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_22
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 231
+        width: 18
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d73f22574ed94b0800000000000000
+      internalID: -5431934383790260893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_23
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 220
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 658cb6ca880cda100800000000000000
+      internalID: 120964458249701462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_24
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 216
+        width: 13
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60006e394019badc0800000000000000
+      internalID: -3626645626069581818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_25
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 195
+        width: 27
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4a1c6f474e90f300800000000000000
+      internalID: 283900805636692558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_26
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 189
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 198e0e83ec843c0b0800000000000000
+      internalID: -5709639852020930415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_27
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 173
+        width: 20
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ba5c35d1ee31c840800000000000000
+      internalID: 5242540580902034101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_28
+      rect:
+        serializedVersion: 2
+        x: 949
+        y: 193
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 786a67fe8560a9750800000000000000
+      internalID: 6312364806757590663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_29
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 180
+        width: 29
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d47b368321e788d0800000000000000
+      internalID: -2844057096969030441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_30
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 123
+        width: 16
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd1ed630c8ca36fe0800000000000000
+      internalID: -1196923358597488161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_31
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 152
+        width: 17
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6ee713a0c985e820800000000000000
+      internalID: 2946912991646838378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_32
+      rect:
+        serializedVersion: 2
+        x: 977
+        y: 108
+        width: 12
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa7390f92b8c92110800000000000000
+      internalID: 1236740242187827119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_33
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 71
+        width: 13
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b750e772d86ca3af0800000000000000
+      internalID: -415801706023090821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_34
+      rect:
+        serializedVersion: 2
+        x: 971
+        y: 62
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e04afd1ef93dc0a0800000000000000
+      internalID: -6859762893827981088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_35
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 30
+        width: 26
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e7ff7637a5ff1f90800000000000000
+      internalID: -6980590798878279711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_36
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 26
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f3fb75f818823740800000000000000
+      internalID: 5130312566307550200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_37
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 10
+        width: 27
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc915660305ba1710800000000000000
+      internalID: 1664842036863637963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_38
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 1
+        width: 27
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 263d0432e759fd0f0800000000000000
+      internalID: -1089988215810501790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_39
+      rect:
+        serializedVersion: 2
+        x: 859
+        y: 0
+        width: 26
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd4f839f0683e8300800000000000000
+      internalID: 256204217955972316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map Road_40
+      rect:
+        serializedVersion: 2
+        x: 904
+        y: 6
+        width: 26
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c34494027cb938a0800000000000000
+      internalID: -6324817003776031807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Map Road_0: -737141533171918033
+      Map Road_1: -8367583896560442597
+      Map Road_10: -4484517398957794586
+      Map Road_11: 5633973078711827843
+      Map Road_12: -6119780610310930749
+      Map Road_13: 8898837313140223762
+      Map Road_14: 5790231201424674006
+      Map Road_15: 3632702835059878187
+      Map Road_16: -37428230696385379
+      Map Road_17: 9134886647064105195
+      Map Road_18: 2264838834910802757
+      Map Road_19: 2647133187385623253
+      Map Road_2: -6898724294344962863
+      Map Road_20: 1067005021060275774
+      Map Road_21: -313368815756855701
+      Map Road_22: -5431934383790260893
+      Map Road_23: 120964458249701462
+      Map Road_24: -3626645626069581818
+      Map Road_25: 283900805636692558
+      Map Road_26: -5709639852020930415
+      Map Road_27: 5242540580902034101
+      Map Road_28: 6312364806757590663
+      Map Road_29: -2844057096969030441
+      Map Road_3: -4339370056785356491
+      Map Road_30: -1196923358597488161
+      Map Road_31: 2946912991646838378
+      Map Road_32: 1236740242187827119
+      Map Road_33: -415801706023090821
+      Map Road_34: -6859762893827981088
+      Map Road_35: -6980590798878279711
+      Map Road_36: 5130312566307550200
+      Map Road_37: 1664842036863637963
+      Map Road_38: -1089988215810501790
+      Map Road_39: 256204217955972316
+      Map Road_4: -582305377353180257
+      Map Road_40: -6324817003776031807
+      Map Road_5: -6857483571355598341
+      Map Road_6: 5079097254948161884
+      Map Road_7: -3254241346031132396
+      Map Road_8: -3070929484766920613
+      Map Road_9: 5271312984781116003
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

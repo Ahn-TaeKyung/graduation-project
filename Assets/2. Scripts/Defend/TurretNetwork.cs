@@ -47,7 +47,7 @@ public class TurretNetwork : NetworkBehaviour
         if (_currentTarget != null && _fireCooldown.ExpiredOrNotRunning(Runner))
         {
             // Debug.Log($"Firing at target: {_currentTarget.name}");
-            RotateTowardsTarget(_currentTarget.transform.position);
+            // RotateTowardsTarget(_currentTarget.transform.position);
             Fire(_currentTarget.transform.position);
             _fireCooldown = TickTimer.CreateFromSeconds(Runner, 1f / fireRate);
         }

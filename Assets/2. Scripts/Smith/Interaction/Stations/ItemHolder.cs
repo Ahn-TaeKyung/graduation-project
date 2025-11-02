@@ -37,6 +37,7 @@ public class ItemHolder : NetworkBehaviour, IInteractable
 
     public void OnTap(PlayerInteractor p)
     {
+        // 상태 권한 없는 쪽은 RPC로 요청
         if (!Object || !Object.HasStateAuthority)
         {
             RPC_RequestTap(p.NetObj.InputAuthority);
@@ -56,6 +57,7 @@ public class ItemHolder : NetworkBehaviour, IInteractable
 
     private void HandleTap(PlayerInteractor p)
     {
+        // 비어있을 때 → 올려두기
         if (Stored == null)
         {
             if (p.hand.Held == null) return;
@@ -67,6 +69,7 @@ public class ItemHolder : NetworkBehaviour, IInteractable
 
             PlaceOnSlot(item);
         }
+        // 차 있을 때 → 가져가기
         else
         {
             if (!p.hand.IsEmpty) return;
@@ -80,10 +83,23 @@ public class ItemHolder : NetworkBehaviour, IInteractable
 
     private void PlaceOnSlot(Item item)
     {
-        item.transform.SetParent(slot);
+        item.transform.SetParent(slot, worldPositionStays: false);
+        ApplySlotTransform(item);
+
+        if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
+        if (item.TryGetComponent(out Collider col)) col.enabled = false;
+
+        //  여기서 NetworkTransform 건드리던 코드 제거 (버전마다 달라서)
+        // if (item.TryGetComponent(out NetworkTransform nt)) { ... }
+
+        item.gameObject.SetActive(true);
+    }
+
+    // 위치/회전/스케일을 한군데서만 계산
+    private void ApplySlotTransform(Item item)
+    {
         item.transform.localPosition = slotLocalOffset;
 
-        // 🔥 타입별 회전 적용
         Vector3 eulerToUse = slotLocalEuler;
         if (item.type == ItemType.Sword)
             eulerToUse = swordLocalEuler;
@@ -92,25 +108,26 @@ public class ItemHolder : NetworkBehaviour, IInteractable
 
         item.transform.localRotation = Quaternion.Euler(eulerToUse);
         item.transform.localScale = Vector3.one * Mathf.Max(0.0001f, placedScale);
-
-        if (item.TryGetComponent(out Rigidbody rb)) rb.isKinematic = true;
-        if (item.TryGetComponent(out Collider col)) col.enabled = false;
-        item.gameObject.SetActive(true);
     }
 
     private void LateUpdate()
     {
         if (Stored == null) return;
+
         var item = Stored.GetComponent<Item>();
         if (!item) return;
 
+        // 매 프레임 강제 고정
         if (item.transform.parent != slot)
-            PlaceOnSlot(item);
+            item.transform.SetParent(slot, worldPositionStays: false);
+
+        ApplySlotTransform(item);
     }
 
     private PlayerInteractor FindPlayerByRef(PlayerRef who)
     {
-        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(UnityEngine.FindObjectsSortMode.None);
+        //  풀네임으로 호출
+        var all = UnityEngine.Object.FindObjectsByType<PlayerInteractor>(FindObjectsSortMode.None);
         foreach (var pi in all)
         {
             if (pi.Object != null && pi.Object.InputAuthority == who)

@@ -1,0 +1,1430 @@
+fileFormatVersion: 2
+guid: a917e850677cace44b6a831c2d47d4e6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8809373269924287598
+    second: Socia Icon_0
+  - first:
+      213: 9200022706999219766
+    second: Socia Icon_1
+  - first:
+      213: -6755732381257576961
+    second: Socia Icon_2
+  - first:
+      213: 6515624151355844393
+    second: Socia Icon_3
+  - first:
+      213: -7775851457566438039
+    second: Socia Icon_4
+  - first:
+      213: 2359260423765259266
+    second: Socia Icon_5
+  - first:
+      213: 5092487986558340142
+    second: Socia Icon_6
+  - first:
+      213: -318448320522042933
+    second: Socia Icon_7
+  - first:
+      213: -5777326162837200492
+    second: Socia Icon_8
+  - first:
+      213: -1198671682854427265
+    second: Socia Icon_9
+  - first:
+      213: -8754510328467895906
+    second: Socia Icon_10
+  - first:
+      213: 6923706106289557180
+    second: Socia Icon_11
+  - first:
+      213: -5102175979846102257
+    second: Socia Icon_12
+  - first:
+      213: 4425366223708694670
+    second: Socia Icon_13
+  - first:
+      213: 1854905836756936098
+    second: Socia Icon_14
+  - first:
+      213: -818901512331844142
+    second: Socia Icon_15
+  - first:
+      213: -6949755533116028352
+    second: Socia Icon_16
+  - first:
+      213: 7049361957045684701
+    second: Socia Icon_17
+  - first:
+      213: -8884592371192235166
+    second: Socia Icon_18
+  - first:
+      213: -7035296180232124570
+    second: Socia Icon_19
+  - first:
+      213: -541666729205595899
+    second: Socia Icon_20
+  - first:
+      213: -8319145388690539776
+    second: Socia Icon_21
+  - first:
+      213: 1251075032951709362
+    second: Socia Icon_22
+  - first:
+      213: 3297618955006556999
+    second: Socia Icon_23
+  - first:
+      213: 3080075241185672464
+    second: Socia Icon_24
+  - first:
+      213: 3586681374879154323
+    second: Socia Icon_25
+  - first:
+      213: 9222815866567858830
+    second: Socia Icon_26
+  - first:
+      213: -8770162425997859763
+    second: Socia Icon_27
+  - first:
+      213: 3334031478111513448
+    second: Socia Icon_28
+  - first:
+      213: 6070147294877245557
+    second: Socia Icon_29
+  - first:
+      213: -4328732164922786836
+    second: Socia Icon_30
+  - first:
+      213: 1912195675327025845
+    second: Socia Icon_31
+  - first:
+      213: -876416156925409837
+    second: Socia Icon_32
+  - first:
+      213: 8317772564968838694
+    second: Socia Icon_33
+  - first:
+      213: -606991198634712083
+    second: Socia Icon_34
+  - first:
+      213: 6945327098195630919
+    second: Socia Icon_35
+  - first:
+      213: 8795877028074893852
+    second: Socia Icon_36
+  - first:
+      213: 4871498761419615827
+    second: Socia Icon_37
+  - first:
+      213: -6385989978678869455
+    second: Socia Icon_38
+  - first:
+      213: 7452751713472813707
+    second: Socia Icon_39
+  - first:
+      213: -6878581620528895629
+    second: Socia Icon_40
+  - first:
+      213: 3834505662449269900
+    second: Socia Icon_41
+  - first:
+      213: -7443738342288854148
+    second: Socia Icon_42
+  - first:
+      213: -5224002128004625935
+    second: Socia Icon_43
+  - first:
+      213: -2967197507026991534
+    second: Socia Icon_44
+  - first:
+      213: 8276926970749899553
+    second: Socia Icon_45
+  - first:
+      213: -2656377059244611334
+    second: Socia Icon_46
+  - first:
+      213: 307040126680148042
+    second: Socia Icon_47
+  - first:
+      213: 8924409120665760663
+    second: Socia Icon_48
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Socia Icon_0
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 2924
+        width: 246
+        height: 347
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 721975cf086895a4994ed3a610be467f
+      internalID: 441394799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_1
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 2925
+        width: 246
+        height: 341
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 977e58d2d3ac47f45835fe0edde29f4c
+      internalID: 759471172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_2
+      rect:
+        serializedVersion: 2
+        x: 613
+        y: 2925
+        width: 246
+        height: 342
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d8608098503a640aaae50cc599f43a
+      internalID: 1871448091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_3
+      rect:
+        serializedVersion: 2
+        x: 879
+        y: 2924
+        width: 246
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35cf7629847fe864a8677930c2f044c4
+      internalID: 101990665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_4
+      rect:
+        serializedVersion: 2
+        x: 1143
+        y: 2924
+        width: 246
+        height: 341
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea32fa015ff5b504f98f39a0c7d9fb11
+      internalID: 1924201092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_5
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 2924
+        width: 246
+        height: 342
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71957b78a5e04a14ba7936c65ebe70e3
+      internalID: 2102095355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_6
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 2513
+        width: 272
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9c09de55b6532a4fb1b5991da3bb570
+      internalID: 223447961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_7
+      rect:
+        serializedVersion: 2
+        x: 375
+        y: 2513
+        width: 272
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 793120fec3cc56040bf9b7925c4cabb1
+      internalID: 1680196634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_8
+      rect:
+        serializedVersion: 2
+        x: 667
+        y: 2513
+        width: 272
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5849cb0c1cc9b7c4f9da17744e98a6a3
+      internalID: -1069579017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_9
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 2513
+        width: 273
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77351f6faaed4e4448992d2128643e88
+      internalID: -1839342185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_10
+      rect:
+        serializedVersion: 2
+        x: 1258
+        y: 2513
+        width: 272
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 836d4c7f0342fbf40bd856c0758cf4e1
+      internalID: 1621550159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_11
+      rect:
+        serializedVersion: 2
+        x: 1550
+        y: 2513
+        width: 272
+        height: 346
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bad28091ab1f85c4d8b931d078e6538c
+      internalID: -1984770965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_12
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33f6861a670a2a24287a88c1b76475f2
+      internalID: 1156901848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_13
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97649543df5005c4e9dc6700a9d065cf
+      internalID: -1396476876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_14
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 324d3b2d478119a4ba33c64e25b119c6
+      internalID: 2093862622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_15
+      rect:
+        serializedVersion: 2
+        x: 1018
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f386b47704a4b04fb5ac1686464cbb9
+      internalID: 1932103582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_16
+      rect:
+        serializedVersion: 2
+        x: 1330
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff2f3e19dacb7464589dd76559e74015
+      internalID: 957148402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_17
+      rect:
+        serializedVersion: 2
+        x: 1638
+        y: 2096
+        width: 301
+        height: 355
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e63fd382a004aa04ab9ef7e11659f9db
+      internalID: -485268161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_18
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 1683
+        width: 290
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de3c4292c3b1735468d2b5ab4a00deb5
+      internalID: -193883665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_19
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 1683
+        width: 290
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 671e480a3db601b43854e4eda5ce9224
+      internalID: 835622552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_20
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 1683
+        width: 290
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b76f1e52ebc0aaa40984e2126b463267
+      internalID: -836831921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_21
+      rect:
+        serializedVersion: 2
+        x: 972
+        y: 1683
+        width: 290
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f58b30c6db77ea24e85e9e6b51f26ef8
+      internalID: 424438957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_22
+      rect:
+        serializedVersion: 2
+        x: 1269
+        y: 1683
+        width: 290
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5251b24bb37ea4840ba4e21835b367b6
+      internalID: -1942650391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_23
+      rect:
+        serializedVersion: 2
+        x: 1568
+        y: 1683
+        width: 289
+        height: 352
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7184b913cc1670d41bae18eb5c7cede7
+      internalID: 1925970247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_24
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 1274
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed664b0c2473ad64f8d160a21c0bf422
+      internalID: -1185114306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_25
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 1274
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e6e03daa789c9b44bee6c5af0022462
+      internalID: -1755445754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_26
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 1274
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fc69f612cbdcf64ab5c5c04bc8da097
+      internalID: -1510680184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_27
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 1274
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb8a010fa9c479942ae374665059cd61
+      internalID: -1727954226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_28
+      rect:
+        serializedVersion: 2
+        x: 1305
+        y: 1278
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b71cf8146c5e5514998dc1f17a679960
+      internalID: -250075989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_29
+      rect:
+        serializedVersion: 2
+        x: 1614
+        y: 1274
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b7852b12bd7cf945a4185e7821f504f
+      internalID: -1851535309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_30
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc9f607aab8d1b84f8e54924b91590d5
+      internalID: -1594939399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_31
+      rect:
+        serializedVersion: 2
+        x: 386
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d44eb5bb4db8cb943b26db42d3bf8879
+      internalID: 1969641887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_32
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b079a8ee0a9112b4888cae2e1d22f701
+      internalID: -944970050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_33
+      rect:
+        serializedVersion: 2
+        x: 1002
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e55ce344737f7f148a8aedba45891a79
+      internalID: 1300553413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_34
+      rect:
+        serializedVersion: 2
+        x: 1309
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bb4223f920c3b34f9a7015de973281c
+      internalID: 1113432767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_35
+      rect:
+        serializedVersion: 2
+        x: 1617
+        y: 853
+        width: 302
+        height: 360
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b64a96d4a92a65d49a83a11e7a9b7290
+      internalID: 1964307295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_36
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 439
+        width: 290
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a8b8dc4ce14d29438dcae2672cc071d
+      internalID: 1131132233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_37
+      rect:
+        serializedVersion: 2
+        x: 377
+        y: 439
+        width: 290
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44e88b8bab1817740b79f477560ff32b
+      internalID: 1783410027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_38
+      rect:
+        serializedVersion: 2
+        x: 674
+        y: 439
+        width: 290
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68e8cb8a14e2bde4aa590c0a8cd40f25
+      internalID: 1646275101
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_39
+      rect:
+        serializedVersion: 2
+        x: 970
+        y: 439
+        width: 291
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2907d81a6b4971479a5982978b16f2e
+      internalID: 1712313138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_40
+      rect:
+        serializedVersion: 2
+        x: 1265
+        y: 439
+        width: 291
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85d2519d1026c38478c51e3fb3147419
+      internalID: 1936206721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_41
+      rect:
+        serializedVersion: 2
+        x: 1564
+        y: 439
+        width: 291
+        height: 350
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8969a6d132ba02f408d112e8bdcdea3a
+      internalID: -764348408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_42
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a841aac90fe006d49a37d24393dbae8d
+      internalID: 241808702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_43
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 637beba0f38a37b48acbab2b8223ba75
+      internalID: -1083161655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_44
+      rect:
+        serializedVersion: 2
+        x: 687
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60f44b80b9d28934ea679d5b40146b91
+      internalID: -1324295817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_45
+      rect:
+        serializedVersion: 2
+        x: 991
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dee42edaa0e9f5147a34eca3daf0e216
+      internalID: 941552685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_46
+      rect:
+        serializedVersion: 2
+        x: 1292
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 096f1bf67ccaced48b296124fdce5f3f
+      internalID: 812382248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_47
+      rect:
+        serializedVersion: 2
+        x: 1595
+        y: 34
+        width: 295
+        height: 345
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e226e9a0ec9ed5742917eca624d03495
+      internalID: -1250011552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Socia Icon_48
+      rect:
+        serializedVersion: 2
+        x: 1763
+        y: 39
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c10ce4d7c9d1015448db0ba59845b4cb
+      internalID: -1745629523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 96ade1f4a948c2b4489578c4df58a9d2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Socia Icon_0: 441394799
+      Socia Icon_1: 759471172
+      Socia Icon_10: 1621550159
+      Socia Icon_11: -1984770965
+      Socia Icon_12: 1156901848
+      Socia Icon_13: -1396476876
+      Socia Icon_14: 2093862622
+      Socia Icon_15: 1932103582
+      Socia Icon_16: 957148402
+      Socia Icon_17: -485268161
+      Socia Icon_18: -193883665
+      Socia Icon_19: 835622552
+      Socia Icon_2: 1871448091
+      Socia Icon_20: -836831921
+      Socia Icon_21: 424438957
+      Socia Icon_22: -1942650391
+      Socia Icon_23: 1925970247
+      Socia Icon_24: -1185114306
+      Socia Icon_25: -1755445754
+      Socia Icon_26: -1510680184
+      Socia Icon_27: -1727954226
+      Socia Icon_28: -250075989
+      Socia Icon_29: -1851535309
+      Socia Icon_3: 101990665
+      Socia Icon_30: -1594939399
+      Socia Icon_31: 1969641887
+      Socia Icon_32: -944970050
+      Socia Icon_33: 1300553413
+      Socia Icon_34: 1113432767
+      Socia Icon_35: 1964307295
+      Socia Icon_36: 1131132233
+      Socia Icon_37: 1783410027
+      Socia Icon_38: 1646275101
+      Socia Icon_39: 1712313138
+      Socia Icon_4: 1924201092
+      Socia Icon_40: 1936206721
+      Socia Icon_41: -764348408
+      Socia Icon_42: 241808702
+      Socia Icon_43: -1083161655
+      Socia Icon_44: -1324295817
+      Socia Icon_45: 941552685
+      Socia Icon_46: 812382248
+      Socia Icon_47: -1250011552
+      Socia Icon_48: -1745629523
+      Socia Icon_5: 2102095355
+      Socia Icon_6: 223447961
+      Socia Icon_7: 1680196634
+      Socia Icon_8: -1069579017
+      Socia Icon_9: -1839342185
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

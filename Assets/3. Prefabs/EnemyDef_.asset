@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: BasicMonster
   DisplayName: "\uAE30\uBCF8 \uBAAC\uC2A4\uD130"
-  MaxHealth: 50
+  MaxHealth: 45
   MoveSpeed: 2
   DamageToGoal: 1
   Armor: 0
