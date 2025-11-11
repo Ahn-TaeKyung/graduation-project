@@ -34,7 +34,9 @@ public class GameSceneManager : NetworkBehaviour
 
     public override void Spawned()
     {
-        // NetworkRunner 가져오기
+        // [수정] NetworkRunner 가져오기 코드를 base.Spawned() 뒤로 이동
+        base.Spawned();
+
         NetworkRunner runner = Runner;
         if (runner == null)
         {
@@ -42,24 +44,25 @@ public class GameSceneManager : NetworkBehaviour
             return;
         }
 
-        // 씬 진입 시 Room에 있는 모든 플레이어 스폰
+        // [핵심 수정]
+        // Host(State Authority)일 때만 플레이어 스폰 로직을 실행합니다.
+        // 클라이언트는 이 블록을 건너뛰어야 합니다.
         if (Object.HasStateAuthority)
         {
-            // (로그: GameSceneManager.Spawned () (at ...GameSceneManager.cs:48))
-            // 당신의 코드 48라인 근처에 이 로직이 있을 것입니다.
-            
-            // 예시: 모든 플레이어를 스폰시키는 로직
+            // (당신의 코드 48라인 근처의 로직)
+            Debug.Log("[GameSceneManager] Host 권한으로 모든 ActivePlayer 스폰을 시작합니다.");
             foreach (var player in Runner.ActivePlayers)
             {
-                SpawnPlayer(player); // (로그: GameSceneManager.SpawnPlayer ... :121)
+                SpawnPlayer(player); // (당신의 코드 121라인)
             }
         }
+        else
+        {
+            Debug.Log("[GameSceneManager] Client 권한. 스폰 로직을 건너뜁니다.");
+        }
 
-        // Host/Client 추가 입장 처리
-
-        base.Spawned();
-
-        // 역할 정보 로드 후 내 역할 저장
+        // (당신의 코드 63라인)
+        // 역할 정보 로드 후 내 역할 저장 (이 로직은 모든 플레이어가 실행해야 함)
         var playerGameDatas = PlayerGameDataManager.LoadPlayerGameDatas();
 
         int myId = NetworkRunner.GetRunnerForGameObject(gameObject).LocalPlayer.PlayerId;

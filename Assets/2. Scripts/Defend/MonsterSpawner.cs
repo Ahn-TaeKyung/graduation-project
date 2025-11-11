@@ -7,6 +7,8 @@ using System.Collections.Generic;
 public class MonsterSpawner : NetworkBehaviour, IGameStartListener
 {
     public static MonsterSpawner Instance { get; private set; }
+    
+    public GameObject m_stage_select_canvas; 
 
     [Header("Stage Configuration")]
     [Tooltip("현재 스테이지에서 사용할 StageData 에셋")]
@@ -34,6 +36,7 @@ public class MonsterSpawner : NetworkBehaviour, IGameStartListener
     // "Start" 상태 진입 시 호출 (GameStateManager가 30초 대기 시작)
     public void OnGameStart()
     {
+        m_stage_select_canvas.SetActive(false);
         Debug.Log("[MonsterSpawner] GameState.Start 진입. 30초 대기 시작.");
     }
 

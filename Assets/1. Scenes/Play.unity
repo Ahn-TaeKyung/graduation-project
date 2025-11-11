@@ -21481,6 +21481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad559a599ed9b27429a22d68d154efb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_stage_select_canvas: {fileID: 1221708530}
   currentStageData: {fileID: 11400000, guid: 22e52d2f6f306ee4d96ac674651c1599, type: 2}
 --- !u!4 &1447689392
 Transform:
@@ -28369,6 +28370,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad559a599ed9b27429a22d68d154efb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_stage_select_canvas: {fileID: 0}
   currentStageData: {fileID: 0}
 --- !u!4 &1781011182
 Transform:

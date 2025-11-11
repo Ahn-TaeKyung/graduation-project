@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Fusion; // NetworkRunner를 찾기 위해 추가
 
 // [수정] 맵 캔버스가 켜지는/꺼지는 시점을 GameStateManager로부터 받음
-public class StageSelectUI : MonoBehaviour, IGameReadyListener
+public class StageSelectUI : MonoBehaviour, IGameReadyListener, IGameStartListener, IGameEndListener
 {
     [Header("UI References")]
     [SerializeField] private RectTransform m_player_icon;
@@ -31,27 +31,76 @@ public class StageSelectUI : MonoBehaviour, IGameReadyListener
     private NetworkRunner _runner;
 
     // [수정] Start()에서 리스너 등록
-    void Start()
+
+    private IEnumerator Start()
     {
-        // 씬 로드 시 GameStateManager를 찾아서 리스너 등록
-        if (GameStateManager.Instance != null)
+        while (GameStateManager.Instance == null)
         {
-            GameStateManager.Instance.RegisterListener((IGameReadyListener)this);
+            Debug.Log("탈출 1");
+            yield return null;
+        }
+        while (!GameStateManager.Instance.Object || !GameStateManager.Instance.Object.IsValid)
+        {
+            Debug.Log("탈출 2");
+            yield return null;
+        }
+        while (!GameStateManager.Instance.Object.IsValid)
+        {
+            Debug.Log("탈출 3");
+            yield return null;
         }
 
+        GameStateManager.Instance.RegisterListener((IGameReadyListener)this);
         m_button_Yes.onClick.AddListener(StageSelectYes);
         m_button_No.onClick.AddListener(StageSelectNo);
         m_stage_select_check_UI.SetActive(false);
 
-        _runner = FindObjectOfType<NetworkRunner>();
-        if (_runner != null)
-        {
-            _isHost = _runner.IsServer; // IsHost 대신 IsServer
-        }
-        
+
+        var cur = GameStateManager.Instance.CurrentState;
+        ApplyStateImmediate(cur);
+
+        // _runner = FindObjectOfType<NetworkRunner>();
+        // if (_runner != null)
+        // {
+        //     _isHost = _runner.IsServer; // IsHost 대신 IsServer
+        // }
+
         // [수정] GameStateManager가 켜주므로 Start에서 끄지 않습니다.
         // gameObject.SetActive(false);
     }
+    private void ApplyStateImmediate(GameState state)
+    {
+        switch(state)
+        {
+            case GameState.Ready:
+                gameObject.SetActive(true);
+                break;
+            default:
+                gameObject.SetActive(false);
+                break;
+        }
+    }
+    // void Start()
+    // {
+    //     // 씬 로드 시 GameStateManager를 찾아서 리스너 등록
+    //     if (GameStateManager.Instance != null)
+    //     {
+    //         GameStateManager.Instance.RegisterListener((IGameReadyListener)this);
+    //     }
+
+    //     m_button_Yes.onClick.AddListener(StageSelectYes);
+    //     m_button_No.onClick.AddListener(StageSelectNo);
+    //     m_stage_select_check_UI.SetActive(false);
+
+    //     _runner = FindObjectOfType<NetworkRunner>();
+    //     if (_runner != null)
+    //     {
+    //         _isHost = _runner.IsServer; // IsHost 대신 IsServer
+    //     }
+        
+    //     // [수정] GameStateManager가 켜주므로 Start에서 끄지 않습니다.
+    //     // gameObject.SetActive(false);
+    // }
     
     private void OnDestroy()
     {
@@ -65,6 +114,7 @@ public class StageSelectUI : MonoBehaviour, IGameReadyListener
     // GameStateManager가 'Ready' 상태가 될 때 호출됨
     public void OnGameReady()
     {
+        gameObject.SetActive(true);
         // GameStateManager가 스폰되었으므로, 정확한 권한 확인
         if (GameStateManager.Instance.Object.IsValid)
         {
@@ -256,12 +306,25 @@ public class StageSelectUI : MonoBehaviour, IGameReadyListener
             }
         }
     }
-    
+
     private void UpdateIconPositionImmediate(int button_index)
     {
         if (button_index < 0 || button_index >= m_icon_path.Length) return;
-        
+
         Vector2 target_pos = m_icon_path[button_index].GetComponent<RectTransform>().anchoredPosition;
         m_player_icon.anchoredPosition = target_pos;
+    }
+
+    // IGameStartListener
+    public void OnGameStart()
+    {
+        gameObject.SetActive(false);
+    }
+
+    // IGameEndListener
+    public void OnGameEnd()
+    {
+        // 필요시 표시/비표시 처리
+        gameObject.SetActive(false);
     }
 }

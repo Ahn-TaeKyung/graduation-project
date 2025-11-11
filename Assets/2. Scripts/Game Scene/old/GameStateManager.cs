@@ -1,8 +1,11 @@
-// 파일명: GameStateManager.cs (체력 초기화 시점 수정)
+// 파일명: GameStateManager.cs (Spawned 함수 수정)
 using Fusion;
 using UnityEngine;
 using System.Collections.Generic;
-using System; 
+using System;
+using System.Collections;
+
+
 
 
 public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStartListener, IGameEndListener
@@ -16,6 +19,11 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
     public GameObject m_stage_select_canvas; 
     public GameObject m_end_canvas;
     public GameObject m_clear_canvas;
+    
+    // [신규] UI 캔버스의 씬 상의 정확한 이름 (인스펙터 참조 실패 시 대비)
+    private const string STAGE_SELECT_CANVAS_NAME = "StageSelectMap_Panel"; // 씬에 있는 UI 캔버스 오브젝트의 이름
+    private const string END_CANVAS_NAME = "m_end_canvas"; // 씬에 있는 UI 캔버스 오브젝트의 이름
+    private const string CLEAR_CANVAS_NAME = "m_clear_canvas"; // 씬에 있는 UI 캔버스 오브젝트의 이름
 
     // --- Networked State ---
     [Networked]
@@ -50,15 +58,40 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
     public override void Spawned()
     {
         base.Spawned();
-        if (Object.HasStateAuthority)
-        {
-            ChangeState(GameState.Loading);
-        }
-        _lastSyncedState = CurrentState;
+        Debug.Log($"[GSM] Spawned on {(Object.HasStateAuthority ? "Host" : "Client")}, CurrentState={CurrentState}");
 
-        if (m_stage_select_canvas != null) m_stage_select_canvas.SetActive(false);
-        if (m_end_canvas != null) m_end_canvas.SetActive(false);
-        if (m_clear_canvas != null) m_clear_canvas.SetActive(false);
+        
+        // [핵심 수정 1]
+        // _lastSyncedState를 현재 상태(Host로부터 동기화된)와 다른 값으로 초기화합니다.
+        // 이렇게 하면 클라이언트의 첫 FixedUpdateNetwork에서 if문이 true가 되어
+        // HandleStateChange가 무조건 호출됩니다.
+        _lastSyncedState = (GameState)(-1); // 존재하지 않는 값으로 설정
+
+        // [핵심 수정 2] UI 참조가 비어있다면 이름으로 다시 찾습니다. (안전 장치)
+        StartCoroutine(EnsureUICanvasReferences());
+        HandleStateChange(CurrentState);
+    }
+
+    private IEnumerator EnsureUICanvasReferences()
+    {
+        while (m_stage_select_canvas == null)
+        {
+            m_stage_select_canvas = GameObject.Find(STAGE_SELECT_CANVAS_NAME);
+            if (m_stage_select_canvas == null)
+                yield return null;
+        }
+        while (m_end_canvas == null)
+        {
+            m_end_canvas = GameObject.Find(END_CANVAS_NAME);
+            if (m_end_canvas == null)
+                yield return null;
+        }
+        while (m_clear_canvas == null)
+        {
+            m_clear_canvas = GameObject.Find(CLEAR_CANVAS_NAME);
+            if (m_clear_canvas == null)
+                yield return null;
+        }
     }
 
     public override void FixedUpdateNetwork()
@@ -67,7 +100,7 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
         if (_lastSyncedState != CurrentState)
         {
             Debug.Log($"[Networked] GameState changed: {_lastSyncedState} → {CurrentState}");
-            HandleStateChange(CurrentState);
+            HandleStateChange(CurrentState); // 상태 변경 시 캔버스 켜고 끄기 실행
             _lastSyncedState = CurrentState;
         }
 
@@ -81,31 +114,22 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
                 {
                     _stateTransitionTimer = TickTimer.None; 
                     if (CurrentState == GameState.Start)
-                    {
                         ChangeState(GameState.Play);
-                    }
                     else if (CurrentState == GameState.Play)
-                    {
                         ChangeState(GameState.Clear);
-                    }
                 }
             }
         }
     }
 
     #region Public RPCs (UI -> Host)
-
-    // StageSelectUI(Host)가 "예" 버튼 클릭 시 호출
     public void HostSelectStage(int stageIndex, int iconButtonIndex)
     {
         if (!Object.HasStateAuthority) return;
-
         this.SelectedStageIndex = stageIndex;
         this.CurrentIconIndex = iconButtonIndex; 
         ChangeState(GameState.Start);
     }
-
-    // GameResultUI(Host/Client)가 "다시시작" 버튼 클릭 시 호출
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_ReturnToReady()
     {
@@ -114,23 +138,17 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
         SelectedStageIndex = -1;
         ChangeState(GameState.Ready);
     }
-
-    // EnemyNetwork(Host)가 호출
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_PlayerTakeDamage(int damage)
     {
         if (!Object.HasStateAuthority || CurrentState != GameState.Play) return;
-
         CurrentStageHealth -= damage;
-        Debug.Log($"[GameStateManager] 스테이지 체력 감소. 남은 체력: {CurrentStageHealth}");
-
         if (CurrentStageHealth <= 0)
         {
             CurrentStageHealth = 0;
             ChangeState(GameState.End);
         }
     }
-
     #endregion
 
     #region Listener Registration
@@ -143,28 +161,22 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
     #endregion
 
     #region State Machine
-
-    // Host만 이 함수를 호출해야 함
     public void ChangeState(GameState newState)
     {
         if (!Object.HasStateAuthority) return;
-        
         if (CurrentState == newState) return;
         if ((CurrentState == GameState.End || CurrentState == GameState.Clear) && newState != GameState.Ready)
         {
             return;
         }
-
         Debug.Log($"[GameStateManager] Host가 상태 변경: {CurrentState} → {newState}");
         CurrentState = newState;
-        
         HandleStateChange(newState); 
     }
-
-    // Host와 Client 모두 FixedUpdateNetwork를 통해 이 함수를 호출 (상태 동기화)
     private void HandleStateChange(GameState state)
     {
-        if (m_stage_select_canvas != null) m_stage_select_canvas.SetActive(false);
+        foreach (var listener in _gameReadyListeners)
+            listener.OnGameReady();
         if (m_end_canvas != null) m_end_canvas.SetActive(false);
         if (m_clear_canvas != null) m_clear_canvas.SetActive(false);
 
@@ -174,90 +186,93 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
             case GameState.Role:
                 if (Object.HasStateAuthority) ChangeState(GameState.Ready);
                 break;
-
             case GameState.Ready:
                 if (Object.HasStateAuthority)
                 {
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
                 }
-                
-                if (m_stage_select_canvas != null) m_stage_select_canvas.SetActive(true);
+                if (m_stage_select_canvas != null)
+                    m_stage_select_canvas.SetActive(true);
+                else
+                    Debug.LogError($"[GameStateManager] m_stage_select_canvas 참조가 null이라 켤 수 없습니다!");
                 
                 foreach (var listener in _gameReadyListeners) listener.OnGameReady();
                 Debug.Log("[GameStateManager] 'Ready' 상태 진입. 맵 선택 UI 활성화.");
                 break;
-
             case GameState.Start:
+            
+                m_stage_select_canvas.SetActive(false);
                 foreach (var listener in _gameStartListeners) listener.OnGameStart();
-                Debug.Log($"[GameStateManager] 'Start' 상태 진입 (스테이지 {SelectedStageIndex}). 30초 카운트다운 시작.");
-                
                 if (Object.HasStateAuthority)
                 {
-                    // 1. 30초 타이머 시작
                     _stateTransitionTimer = TickTimer.CreateFromSeconds(Runner, DURATION_START_TO_PLAY);
                     SharedGameTimer = DURATION_START_TO_PLAY;
-                    
-                    // 2. [핵심 수정] 스테이지 체력을 'Start' 상태에서 즉시 초기화
                     if (spawner != null && spawner.currentStageData != null)
-                    {
                         CurrentStageHealth = spawner.currentStageData.StageHealth;
-                        Debug.Log($"[GameStateManager] 스테이지 체력 설정: {CurrentStageHealth}");
-                    }
                     else
-                    {
-                        CurrentStageHealth = 1; // 비상용 체력
-                        Debug.LogError("[GameStateManager] MonsterSpawner 또는 currentStageData가 null입니다. 비상 체력 1로 시작.");
-                    }
+                        CurrentStageHealth = 1; 
                 }
                 break;
-
             case GameState.Play:
+                m_stage_select_canvas.SetActive(false);
                 if (spawner != null) spawner.StartWave();
-                Debug.Log("[GameStateManager] Play 상태로 전환됨 - 적 웨이브 시작");
-                
                 if (Object.HasStateAuthority)
                 {
-                    // 5분 타이머 시작
                     _stateTransitionTimer = TickTimer.CreateFromSeconds(Runner, DURATION_PLAY_TO_END);
                     SharedGameTimer = DURATION_PLAY_TO_END;
-                    
-                    // [핵심 수정] 체력 설정 로직을 'Start'로 이동했으므로 여기서는 제거
                 }
                 break;
-
-            case GameState.End: // 게임 오버
+            case GameState.End: 
                 foreach (var listener in _gameEndListeners) listener.OnGameEnd();
                 if (spawner != null) spawner.StopWave();
-                if (m_end_canvas != null)
-                    m_end_canvas.SetActive(true); 
-                
+                if (m_end_canvas != null) m_end_canvas.SetActive(true); 
                 if (Object.HasStateAuthority)
                 {
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
+                    CleanupNetworkObjects();
                 }
                 break;
-                
-            case GameState.Clear: // 게임 클리어
+            case GameState.Clear: 
                 foreach (var listener in _gameEndListeners) listener.OnGameEnd();
                 if (spawner != null) spawner.StopWave();
-                if (m_clear_canvas != null)
-                    m_clear_canvas.SetActive(true); 
-                
+                if (m_clear_canvas != null) m_clear_canvas.SetActive(true); 
                 if (Object.HasStateAuthority)
                 {
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
+                    CleanupNetworkObjects();
                 }
                 break;
         }
     }
     
-    // --- 인터페이스 구현 (비워두기) ---
-    public void OnGameReady() { /* 다른 스크립트가 구현 */ }
-    public void OnGameStart() { /* 다른 스크립트가 구현 */ }
-    public void OnGameEnd() { /* 다른 스크립트가 구현 */ }
-
+    private void CleanupNetworkObjects()
+    {
+        if (!Object.HasStateAuthority) return;
+        Debug.Log("[GameStateManager] 게임 종료. 모든 몬스터, 타워, 총알을 정리합니다...");
+        DespawnAllNetworkObjects<EnemyNetwork>();
+        DespawnAllNetworkObjects<Bullet>();
+        DespawnAllNetworkObjects<TurretNetwork>(); 
+        DespawnAllNetworkObjects<SwordTurretNetwork>();
+        DespawnAllNetworkObjects<NetworkedVFXAutoDespawn>();
+    }
+    private void DespawnAllNetworkObjects<T>() where T : NetworkBehaviour
+    {
+        T[] objectsToDespawn = FindObjectsByType<T>(FindObjectsSortMode.None);
+        Debug.Log($"[GameStateManager] ... {objectsToDespawn.Length}개의 {typeof(T).Name} 오브젝트 제거 중");
+        foreach (T obj in objectsToDespawn)
+        {
+            if (obj != null && obj.Object != null && obj.Object.IsValid)
+            {
+                Runner.Despawn(obj.Object);
+            }
+        }
+    }
+    
+    public void OnGameReady() { }
+    public void OnGameStart() { }
+    public void OnGameEnd() { }
     #endregion
 }
