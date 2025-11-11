@@ -110,10 +110,10 @@ public class EnemyNetwork : NetworkBehaviour
         // [핵심 수정] 게임 매니저에 피해 주기
         if (GameStateManager.Instance != null && Definition != null)
         {
+            Runner.Despawn(Object); 
             GameStateManager.Instance.RPC_PlayerTakeDamage(Definition.DamageToGoal);
         }
-        
-        Runner.Despawn(Object); 
+        // Runner.Despawn(Object); 
     }
 
     // [제거됨] public static void OnHealthChanged(Changed<EnemyNetwork> change)

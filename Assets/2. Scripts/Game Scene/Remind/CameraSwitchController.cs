@@ -9,7 +9,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
     private Canvas towerBox;
 
     private bool isDefendView = false;
-    private bool isCameraControlEnabled = false;
+    private bool isCameraControlEnabled = true;
 
     public override void Spawned()
     {
@@ -101,7 +101,7 @@ public class CameraSwitchController : NetworkBehaviour, IGameReadyListener, IGam
         if (!Object.HasInputAuthority)
             return;
 
-        isCameraControlEnabled = false;
+        // isCameraControlEnabled = false;
         SwitchCamera(false);
         Debug.Log("[CameraSwitch] Game Ready - BuildCamera 활성화됨");
     }

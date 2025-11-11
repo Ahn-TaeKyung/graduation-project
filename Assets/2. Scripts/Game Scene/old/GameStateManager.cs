@@ -181,9 +181,9 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
                 }
-                
+
                 if (m_stage_select_canvas != null) m_stage_select_canvas.SetActive(true);
-                
+
                 foreach (var listener in _gameReadyListeners) listener.OnGameReady();
                 Debug.Log("[GameStateManager] 'Ready' 상태 진입. 맵 선택 UI 활성화.");
                 break;
@@ -191,13 +191,13 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
             case GameState.Start:
                 foreach (var listener in _gameStartListeners) listener.OnGameStart();
                 Debug.Log($"[GameStateManager] 'Start' 상태 진입 (스테이지 {SelectedStageIndex}). 30초 카운트다운 시작.");
-                
+
                 if (Object.HasStateAuthority)
                 {
                     // 1. 30초 타이머 시작
                     _stateTransitionTimer = TickTimer.CreateFromSeconds(Runner, DURATION_START_TO_PLAY);
                     SharedGameTimer = DURATION_START_TO_PLAY;
-                    
+
                     // 2. [핵심 수정] 스테이지 체력을 'Start' 상태에서 즉시 초기화
                     if (spawner != null && spawner.currentStageData != null)
                     {
@@ -215,13 +215,13 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
             case GameState.Play:
                 if (spawner != null) spawner.StartWave();
                 Debug.Log("[GameStateManager] Play 상태로 전환됨 - 적 웨이브 시작");
-                
+
                 if (Object.HasStateAuthority)
                 {
                     // 5분 타이머 시작
                     _stateTransitionTimer = TickTimer.CreateFromSeconds(Runner, DURATION_PLAY_TO_END);
                     SharedGameTimer = DURATION_PLAY_TO_END;
-                    
+
                     // [핵심 수정] 체력 설정 로직을 'Start'로 이동했으므로 여기서는 제거
                 }
                 break;
@@ -230,30 +230,69 @@ public class GameStateManager : NetworkBehaviour, IGameReadyListener, IGameStart
                 foreach (var listener in _gameEndListeners) listener.OnGameEnd();
                 if (spawner != null) spawner.StopWave();
                 if (m_end_canvas != null)
-                    m_end_canvas.SetActive(true); 
-                
+                    m_end_canvas.SetActive(true);
+
                 if (Object.HasStateAuthority)
                 {
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
+                    CleanupNetworkObjects();
                 }
                 break;
-                
+
             case GameState.Clear: // 게임 클리어
                 foreach (var listener in _gameEndListeners) listener.OnGameEnd();
                 if (spawner != null) spawner.StopWave();
                 if (m_clear_canvas != null)
-                    m_clear_canvas.SetActive(true); 
-                
+                    m_clear_canvas.SetActive(true);
+
                 if (Object.HasStateAuthority)
                 {
                     _stateTransitionTimer = TickTimer.None;
                     SharedGameTimer = 0;
+                    CleanupNetworkObjects();
                 }
                 break;
         }
     }
-    
+    private void CleanupNetworkObjects()
+    {
+        // 이 로직은 Host에서만 실행되어야 합니다. (HandleStateChange의 if문이 보장)
+        if (!Object.HasStateAuthority) return;
+
+        Debug.Log("[GameStateManager] 게임 종료. 모든 몬스터, 타워, 총알을 정리합니다...");
+
+        // 1. 모든 적 제거
+        DespawnAllNetworkObjects<EnemyNetwork>();
+
+        // 2. 모든 총알 제거
+        DespawnAllNetworkObjects<Bullet>();
+
+        // 3. 모든 타워 제거 (BowTurret, SwordTurret)
+        DespawnAllNetworkObjects<TurretNetwork>(); // BowTurret 스크립트
+        DespawnAllNetworkObjects<SwordTurretNetwork>(); // SwordTurret 스크립트
+        
+        // 4. (선택 사항) AoE 이펙트가 남아있다면 제거
+        DespawnAllNetworkObjects<NetworkedVFXAutoDespawn>();
+    }
+
+    // [신규] 특정 타입의 모든 NetworkBehaviour를 찾아 Despawn하는 제네릭 함수
+    private void DespawnAllNetworkObjects<T>() where T : NetworkBehaviour
+    {
+        // 씬에 있는 모든 T 타입의 NetworkBehaviour를 찾습니다.
+        T[] objectsToDespawn = FindObjectsByType<T>(FindObjectsSortMode.None);
+        
+        Debug.Log($"[GameStateManager] ... {objectsToDespawn.Length}개의 {typeof(T).Name} 오브젝트 제거 중");
+
+        foreach (T obj in objectsToDespawn)
+        {
+            // NetworkObject가 유효하고, 아직 Despawn되지 않았다면
+            if (obj != null && obj.Object != null && obj.Object.IsValid)
+            {
+                Runner.Despawn(obj.Object);
+            }
+        }
+    }
     // --- 인터페이스 구현 (비워두기) ---
     public void OnGameReady() { /* 다른 스크립트가 구현 */ }
     public void OnGameStart() { /* 다른 스크립트가 구현 */ }
